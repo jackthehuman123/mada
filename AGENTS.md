@@ -29,14 +29,15 @@ Read this whole file first. Then do the start-of-session routine below.
 1. Update `docs/PROGRESS.md`: what's done, **how you verified it**, what's next, known bugs.
 2. Log every choice the docs didn't settle in `docs/DECISIONS.md` (one line each: decision, why, how to change it).
 3. `git add` + `git commit` with a message like `M2: camcorder record + playback`. Don't push unless the human asks.
-4. Tell the human to **save the place in Studio** (File → Save, or Publish). World geometry and inserted models live in the place, not in git.
+4. Tell the human to **save the place in Studio** (File → Save, or Publish). World-builder's geometry and inserted models live in the place, not in git (the graybox layout itself is also in `src/server/World/Build.luau`, see §4).
 
 ## 4. Where things live — the rule that prevents lost work
 
 | What | Source of truth | How you change it |
 | --- | --- | --- |
 | All Luau code | `src/` in git | Edit the files. Rojo syncs them into Studio. **Never** edit Rojo-managed scripts with the MCP `multi_edit` tool or inside Studio: Rojo overwrites them on the next sync. |
-| World: terrain, buildings, props, lighting | The Studio place file | MCP tools. Prefer writing builder scripts in `tools/worldgen/*.luau` and running them with `execute_luau`, so the world can be rebuilt from git. |
+| World, graybox layer: layout, gameplay objects, tags | `src/server/World/Build.luau` in git. The server builds it only when the place has no world yet (`Workspace` attribute `WorldBuilt`); the factory tests always run on it. | Main agent edits `Build.luau`. `tools/worldgen/00_graybox.luau` bakes it into the open place. |
+| World, art layer: terrain dressing, models, props, lighting polish | The published place (world-builder, `tools/worldgen/NN_area.luau` scripts) | Keep the graybox's names, tags and positions so code and tests keep working. Save the place. |
 | Player-facing text (clues, dialogue, UI strings) | `src/shared/Content/*.luau` | Data modules only, never hard-coded in logic. |
 | Tunable numbers (timers, distances, battery) | `src/shared/Config.luau` | Never inline magic numbers. |
 | Asset IDs and where they're used | `docs/ASSETS.md` | Add a row for every asset you insert. |
@@ -117,6 +118,8 @@ Rules for delegating:
 - Record each subagent's report in `docs/PROGRESS.md` (short) and any DRAFT items in `docs/DECISIONS.md`.
 
 ## 11. Definition of done (any task)
+
+- `python tools/factory/test.py` says **PASS** (it builds the place from git, plays it in its own Studio window and runs `tests/`). Add or extend a test for every acceptance check you build. Don't run it while another agent is using Studio (§10): it opens a second Studio window for ~2 minutes.
 
 - Code is in `src/`, synced, and committed.
 - A playtest starts with **no errors from our scripts** in `get_console_output`.

@@ -12,3 +12,8 @@ art/exports/
 Thumbs.db
 .vscode/settings.json
 *:Zone.Identifier
+
+# Factory test runner output (tools/factory/test.py)
+build/
+tools/factory/reports/
+__pycache__/
