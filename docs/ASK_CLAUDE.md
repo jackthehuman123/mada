@@ -77,7 +77,7 @@ take several. When it has changed files, the comment ends with a branch name and
 - It follows `AGENTS.md`: no gore, no invented story, anything it writes for players is marked DRAFT and logged in
   `docs/DECISIONS.md`.
 - It forgets between comments except for what's in the issue or pull request thread, so keep a topic in one thread.
-- Usage limits: each run is capped at 15 minutes (and 15 steps). It uses the plan or API key from setup step 2, plus
+- Usage limits: each run is capped at 15 minutes (and 30 steps). It uses the plan or API key from setup step 2, plus
   GitHub Actions minutes (private repos get a free monthly allowance).
 - **The bot watches its own weekly budget.** After every request it adds up what it has used since Monday and works out
   where that pace ends by Sunday. If it would run past the weekly budget, it posts one heads-up a day in the thread,
