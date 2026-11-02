@@ -60,6 +60,9 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   rural house: one storey, ochre lime-plaster walls, red terracotta tile roof, wooden shutters, a front porch on
   wooden posts, a brick yard) and the props around it; (2) use store models only for small props (water jars, nón lá,
   baskets, bamboo, dock); (3) if that's still not good enough, a paid pack or a commissioned modeller (Catlyn's call).
+- **Pipeline (2026-11-02):** `docs/MESHY.md`. Meshy's free plan makes the house kit (roof, walls, porch: separate
+  meshes so each takes its own Roblox material) plus the shrine, lantern, altar, boat and puppet pavilion; waiting on
+  Catlyn to generate them (W-06).
 - **Done when:** every house reads as a Vietnamese village house up close (porch, roof tiles, shutters, yard
   clutter), Catlyn approves screenshots, names/tags/positions kept, `test.py --art` PASS, assets logged.
 
@@ -151,6 +154,9 @@ Claude doesn't pick these up; when Catlyn gives an answer or a file, turn it int
 - **W-04 · Finale staging** (Về nhà, Im lặng) once seen.
 - **W-05 · The village map image** `docs/design/map.png`; then update `PROTOTYPE_BRIEF.md` §8 and the map constants
   in `Build.luau`.
+- **W-06 · Meshy, November's ten** (`docs/MESHY.md`): generate the ten queued in `art/meshy/manifest.json` on the
+  free plan (two Lite previews each, mesh only, download the better as `.glb` into `art/meshy/in/<name>.glb`), and
+  make an Open Cloud key for `upload.luau` (or use Studio's 3D Importer). Then Claude checks, uploads and places them.
 
 Studio isn't usable on the loaner laptop (2026-11); W-01 to W-04 wait for a computer with Studio.
 

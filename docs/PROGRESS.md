@@ -47,6 +47,10 @@ system, the camcorder and the boundaries work. Everything is built from git (see
 - **I-13 built:** music layer in `SoundController` (menu / bed / tension / chase), four licensed tracks picked by
   name and length (not listened to), alternatives in `ASSETS.md`.
 - Verified statically again (`luau-lsp analyze`: no new errors in the changed code).
+- **Asset pipeline (Meshy):** `docs/MESHY.md`, `art/meshy/manifest.json` (November's ten queued with prompts),
+  `tools/meshy/check.luau` (reads a .glb: triangles, size, textures vs Roblox limits; tested on Khronos Box/Duck
+  samples: 12 and 4,212 triangles, correct), `tools/meshy/upload.luau` (Open Cloud upload; not run, needs Catlyn's key).
+  Free plan checked on meshy.ai: 100 credits, 10 downloads of untextured Meshy 6 Lite a month, CC BY 4.0, no API.
 - Next: on a computer with Studio, `test.py` (11 tests), then 2 clients for I-09 and I-12; listen to I-13; then I-11, I-10.
 
 ### 2026-11-03 — verified Catlyn's 11-02 changes; last sounds; houses and finale readable (branch `complete-game`, off `full-game`; not merged)
