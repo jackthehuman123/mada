@@ -13,6 +13,7 @@ local Text = {
 		ending_silence = "Some say every lantern on the lake went out at once, and the quiet came down over the whole village, and Sen came for them one by one until morning. Bin was never found. Weeks later somebody found a camera on some old steps, with nothing on it but static and, very faint, festival music.\n\n(Im lặng)",
 	},
 	Messages = {
+		membersOnly = "Làng Vọng is in closed playtesting: only members of the dev group can join for now.", -- DRAFT (kick message, PlaytestGate)
 		findBin = "Find Bin.", -- brief §4 beat 7
 		causewayFlooded = "The causeway is under water.", -- brief §4 beat 5
 		binCamera = "Bin's camera. Still recording.", -- story.md §13 "still recording". Approved by Catlyn 2026-11-02
