@@ -40,6 +40,8 @@ system, the camcorder and the boundaries work. Everything is built from git (see
   - The letter could be lost for the run: dropped (Backspace, or its holder taken) its non-colliding handle fell through the world; a holder who reset, died or left took it with them. Now a dropped letter lies still on the ground, a holder who dies or leaves drops it where they stood, and a letter gone from the world is back under Sen's altar. New check in `07_mystery`.
   - A taken player who reset their character woke on the surface (out of the drowned festival). Now they wake in the festival again. New check in `08_sen`.
   - If the last player who wasn't taken left, the taken waited in the festival until midnight. Now leaving re-checks "everyone taken" → Im lặng.
+- **Grass on every house floor** (seen in the 07 screenshots): the land's terrain surface sits at y ~ 2 (a full voxel fills up to the next one's centre), above the house floors (top y = 1). `terrainPass` now clears the top voxel layer inside each house's walls; the porch slab is gone (posts and roof stay) and the plinth is raised to show above the grass. Banana trees rebuilt (tapered trunk, arching leaves, one dry leaf).
+- `06_night1`: the second-drift count waits for all four lanterns (they go out 4 s apart; counting at once was a race).
 - Next: the human playtest (2–4 players); Creator Store models for the art layer in the shared place, exported with `tools/art/export` (needs Lune trusted: `rokit trust lune-org/lune`).
 
 ### 2026-11-02 — M4–M8: the whole run (branch `full-game`, off `m3-night1`; not merged)

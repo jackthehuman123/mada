@@ -111,6 +111,11 @@ local function terrainPass()
 	end
 	-- the cut the carp steps go down through, from the back yard to the cove's water
 	t:FillBlock(CFrame.new(350, -4, -1), Vector3.new(12, 12, 24), M.Air)
+	-- inside each house: the land's surface sits at y ~ 2 (a full voxel fills up to the next one's centre), above the
+	-- floor (top y = 1), so grass covered every floor. Clear the top voxel layer inside the walls; the floor hides it
+	for _, hs in HOUSES do
+		t:FillBlock(CFrame.new(hs.x, 0, HOUSE_Z), Vector3.new(21, 8, 17), M.Air)
+	end
 end
 
 -- one house on the lane: floor, walls with a door gap toward the lane, a tiled roof, a window ---------------------
@@ -126,10 +131,11 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 	P(m, { Name = "Floor", Size = Vector3.new(W, 1, D), Position = c + Vector3.new(0, 0.5, 0), Color = rgb(120, 92, 64), Material = M.WoodPlanks })
 	-- dressing (no gameplay): a brick plinth, gable ends and a ridge under the roof, a porch with posts, shutters
 	local brick = rgb(118, 74, 58)
-	P(m, { Name = "Plinth", Size = Vector3.new(W + 0.6, 1.6, 0.3), Position = c + Vector3.new(0, 0.8, D / 2 + 0.15), Color = brick, Material = M.Brick, CanCollide = false })
+	-- (the ground outside is at y ~ 2: the plinth shows its top 0.8 studs)
+	P(m, { Name = "Plinth", Size = Vector3.new(W + 0.6, 2.8, 0.3), Position = c + Vector3.new(0, 1.4, D / 2 + 0.15), Color = brick, Material = M.Brick, CanCollide = false })
 	for _, sx in { -1, 1 } do
-		P(m, { Name = "Plinth", Size = Vector3.new(0.3, 1.6, D + 0.6), Position = c + Vector3.new(sx * (W / 2 + 0.15), 0.8, 0), Color = brick, Material = M.Brick, CanCollide = false })
-		P(m, { Name = "Plinth", Size = Vector3.new((W - 6) / 2, 1.6, 0.3), Position = c + Vector3.new(sx * (W / 2 - (W - 6) / 4), 0.8, -D / 2 - 0.15), Color = brick, Material = M.Brick, CanCollide = false })
+		P(m, { Name = "Plinth", Size = Vector3.new(0.3, 2.8, D + 0.6), Position = c + Vector3.new(sx * (W / 2 + 0.15), 1.4, 0), Color = brick, Material = M.Brick, CanCollide = false })
+		P(m, { Name = "Plinth", Size = Vector3.new((W - 6) / 2, 2.8, 0.3), Position = c + Vector3.new(sx * (W / 2 - (W - 6) / 4), 1.4, -D / 2 - 0.15), Color = brick, Material = M.Brick, CanCollide = false })
 	end
 	for _, sx in { -1, 1 } do
 		for _, sz in { -1, 1 } do
@@ -140,7 +146,6 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 		end
 	end
 	P(m, { Name = "Ridge", Size = Vector3.new(W + 3.4, 0.7, 0.9), Position = c + Vector3.new(0, H + 6.4, 0), Color = tile:Lerp(rgb(0, 0, 0), 0.25), Material = M.Slate })
-	P(m, { Name = "Porch", Size = Vector3.new(W + 2, 0.8, 5), Position = c + Vector3.new(0, 0.4, -D / 2 - 2.5), Color = rgb(128, 84, 64), Material = M.Brick })
 	P(m, { Name = "PorchRoof", Size = Vector3.new(W + 3, 0.5, 6), CFrame = CFrame.new(c + Vector3.new(0, H - 0.6, -D / 2 - 2.6)) * CFrame.Angles(math.rad(-12), 0, 0),
 		Color = tile, Material = M.Slate })
 	for _, px in { -W / 2, -3.5, 3.5, W / 2 } do
@@ -477,7 +482,7 @@ local function dressing(parent: Instance)
 			CFrame = CFrame.new(at + Vector3.new(0, 2.15, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(30, 45, 50), Material = M.Glass, CanCollide = false })
 	end
 	for _, hs in HOUSES do
-		jar(Vector3.new(hs.x - 9.5, 0.8, HOUSE_Z - 11.5)) -- on the porch
+		jar(Vector3.new(hs.x - 9.5, 2, HOUSE_Z - 11.5)) -- under the porch roof, on the ground (y ~ 2)
 		banana(Vector3.new(hs.x + rng:NextNumber(-8, 8), 0, HOUSE_Z + rng:NextNumber(13, 20)))
 	end
 	for k = 1, 8 do -- along the lane's lake side, between the houses' yards and the shore
