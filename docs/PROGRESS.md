@@ -12,13 +12,13 @@ Updated by the agent at the end of every session. Newest session at the top of t
 - [x] **M5** Sen + taken / rescue + incense *(branch `full-game`)*
 - [x] **M6 ★** Endings + midnight — full run playable *(branch `full-game`)*
 - [~] **M7** Art + audio pass — audio done (licensed library), graybox dressed in code; the model art pass belongs in the shared place (world-builder), not done
-- [~] **M8** Playtest build — analytics summary + the Stay ending done; the Quiet Man (optional) not built; publishing the private test place is a human step
+- [~] **M8** Playtest build — analytics summary done; the Stay ending built, then cut by Catlyn (2026-11-02, `Config.StayEnding`); the Quiet Man (optional) not built; publishing the private test place is a human step
 
 ## Current state
 
 **A full run is playable from start to finish (branch `full-game`, not merged).** Night 1, then the open village:
 15 clues and 4 mementos across the houses, the letter under Sen's altar, the stuck hint, Sen hunting lone players by the
-water (taken → drowned festival → rescue with incense), and three endings at midnight (Về nhà, Ở lại, Im lặng) with the
+water (taken → drowned festival → rescue with incense), and two endings at midnight (Về nhà, or Im lặng where Sen takes everyone one by one; Ở lại cut 2026-11-02) with the
 teller's cards and a playtest summary line. Earlier summary of the run's shape: Intro card → Arrival (walk to the shrine with Bin) → Night 1 (the seven scripted
 beats: Bà Thu's scene, the lanterns, Bin vanishes, the causeway floods, Bin's camera and tapes) → Open (clock
 21:00 → 24:00, "Find Bin.", lanterns again at 23:00, Bà Thu can be talked to again) → Finale → Ending card → reset. The graybox village, the clue/journal
@@ -37,7 +37,8 @@ system, the camcorder and the boundaries work. Everything is built from git (see
   - Shared `Figures` (Sen and the children, used on the tape and in the finale), `StoryController` (memories, taken button, finale camera/static, Stay choice), dialogue choice buttons.
 - Verified by: `python tools/factory/test.py` → PASS 9/9, 0 console errors. New `07_mystery` (14 clues placed with prompts + the letter = 15 in the journal, 4 mementos, a memory plays and ends, the letter from the altar, the stuck hint, carp at the steps), `08_sen` (warnings 1–5 in order → taken to the festival with the letter dropped; the lantern button; rescue at the shrine; the shrine is safe; incense withdraws her; walking away cancels her; second taking for good → everyone taken → Im lặng + summary), `09_endings` (letter → Write: Sen → she walks to the bottom step → Về nhà → card + summary; midnight at the steps → hold on → Ở lại; midnight elsewhere → Im lặng with every lantern out and static; reset brings the lanterns, Bà Thu and the camera back).
 - Not checked by a person yet: the whole run at real speed with 2–4 players; how the sounds actually sound; the walk Bà Thu takes; the finale's pacing.
-- Next: playtest; Catlyn's review of every DRAFT (DECISIONS); world-builder art pass in the shared place; music for the finale; sounds for the whistle and the drum.
+- Unverified (2026-11-02, written on the loaner without Studio): Ở lại cut and Im lặng taking players one by one (`EndingService.silence`, `StoryController` hides the lantern button after the night; `tests/09_endings.luau` updated). Run `python tools/factory/test.py` and watch an Im lặng finale with 2+ players.
+- Next: playtest; Catlyn's review of every DRAFT (DECISIONS); world-builder art pass in the shared place (tested both ways, decided 2026-11-02: export `Workspace.World` to an `.rbxm` the factory tests load, plus a hand playthrough for looks; the export + loader aren't built yet); music for the finale; sounds for the whistle and the drum.
 - Known issues: Sen and the children read as small dark shapes in the finale (graybox); no music; the warning about asset 203785492 comes from the place, not our code.
 
 ### 2026-11-02 — M3 ★ Night 1 (branch `m3-night1`, off `factory-prototype`; not merged)

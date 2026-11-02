@@ -25,7 +25,7 @@ The build spec for the first playable prototype. Design intent lives in `docs/de
 - Chapters / the release-plan split. Build one continuous run.
 - Player roles (host, researcher, sound, camera) — players use their own avatars.
 - Hungry ghosts (*cô hồn*), rice and salt.
-- The *Ở lại (Stay)* ending — optional, only after M6.
+- The *Ở lại (Stay)* ending — cut (Catlyn, 2026-11-02): the endings are Về nhà or Im lặng.
 - The Quiet Man / Silence threat — optional M8.
 - Final art. Graybox is fine until M7.
 - Mobile-specific UI tuning. Desktop first, but use ProximityPrompts and on-screen buttons so mobile isn't broken.
@@ -72,7 +72,7 @@ Every player has a camcorder Tool (the channel's gear).
 
 | Action | Default input | Rule |
 | --- | --- | --- |
-| Raise / lower viewfinder | Right mouse or `F` | VHS overlay UI, FOV 55, time + battery shown. Drains battery 1 %/s. |
+| Raise / lower viewfinder | Right mouse or `F` | VHS overlay UI, FOV 55, time + battery shown. Drains the battery (300 s of use from full, see below). |
 | Record | `R` while raised | Records a clip (max 20 s). Max 3 clips per camcorder; oldest is overwritten. |
 | Play back | `T` → choose a clip | Watch a clip in full screen with the VHS overlay. Player can't move while watching; `T` again exits. |
 
@@ -146,8 +146,8 @@ Players who enter Sen's house early just find a sad, ordinary home. That's inten
 | Ending | Trigger at midnight | Prototype presentation |
 | --- | --- | --- |
 | ***Về nhà* (Going home)** — true | Bà Thu was given the letter, the name was written, and she reached the carp steps. | The fish lantern drifts to the middle of the lake. Sen rises holding hands with Minh, Hạnh, Tí, Khoa and Bin. Bà Thu walks onto the water and takes her hand. Hundreds of carp; lanterns carried across the lake; fade. Dawn: causeway dry, Bin wakes on the bank. Teller's text card. |
-| ***Im lặng* (Silence)** — tragic | Anything else at midnight (or every player taken). | Every lantern on the lake goes out at once; all sound dies; fade to static and faint festival music. Teller's text card. |
-| *Ở lại (Stay)* | Optional, after M6 (see `gameplay.md`). | — |
+| ***Im lặng* (Silence)** — tragic | Anything else at midnight (or every player taken). | Every lantern on the lake goes out at once; Sen takes the players still free one by one; all sound dies; fade to static and faint festival music. Teller's text card. |
+| *Ở lại (Stay)* | Cut (Catlyn, 2026-11-02). | — |
 
 Ending texts: adapt from `story.md` §15 and §16 as drafts.
 
@@ -223,7 +223,7 @@ Each milestone must be demonstrable by the agent through MCP (playtest + console
 | **M5** | Sen + taken | With one player alone at the water: warning steps 1–5 fire in order, then taken → drowned festival. Rescue via shrine incense returns them. Incense makes her withdraw. Shrine is safe. |
 | **M6 ★** | Endings | Debug clock to 23:50. Path A: give letter → write name → Bà Thu walks to the steps → *Về nhà* plays. Path B: do nothing → *Im lặng* at midnight. Server resets afterwards. *Full run playable start to finish.* |
 | **M7** | Art + audio | Graybox replaced with sanitized free assets / generated meshes, all logged in `ASSETS.md`; ambient night sound, water, radio static, distant festival drums at the finale. No scripts inside inserted assets (check with `search_game_tree` for Script classes under `Workspace.World`). Client stays smooth on the dev machine. |
-| **M8** | Playtest build | Analytics summary prints at the end. Optional extras if time: *Ở lại* ending, the Quiet Man/Silence zone in Sen's house (hide-only, radio warning, caught → wake at the gate). Human publishes a private test place. |
+| **M8** | Playtest build | Analytics summary prints at the end. Optional extras if time: the Quiet Man/Silence zone in Sen's house (hide-only, radio warning, caught → wake at the gate). Human publishes a private test place. |
 
 ## 12. Open questions and defaults
 

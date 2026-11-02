@@ -1,6 +1,6 @@
 -- M6 ★ Endings (brief §5.7, §7, §10, §11 M6; gameplay.md): giving Bà Thu the letter -> "Write: Sen" -> she walks to
--- the carp steps -> Về nhà; players at the steps at midnight without that -> Ở lại (hold on / let go); anything else ->
--- Im lặng. Each ends on the teller's card and the playtest summary line, and the server resets after.
+-- the carp steps -> Về nhà; anything else at midnight -> Im lặng: the lanterns go out and Sen takes the players one by
+-- one (Ở lại is cut). Each ends on the teller's card and the playtest summary line, and the server resets after.
 --@ Server
 dbg("speed", 25)
 dbg("sen", "off")
@@ -71,7 +71,7 @@ check(gui.Card.Visible and gui.Card.Text.Text:find("Về nhà", 1, true), "no V�
 return "card: " .. gui.Card.Text.Text:gsub("\n", " "):sub(1, 80)
 --@ Shot ending-home
 --@ Server
--- Ở lại: at the steps at midnight, the letter never given
+-- Ở lại is cut: at the steps at midnight, the letter never given, it's Im lặng, and Sen takes the player
 dbg("reset")
 task.wait(1.5)
 dbg("speed", 25)
@@ -80,27 +80,16 @@ dbg("phase", "Open")
 local root = game.Players:GetPlayers()[1].Character.HumanoidRootPart
 root.CFrame = CFrame.new(350, 3, 6)
 task.wait(0.3)
-dbg("speed", 2) -- (slow enough for the choice to be pressed)
 dbg("time", 23.999)
 local t0 = os.clock()
-while dbg("get").phase ~= "Finale" and os.clock() - t0 < 4 do task.wait(0.1) end
-eq(dbg("get").phase, "Finale", "midnight")
-return "midnight at the carp steps"
+while dbg("get").phase ~= "Ending" and os.clock() - t0 < 8 do task.wait(0.1) end
+eq(dbg("ending").ending, "silence", "ending at the steps")
+eq(game.Players:GetPlayers()[1]:GetAttribute("Taken"), true, "Sen didn't take the player in Im lặng")
+return "midnight at the carp steps -> Im lặng; the player was taken"
 --@ Client
-local t0 = os.clock()
-while not gui.Stay.Visible and os.clock() - t0 < 5 do task.wait(0.1) end
-check(gui.Stay.Visible, "no hold on / let go choice")
-return "choice: " .. gui.Stay.Prompt.Text
---@ Shot stay-choice
---@ Client
-lp.PlayerScripts:WaitForChild("LVStoryDebug"):Invoke("stay", "hold")
-return "held on"
---@ Server
-local t0 = os.clock()
-while dbg("get").phase ~= "Ending" and os.clock() - t0 < 10 do task.wait(0.1) end
-eq(dbg("ending").ending, "stay", "ending")
-eq(game.Players:GetPlayers()[1]:GetAttribute("Stayed"), true, "the player who held on stayed")
-return "Ở lại: held on -> stayed with Sen; Bin goes free"
+check(not gui.Stay.Visible, "the hold on / let go choice showed")
+check(not gui.Taken.Visible, "'Light a lantern' showed after the night ended")
+return "no Ở lại choice, no lantern button"
 --@ Server
 -- Im lặng: midnight anywhere else
 dbg("reset")

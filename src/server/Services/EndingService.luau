@@ -3,8 +3,8 @@
 --   Giving Bà Thu the letter: talk to her while holding it (Open phase). The players read it out; she cries,
 --     finishes the paper fish and asks for the name: "Write: Sen". Then she walks through the lane, her back yard and
 --     down the carp steps; players follow. At the bottom step the clock jumps to midnight: Về nhà.
---   Midnight without that: players at the carp steps -> Ở lại (each one there chooses: hold on, or let go; if
---     nobody holds on, it's Im lặng). Anything else, or everyone taken -> Im lặng.
+--   Midnight without that, or everyone taken -> Im lặng: every lantern goes out and Sen takes the players one by one
+--     (story.md §16). Ở lại (players at the carp steps choose: hold on, or let go) is cut; Config.StayEnding brings it back.
 -- Each finale is a short scripted scene (camera shots on the clients through ReplicatedStorage attributes
 -- FinaleCamPos / FinaleCamLook), then the Ending phase shows the teller's card and the playtest summary prints.
 
@@ -25,7 +25,7 @@ local Tags = require(Shared:WaitForChild("Tags"))
 local EndingService = {}
 
 local rgb = Color3.fromRGB
-local GameState: any, Dialogue: any, Mystery: any, Bin: any, Director: any, Lanterns: any
+local GameState: any, Dialogue: any, Mystery: any, Bin: any, Director: any, Lanterns: any, Sen: any
 local LAKE_CENTRE = Vector3.new(0, -1, -265)
 local STEPS_BOTTOM = Vector3.new(350, -7.3, -16) -- the last carp step (World/Build.luau: cove)
 local STEPS_TOP = Vector3.new(350, 1, 14)
@@ -207,7 +207,15 @@ local function silence()
 	end
 	print("[Ending] every lantern goes out")
 	ReplicatedStorage:SetAttribute("FinaleStatic", false)
-	pause(3)
+	pause(2)
+	-- and Sen comes for them one by one
+	for _, p in Players:GetPlayers() do
+		if p:GetAttribute("Taken") ~= true then
+			Sen.Take(p)
+			pause(Config.SilenceTakeGapSeconds)
+		end
+	end
+	pause(1)
 	ReplicatedStorage:SetAttribute("FinaleStatic", true) -- the clients fade to static
 	Remotes.event(Remotes.Names.Sfx):FireAllClients("festival_static", nil)
 	pause(Config.FinaleSilenceSeconds - 5.5)
@@ -430,7 +438,7 @@ local function playFinale()
 	local kind = ReplicatedStorage:GetAttribute("Ending")
 	if kind == nil then
 		local there = atTheSteps()
-		kind = if thuAtSteps then "home" elseif #there > 0 then "stay" else "silence"
+		kind = if thuAtSteps then "home" elseif Config.StayEnding and #there > 0 then "stay" else "silence"
 		setEnding(kind :: string)
 		if kind == "stay" then
 			stay(there)
@@ -518,6 +526,7 @@ function EndingService.Start()
 	Bin = require(script.Parent:WaitForChild("BinService"))
 	Director = require(script.Parent:WaitForChild("NightOneDirector"))
 	Lanterns = require(script.Parent:WaitForChild("LanternService"))
+	Sen = require(script.Parent:WaitForChild("SenService"))
 	local m = thu()
 	thuHome = m and m:GetPivot()
 	GameState.OnReset(EndingService.Reset)
