@@ -17,7 +17,8 @@ This repo holds the design and the prototype code. It's set up so a coding agent
 | `docs/PROGRESS.md` | Milestone checklist and session log (the agent keeps it updated). |
 | `docs/DECISIONS.md` | Choices the agent made and drafts waiting for review. |
 | `src/` | Luau code, synced into Studio by Rojo. |
-| `tools/worldgen/` | Scripts the agent runs in Studio to build the world. |
+| `src/server/World/` | The village, built by the server from code at startup (graybox, tagged). |
+| `tools/factory/`, `tests/` | The factory test runner and the acceptance tests: `python tools/factory/test.py` (see `docs/FACTORY.md`). |
 
 ## Getting started (builder)
 
@@ -27,10 +28,10 @@ This repo holds the design and the prototype code. It's set up so a coding agent
    - `rojo serve` in this folder, then **Plugins → Rojo → Connect** in Studio.
    - Open Claude Code in this folder and say:
      > Read CLAUDE.md and follow it. Begin the next milestone in docs/PROGRESS.md.
-3. When the agent finishes a step, **save/publish the place in Studio** and push the commits.
+3. When the agent finishes a step, `python tools/factory/test.py` must say PASS; then push the commits. (The world is built from code, so there's no place file to save for it.)
 
 ## Working together
 
 - **Catlyn** owns the story and design (`docs/design/`). Edit those files and push; the agent re-reads them each session.
 - Review anything marked `DRAFT` (in `docs/DECISIONS.md` and `src/shared/Content/`) — that's text the agent wrote from the story.
-- **Code** is shared through git. **The world** (terrain, buildings, models) lives in the published Roblox place; add each other as collaborators in Game Settings → Permissions and use Team Create to work in the same place. Only one person runs `rojo serve` into it at a time.
+- **Code and the world** are shared through git: the village is built from `src/server/World/Build.luau` when the server starts, so nobody's unsaved place can lose it. Only one person runs `rojo serve` into a shared place at a time.

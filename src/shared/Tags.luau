@@ -10,6 +10,7 @@ local Tags = {
 	ShrineZone = "ShrineZone", -- safe zone + camera recharge
 	WaterEdge = "WaterEdge", -- shoreline parts used for Sen's distance checks
 	BoundaryTeleport = "BoundaryTeleport", -- walking into it returns players to the lake shore
+	ShoreReturn = "ShoreReturn", -- where a boundary sends players back to (a part on the lane by the shrine)
 
 	-- Interaction
 	Clue = "Clue", -- attribute ClueId

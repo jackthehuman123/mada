@@ -18,6 +18,11 @@ Remotes.Names = {
 	ShowTextCard = "ShowTextCard", -- server -> clients: (cardId) teller narration
 	SenWarning = "SenWarning", -- server -> target client: (step)
 	PlayerTaken = "PlayerTaken", -- server -> clients: (userId)
+	InspectClue = "InspectClue", -- server -> client: (clueId) open the clue panel
+	JournalSync = "JournalSync", -- server -> clients: ({ clueId }) the group's found clues
+	CameraRaised = "CameraRaised", -- client -> server: (raised: boolean) the viewfinder is up (battery drain)
+	Message = "Message", -- server -> clients: (text) one line at the bottom of the screen
+	Fade = "Fade", -- server -> client: (seconds) fade to black and back (boundary return)
 }
 
 local function getFolder(): Folder

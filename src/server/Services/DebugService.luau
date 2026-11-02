@@ -1,28 +1,113 @@
 --!strict
 -- Studio-only debug commands for testing (AGENTS.md §5). Does nothing in live servers.
--- TODO(M1/M2): add TextChatCommand "/lv" with subcommands, and expose the same functions on
--- ServerStorage attribute-driven hooks so the agent can call them via execute_luau (Server context):
---   /lv phase <Phase>      jump to a phase
---   /lv time <hour>        set the clock, e.g. 23.9
---   /lv give letter        give the letter to the caller
---   /lv clue <ClueId|all>  mark clue(s) found
---   /lv take <name|me>     take a player   /lv rescue <name|me>
---   /lv goto <Location>    teleport the caller
+-- Two ways in, same commands:
+--   chat:   /lv phase Open | /lv time 23.9 | /lv clue all | /lv goto SenHouse | /lv battery 20 | /lv reset
+--   agents: the BindableFunction ServerScriptService.Debug, e.g. Debug:Invoke("goto", "Shrine") from execute_luau
+--           (Server context). The factory test runner (tools/factory/test.py) uses it.
+-- Commands: get | phase <Phase> | time <hour> | clue <ClueId|all> | goto <Location> | battery <0-100> | reset |
+--           inshrine | locations
 
+local CollectionService = game:GetService("CollectionService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
+local ServerScriptService = game:GetService("ServerScriptService")
+local TextChatService = game:GetService("TextChatService")
+
+local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Clues = require(Shared:WaitForChild("Content"):WaitForChild("Clues"))
+local Tags = require(Shared:WaitForChild("Tags"))
 
 local DebugService = {}
+
+local function locationModel(name: string): Model?
+	for _, m in CollectionService:GetTagged(Tags.Location) do
+		if m:GetAttribute("Location") == name and m:IsA("Model") then
+			return m
+		end
+	end
+	return nil
+end
+
+local function run(caller: Player?, cmd: string, arg: any): any
+	local GameState = require(script.Parent:WaitForChild("GameStateService")) :: any
+	local ClueService = require(script.Parent:WaitForChild("ClueService")) :: any
+	local player = caller or Players:GetPlayers()[1]
+	if cmd == "get" then
+		local batteries = {}
+		for _, p in Players:GetPlayers() do
+			batteries[p.Name] = p:GetAttribute("Battery")
+		end
+		return { phase = GameState.GetPhase(), clock = GameState.GetClock(), clues = ClueService.Found(), batteries = batteries,
+			players = #Players:GetPlayers() }
+	elseif cmd == "phase" then
+		GameState.SetPhase(arg)
+	elseif cmd == "time" then
+		GameState.SetClock(tonumber(arg) or 21)
+	elseif cmd == "clue" then
+		assert(player, "no player")
+		if arg == "all" then
+			for id in Clues do
+				ClueService.Inspect(player, id)
+			end
+		else
+			ClueService.Inspect(player, arg)
+		end
+	elseif cmd == "goto" then
+		local m = locationModel(arg)
+		local root = player and player.Character and player.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
+		assert(m and root, `no location {arg} or no character`)
+		root.AssemblyLinearVelocity = Vector3.zero
+		root.CFrame = CFrame.new(m:GetPivot().Position + Vector3.new(0, 3, 0))
+	elseif cmd == "battery" then
+		for _, p in Players:GetPlayers() do
+			p:SetAttribute("Battery", tonumber(arg) or 100)
+		end
+	elseif cmd == "reset" then
+		GameState.Reset()
+	elseif cmd == "inshrine" then
+		return player and GameState.InShrine(player) or false
+	elseif cmd == "locations" then
+		local out = {}
+		for _, m in CollectionService:GetTagged(Tags.Location) do
+			table.insert(out, m:GetAttribute("Location"))
+		end
+		table.sort(out)
+		return out
+	else
+		error(`unknown debug command {cmd}`)
+	end
+	return "ok"
+end
 
 function DebugService.Init()
 	if not RunService:IsStudio() then
 		return
 	end
+	local hook = Instance.new("BindableFunction")
+	hook.Name = "Debug"
+	hook.OnInvoke = function(cmd: string, arg: any)
+		return run(nil, cmd, arg)
+	end
+	hook.Parent = ServerScriptService
 end
 
 function DebugService.Start()
 	if not RunService:IsStudio() then
 		return
 	end
+	pcall(function() -- chat commands (TextChatService only)
+		local command = Instance.new("TextChatCommand")
+		command.Name = "LangVongDebug"
+		command.PrimaryAlias = "/lv"
+		command.Triggered:Connect(function(source: TextSource, text: string)
+			local player = Players:GetPlayerByUserId(source.UserId)
+			local words = string.split(text, " ")
+			local ok, res = pcall(run, player, words[2] or "get", words[3])
+			print(`[LangVong] /lv {words[2] or "get"} {words[3] or ""} -> {ok and "ok" or res}`)
+		end)
+		command.Parent = TextChatService
+	end)
 	print("[LangVong] debug commands enabled (Studio only)")
 end
 

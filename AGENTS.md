@@ -36,7 +36,7 @@ Read this whole file first. Then do the start-of-session routine below.
 | What | Source of truth | How you change it |
 | --- | --- | --- |
 | All Luau code | `src/` in git | Edit the files. Rojo syncs them into Studio. **Never** edit Rojo-managed scripts with the MCP `multi_edit` tool or inside Studio: Rojo overwrites them on the next sync. |
-| World: terrain, buildings, props, lighting | The Studio place file | MCP tools. Prefer writing builder scripts in `tools/worldgen/*.luau` and running them with `execute_luau`, so the world can be rebuilt from git. |
+| World: terrain, buildings, props, lighting | `src/server/World/Build.luau` in git (the server builds it at startup; see `docs/FACTORY.md`) | Edit `Build.luau`. Never build by hand in Studio: hand edits are lost on the next build. Tag everything gameplay touches. |
 | Player-facing text (clues, dialogue, UI strings) | `src/shared/Content/*.luau` | Data modules only, never hard-coded in logic. |
 | Tunable numbers (timers, distances, battery) | `src/shared/Config.luau` | Never inline magic numbers. |
 | Asset IDs and where they're used | `docs/ASSETS.md` | Add a row for every asset you insert. |
@@ -99,6 +99,8 @@ Studio's built-in MCP server gives you these tools (names as Roblox documents th
 - A design choice that would change the story, an ending, or what a character is. For everything else, use the default from the **Open questions** section of the brief, and log it.
 
 ## 10. Definition of done (any task)
+
+- `python tools/factory/test.py` says **PASS** (it builds the place from git, plays it in its own Studio window and runs `tests/`). Add or extend a test for every acceptance check you build.
 
 - Code is in `src/`, synced, and committed.
 - A playtest starts with **no errors from our scripts** in `get_console_output`.
