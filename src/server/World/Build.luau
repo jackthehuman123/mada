@@ -110,7 +110,12 @@ local function terrainPass()
 		t:FillBall(Vector3.new(298 + (z % 20) * 0.2, 2, z), 11, M.Rock)
 	end
 	-- the cut the carp steps go down through, from the back yard to the cove's water
-	t:FillBlock(CFrame.new(350, -4, -1), Vector3.new(12, 12, 24), M.Air)
+	t:FillBlock(CFrame.new(350, -4, -1), Vector3.new(16, 14, 26), M.Air) -- (wide: voxel smoothing slumps a narrow cut over the steps)
+	-- inside each house: the land's surface sits at y ~ 2 (a full voxel fills up to the next one's centre), above the
+	-- floor (top y = 1), so grass covered every floor. Clear the top voxel layer inside the walls; the floor hides it
+	for _, hs in HOUSES do
+		t:FillBlock(CFrame.new(hs.x, 0, HOUSE_Z), Vector3.new(21, 8, 17), M.Air)
+	end
 end
 
 -- one house on the lane: floor, walls with a door gap toward the lane, a tiled roof, a window ---------------------
@@ -126,10 +131,11 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 	P(m, { Name = "Floor", Size = Vector3.new(W, 1, D), Position = c + Vector3.new(0, 0.5, 0), Color = rgb(120, 92, 64), Material = M.WoodPlanks })
 	-- dressing (no gameplay): a brick plinth, gable ends and a ridge under the roof, a porch with posts, shutters
 	local brick = rgb(118, 74, 58)
-	P(m, { Name = "Plinth", Size = Vector3.new(W + 0.6, 1.6, 0.3), Position = c + Vector3.new(0, 0.8, D / 2 + 0.15), Color = brick, Material = M.Brick, CanCollide = false })
+	-- (the ground outside is at y ~ 2: the plinth shows its top 0.8 studs)
+	P(m, { Name = "Plinth", Size = Vector3.new(W + 0.6, 2.8, 0.3), Position = c + Vector3.new(0, 1.4, D / 2 + 0.15), Color = brick, Material = M.Brick, CanCollide = false })
 	for _, sx in { -1, 1 } do
-		P(m, { Name = "Plinth", Size = Vector3.new(0.3, 1.6, D + 0.6), Position = c + Vector3.new(sx * (W / 2 + 0.15), 0.8, 0), Color = brick, Material = M.Brick, CanCollide = false })
-		P(m, { Name = "Plinth", Size = Vector3.new((W - 6) / 2, 1.6, 0.3), Position = c + Vector3.new(sx * (W / 2 - (W - 6) / 4), 0.8, -D / 2 - 0.15), Color = brick, Material = M.Brick, CanCollide = false })
+		P(m, { Name = "Plinth", Size = Vector3.new(0.3, 2.8, D + 0.6), Position = c + Vector3.new(sx * (W / 2 + 0.15), 1.4, 0), Color = brick, Material = M.Brick, CanCollide = false })
+		P(m, { Name = "Plinth", Size = Vector3.new((W - 6) / 2, 2.8, 0.3), Position = c + Vector3.new(sx * (W / 2 - (W - 6) / 4), 1.4, -D / 2 - 0.15), Color = brick, Material = M.Brick, CanCollide = false })
 	end
 	for _, sx in { -1, 1 } do
 		for _, sz in { -1, 1 } do
@@ -140,7 +146,6 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 		end
 	end
 	P(m, { Name = "Ridge", Size = Vector3.new(W + 3.4, 0.7, 0.9), Position = c + Vector3.new(0, H + 6.4, 0), Color = tile:Lerp(rgb(0, 0, 0), 0.25), Material = M.Slate })
-	P(m, { Name = "Porch", Size = Vector3.new(W + 2, 0.8, 5), Position = c + Vector3.new(0, 0.4, -D / 2 - 2.5), Color = rgb(128, 84, 64), Material = M.Brick })
 	P(m, { Name = "PorchRoof", Size = Vector3.new(W + 3, 0.5, 6), CFrame = CFrame.new(c + Vector3.new(0, H - 0.6, -D / 2 - 2.6)) * CFrame.Angles(math.rad(-12), 0, 0),
 		Color = tile, Material = M.Slate })
 	for _, px in { -W / 2, -3.5, 3.5, W / 2 } do
@@ -286,8 +291,15 @@ local function cove(parent: Instance)
 	for k = 0, 6 do -- stone steps from the yard down into the cove's water
 		P(steps, { Name = "Step", Size = Vector3.new(7, 1, 4), Position = Vector3.new(350, 0.5 - k * 1.3, 8 - k * 4), Color = rgb(140, 136, 126), Material = M.Slate })
 	end
+	-- a stone landing at the top, level with the grass (y ~ 2), and two weathered posts either side of it
+	P(steps, { Name = "Landing", Size = Vector3.new(9, 2, 4), Position = Vector3.new(350, 1, 12), Color = rgb(128, 124, 114), Material = M.Slate })
+	for _, sx in { -1, 1 } do
+		P(steps, { Name = "StonePost", Size = Vector3.new(1.2, 4, 1.2), Position = Vector3.new(350 + sx * 5.2, 3, 12.5), Color = rgb(112, 110, 100), Material = M.Slate })
+		P(steps, { Name = "StoneCap", Size = Vector3.new(1.6, 0.5, 1.6), Position = Vector3.new(350 + sx * 5.2, 5.25, 12.5), Color = rgb(98, 96, 88), Material = M.Slate })
+	end
 	steps.PrimaryPart = P(steps, { Name = "Door", Size = Vector3.new(4, 1, 1), Position = Vector3.new(350, 1, 14), Transparency = 1, CanCollide = false, CanQuery = false })
-	P(parent, { Name = "CovePath", Size = Vector3.new(6, 0.4, 56), CFrame = CFrame.new(Vector3.new(345, 0.2, 44)), Color = rgb(120, 100, 76), Material = M.Ground, CanCollide = false })
+	-- the trodden path through the bamboo, on the grass (its surface is at y ~ 2)
+	P(parent, { Name = "CovePath", Size = Vector3.new(6, 0.2, 56), CFrame = CFrame.new(Vector3.new(345, 2.05, 44)), Color = rgb(120, 100, 76), Material = M.Ground, CanCollide = false, CanQuery = false })
 end
 
 -- Night 1 lantern paths (§4 beat 3, §5.4): from the water in front of the shrine, out onto the lake, along it and in
@@ -447,13 +459,27 @@ local function dressing(parent: Instance)
 	local m = model(parent, "Dressing")
 	local rng = Random.new(15)
 	local function banana(at: Vector3)
+		-- a tapered trunk, leaves that rise and then droop, one dry brown leaf, and a hanging flower stalk
 		local h = rng:NextNumber(6, 9)
-		P(m, { Name = "BananaTrunk", Shape = Enum.PartType.Cylinder, Size = Vector3.new(h, 0.9, 0.9),
-			CFrame = CFrame.new(at + Vector3.new(0, h / 2, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(120, 110, 70), Material = M.Wood, CanCollide = false })
-		for k = 1, 6 do
-			local a = k / 6 * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
-			P(m, { Name = "BananaLeaf", Size = Vector3.new(1.6, 0.12, 5.5), CFrame = CFrame.new(at + Vector3.new(0, h, 0)) * CFrame.Angles(0, a, 0)
-				* CFrame.new(0, 0.2, -2.4) * CFrame.Angles(math.rad(-25), 0, 0), Color = rgb(60, 110, 50), Material = M.Grass, CanCollide = false })
+		P(m, { Name = "BananaTrunk", Shape = Enum.PartType.Cylinder, Size = Vector3.new(h * 0.55, 1.2, 1.2),
+			CFrame = CFrame.new(at + Vector3.new(0, h * 0.275, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(112, 108, 72), Material = M.Wood, CanCollide = false })
+		P(m, { Name = "BananaTrunk", Shape = Enum.PartType.Cylinder, Size = Vector3.new(h * 0.5, 0.85, 0.85),
+			CFrame = CFrame.new(at + Vector3.new(0, h * 0.75, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(124, 122, 78), Material = M.Wood, CanCollide = false })
+		local n = rng:NextInteger(6, 8)
+		for k = 1, n do
+			local a = k / n * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
+			local dry = k == 1
+			local col = if dry then rgb(122, 98, 58) else rgb(58 + rng:NextInteger(0, 18), 112 + rng:NextInteger(0, 22), 48)
+			local up = math.rad(rng:NextNumber(30, 45))
+			local base = CFrame.new(at + Vector3.new(0, h, 0)) * CFrame.Angles(0, a, 0)
+			local inner = base * CFrame.Angles(up, 0, 0) * CFrame.new(0, 0, -1.6)
+			P(m, { Name = "BananaLeaf", Size = Vector3.new(1.9, 0.1, 3.2), CFrame = inner, Color = col, Material = M.Grass, CanCollide = false, CanQuery = false })
+			local tip = inner * CFrame.new(0, 0, -1.6) * CFrame.Angles(math.rad(if dry then -110 else -55), 0, 0) * CFrame.new(0, 0, -1.4)
+			P(m, { Name = "BananaLeaf", Size = Vector3.new(1.6, 0.1, 2.8), CFrame = tip, Color = col, Material = M.Grass, CanCollide = false, CanQuery = false })
+		end
+		if rng:NextNumber() < 0.4 then
+			P(m, { Name = "BananaFlower", Shape = Enum.PartType.Ball, Size = Vector3.new(0.7, 1.1, 0.7), Position = at + Vector3.new(0.9, h - 1.4, 0.4),
+				Color = rgb(110, 40, 60), CanCollide = false, CanQuery = false })
 		end
 	end
 	local function jar(at: Vector3)
@@ -463,7 +489,7 @@ local function dressing(parent: Instance)
 			CFrame = CFrame.new(at + Vector3.new(0, 2.15, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(30, 45, 50), Material = M.Glass, CanCollide = false })
 	end
 	for _, hs in HOUSES do
-		jar(Vector3.new(hs.x - 9.5, 0, HOUSE_Z - 11.5))
+		jar(Vector3.new(hs.x - 9.5, 2, HOUSE_Z - 11.5)) -- under the porch roof, on the ground (y ~ 2)
 		banana(Vector3.new(hs.x + rng:NextNumber(-8, 8), 0, HOUSE_Z + rng:NextNumber(13, 20)))
 	end
 	for k = 1, 8 do -- along the lane's lake side, between the houses' yards and the shore

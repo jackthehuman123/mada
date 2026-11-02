@@ -59,9 +59,15 @@ eq(dbg("get").phase, "Open", "phase after picking up Bin's camera")
 eq(s.beat, 7, "beat")
 check(s.tapes, "the group has no tapes")
 near(dbg("get").clock, Config.OpenPhaseStartHour, 0.01, "clock at Open")
-local logs = {}
-for _, m in game:GetService("LogService"):GetLogHistory() do table.insert(logs, m.message) end
-local all = table.concat(logs, "\n")
+local all = ""
+local t1 = os.clock()
+repeat -- (beat 7's line can land in the log a moment after the phase changes)
+	local logs = {}
+	for _, m in game:GetService("LogService"):GetLogHistory() do table.insert(logs, m.message) end
+	all = table.concat(logs, "\n")
+	if all:find("[Night1] beat 7", 1, true) then break end
+	task.wait(0.2)
+until os.clock() - t1 > 3
 for n = 1, 7 do check(all:find("[Night1] beat " .. n, 1, true), "no '[Night1] beat " .. n .. "' line") end
 return "picked up Bin's camera -> Open at 21:00 with the tapes; console has [Night1] beat 1..7"
 --@ Client
@@ -145,8 +151,11 @@ while os.clock() - t0 < 4 do
 	task.wait(0.2)
 end
 check(all:find("[Lanterns] second drift", 1, true), "no second lantern drift at 23:00")
-local n = #workspace.World:WaitForChild("NightLanterns"):GetChildren()
-eq(n, 4, "lanterns on the water in the second drift")
+-- (Bà Thu sets them on the water Config.LanternStaggerSeconds apart, so wait for all four)
+local f = workspace.World:WaitForChild("NightLanterns")
+local t1 = os.clock()
+while #f:GetChildren() < 4 and os.clock() - t1 < 18 do task.wait(0.2) end
+eq(#f:GetChildren(), 4, "lanterns on the water in the second drift")
 dbg("speed", 1)
 dbg("reset")
 task.wait(1)

@@ -109,6 +109,34 @@ local function footprints(p: Player)
 	end)
 end
 
+local function festivalSpot(): CFrame?
+	for _, m in CollectionService:GetTagged(Tags.Location) do
+		if m:GetAttribute("Location") == "DrownedFestival" then
+			return CFrame.new((m :: Model):GetPivot().Position + Vector3.new(0, 3, 0)) * CFrame.Angles(0, math.pi, 0)
+		end
+	end
+	return nil
+end
+
+-- everyone left in the game is taken: Im lặng (§5.6). Also after someone leaves, so the taken aren't left waiting.
+-- (tests with one player can keep the run going with the Studio-only attribute DebugKeepRun)
+local function checkAllTaken()
+	local players = Players:GetPlayers()
+	if #players == 0 then
+		return
+	end
+	for _, o in players do
+		if not taken(o) then
+			return
+		end
+	end
+	if not (RunService:IsStudio() and ReplicatedStorage:GetAttribute("DebugKeepRun") == true) then
+		task.delay(2, function()
+			Ending.AllTaken()
+		end)
+	end
+end
+
 -- take this player: they wake in the drowned festival
 function SenService.Take(p: Player)
 	local r = rootOf(p)
@@ -125,33 +153,16 @@ function SenService.Take(p: Player)
 	Remotes.event(Remotes.Names.Fade):FireClient(p, 1.6)
 	Remotes.event(Remotes.Names.Sfx):FireClient(p, "taken", nil)
 	task.delay(0.8, function()
-		local fest = nil
-		for _, m in CollectionService:GetTagged(Tags.Location) do
-			if m:GetAttribute("Location") == "DrownedFestival" then
-				fest = m
-			end
-		end
-		if fest and r.Parent then
+		local spot = festivalSpot()
+		if spot and r.Parent then
 			r.AssemblyLinearVelocity = Vector3.zero
-			r.CFrame = CFrame.new((fest :: Model):GetPivot().Position + Vector3.new(0, 3, 0)) * CFrame.Angles(0, math.pi, 0)
+			r.CFrame = spot
 		end
 		-- the letter drops where they stood (after they're gone, or they'd just pick it up again)
 		Mystery.DropLetter(p, where)
 		Remotes.event(Remotes.Names.Message):FireClient(p, Text.Messages.taken)
 	end)
-	-- everyone taken: Im lặng now (§5.6)
-	local anyone = false
-	for _, o in Players:GetPlayers() do
-		if not taken(o) then
-			anyone = true
-		end
-	end
-	-- (tests with one player can keep the run going with the Studio-only attribute DebugKeepRun)
-	if not anyone and not (RunService:IsStudio() and ReplicatedStorage:GetAttribute("DebugKeepRun") == true) then
-		task.delay(2, function()
-			Ending.AllTaken()
-		end)
-	end
+	checkAllTaken()
 end
 
 -- bring the first rescuable taken player back to the shrine
@@ -289,9 +300,15 @@ local function setupPlayer(p: Player)
 	p:SetAttribute("TakenFinal", false)
 	p:SetAttribute("Rescues", 0)
 	p:SetAttribute("Incense", Config.IncensePerPlayer)
-	p.CharacterAdded:Connect(function()
+	p.CharacterAdded:Connect(function(char)
 		task.wait(0.2)
 		giveIncense(p)
+		-- a taken player who resets their character wakes in the festival again, not on the shore
+		local root = char:FindFirstChild("HumanoidRootPart") :: BasePart?
+		local spot = festivalSpot()
+		if taken(p) and root and spot then
+			root.CFrame = spot
+		end
 	end)
 	if p.Character then
 		giveIncense(p)
@@ -388,6 +405,7 @@ function SenService.Init()
 		if i then
 			table.remove(takenOrder, i)
 		end
+		task.defer(checkAllTaken)
 	end)
 	Remotes.event(Remotes.Names.LightLantern).OnServerEvent:Connect(function(p: Player)
 		if not taken(p) or os.clock() - (lastLantern[p] or -math.huge) < Pace.seconds(Config.TakenLanternCooldown) then

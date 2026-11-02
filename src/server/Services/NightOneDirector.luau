@@ -29,6 +29,9 @@ local GameState: any, Dialogue: any, Lanterns: any, Bin: any
 local run = 0 -- bumped on every new Night 1 / reset, so an old sequence stops at its next check
 local secondDriftDone = false
 local flood: Folder? = nil
+-- the marsh around the causeway, saved before the flood so it can be written back exactly
+local FLOOD_REGION = Region3.new(Vector3.new(-504, -4, 32), Vector3.new(-288, 8, 252)):ExpandToGrid(4)
+local savedMarsh: { any }? = nil
 local camera: Model? = nil
 local cameraPicked: BindableEvent? = nil
 
@@ -57,18 +60,14 @@ local function floodCauseway()
 	local f = Instance.new("Folder")
 	f.Name = "Flood"
 	local a, b = Vector3.new(-300, 0, 46), Vector3.new(-490, 0, 236)
+	-- the marsh itself rises over the road: terrain water to y = 1.7 (the road's top is 1.2), saved first and put back
+	-- exactly by unflood() (glass parts read as a black road)
+	local terrain = Workspace.Terrain
+	savedMarsh = { terrain:ReadVoxels(FLOOD_REGION, 4) }
 	local n = 12
 	for k = 0, n - 1 do
 		local p = a:Lerp(b, (k + 0.5) / n)
-		local w = Instance.new("Part")
-		w.Name = "FloodWater"
-		w.Anchored, w.CanCollide, w.CanQuery = true, false, false
-		w.Size = Vector3.new(14, 0.3, (b - a).Magnitude / n + 0.5)
-		w.CFrame = CFrame.lookAt(p + Vector3.new(0, 1.35, 0), p + (b - a) + Vector3.new(0, 1.35, 0))
-		w.Color = rgb(40, 62, 70)
-		w.Material = Enum.Material.Glass
-		w.Transparency = 0.25
-		w.Parent = f
+		terrain:FillBlock(CFrame.lookAt(p + Vector3.new(0, 0.85, 0), p + (b - a) + Vector3.new(0, 0.85, 0)), Vector3.new(16, 1.7, (b - a).Magnitude / n + 1), Enum.Material.Water)
 	end
 	-- the line players can't cross: 20 studs out along the causeway, the width of the marsh crossing
 	local edge = a:Lerp(b, 0.12)
@@ -85,6 +84,17 @@ local function floodCauseway()
 	f.Parent = Workspace:FindFirstChild("World") or Workspace
 	flood = f
 	print("[Night1] the causeway is under water")
+end
+
+local function unflood()
+	if flood then
+		flood:Destroy()
+		flood = nil
+	end
+	if savedMarsh then
+		Workspace.Terrain:WriteVoxels(FLOOD_REGION, 4, savedMarsh[1], savedMarsh[2])
+		savedMarsh = nil
+	end
 end
 
 -- beat 6: Bin's camera, floating in the reeds, its REC light blinking
@@ -211,10 +221,7 @@ end
 
 -- dawn after the finale: the causeway is dry again
 function Director.Dry()
-	if flood then
-		flood:Destroy()
-		flood = nil
-	end
+	unflood()
 end
 
 function Director.State(): { [string]: any }
@@ -228,10 +235,7 @@ function Director.Reset()
 	secondDriftDone = false
 	ReplicatedStorage:SetAttribute("Night1Beat", 0)
 	ReplicatedStorage:SetAttribute("BinTapes", false)
-	if flood then
-		flood:Destroy()
-		flood = nil
-	end
+	unflood()
 	if camera then
 		camera:Destroy()
 		camera = nil

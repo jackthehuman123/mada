@@ -35,6 +35,15 @@ system, the camcorder and the boundaries work. Everything is built from git (see
   - **Finale:** Sen and the children rising in Về nhà get a warm lantern rim (Highlight + a light in front), so they read as children and not dark blocks. Her face stays under her hair.
 - Verified by: `python tools/factory/test.py` → PASS 9/9, 0 console errors (report 20261103-021157; shots `06_night1-lit-windows`, `09_endings-finale-home`).
 - Not checked by a person yet: the four new sounds; the house look at real speed.
+- **Closed playtest gate** (`PlaytestGate`, `Config.PlaytestGroupId` = 5099606): a live server kicks anyone not in the group; Studio is never gated; a failed group check lets the player in. Built `build/langvong-playtest.rbxl` for the first publish (a new experience can only be created from Studio's Publish dialog).
+- **Multiplayer fixes** (found reading the join/leave paths; the tests mostly use one player):
+  - The letter could be lost for the run: dropped (Backspace, or its holder taken) its non-colliding handle fell through the world; a holder who reset, died or left took it with them. Now a dropped letter lies still on the ground, a holder who dies or leaves drops it where they stood, and a letter gone from the world is back under Sen's altar. New check in `07_mystery`.
+  - A taken player who reset their character woke on the surface (out of the drowned festival). Now they wake in the festival again. New check in `08_sen`.
+  - If the last player who wasn't taken left, the taken waited in the festival until midnight. Now leaving re-checks "everyone taken" → Im lặng.
+- **Grass on every house floor** (seen in the 07 screenshots): the land's terrain surface sits at y ~ 2 (a full voxel fills up to the next one's centre), above the house floors (top y = 1). `terrainPass` now clears the top voxel layer inside each house's walls; the porch slab is gone (posts and roof stay) and the plinth is raised to show above the grass. Banana trees rebuilt (tapered trunk, arching leaves, one dry leaf).
+- `06_night1`: the second-drift count waits for all four lanterns (they go out 4 s apart; counting at once was a race). Same for the beat 7 log line.
+- **Carp steps** read as a place: the cut is wider (voxel smoothing slumped the narrow one over the steps), a stone landing and two posts at the top; the cove path lies on the grass.
+- **Flooded causeway:** the marsh's own terrain water now rises to y 1.7 over the road (the glass strips read as a black road); the marsh voxels are saved before and written back on reset and at dawn.
 - Next: the human playtest (2–4 players); Creator Store models for the art layer in the shared place, exported with `tools/art/export` (needs Lune trusted: `rokit trust lune-org/lune`).
 
 ### 2026-11-02 — M4–M8: the whole run (branch `full-game`, off `m3-night1`; not merged)
@@ -49,7 +58,7 @@ system, the camcorder and the boundaries work. Everything is built from git (see
 - Not checked by a person yet: the whole run at real speed with 2–4 players; how the sounds actually sound; the walk Bà Thu takes; the finale's pacing.
 - Unverified (2026-11-02, written on the loaner without Studio): Ở lại cut and Im lặng taking players one by one (`EndingService.silence`, `StoryController` hides the lantern button after the night; `tests/09_endings.luau` updated). Run `python tools/factory/test.py` and watch an Im lặng finale with 2+ players. Also unverified: Bin's Tape 2 now shows him taken (21 s: Sen closer between glitches, her hand takes his, under the water both sink and fade; `Content/Tapes`, `CamcorderController`, `tests/06_night1.luau` has new checks and shots `tape2-hand`, `tape2-under`).
 - Next: playtest; Catlyn reviewed every DRAFT text on 2026-11-02 (DECISIONS); still hers once seen/heard: Tape 2 and finale staging, the sounds, the map image; world-builder art pass in the shared place (tested both ways, decided 2026-11-02: export `Workspace.World` to an `.rbxm` the factory tests load, plus a hand playthrough for looks; built 2026-11-02: `tools/art/export.luau` + `merge.luau` checked with Lune on a made-up place (tags, attributes, script removal, Terrain, Lighting, WorldBuilt all carried over); `test.py --art` not run yet; Lune pinned in rokit.toml, see FACTORY.md "Testing the art"); music for the finale; sounds for the whistle and the drum.
-- Known issues: Sen and the children read as small dark shapes in the finale (graybox); no music; the warning about asset 203785492 comes from the place, not our code.
+- Known issues: (fixed 2026-11-03: the finale figures, music, the carp steps sitting low in their cut); the warning about asset 203785492 comes from the place, not our code.
 
 ### 2026-11-02 — M3 ★ Night 1 (branch `m3-night1`, off `factory-prototype`; not merged)
 - Done:

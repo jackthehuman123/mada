@@ -34,6 +34,15 @@ local s = dbg("mystery")
 check(s.letterFound and s.letterHolder == nil, "the letter did not drop when its holder was taken")
 check(workspace.World:FindFirstChild("Letter"), "the dropped letter isn't in the world")
 eq(dbg("get").phase, "Open", "phase (DebugKeepRun)")
+-- resetting your character doesn't get you out
+local plr = game.Players:GetPlayers()[1]
+local char = plr.Character
+char.Humanoid.Health = 0
+local t1 = os.clock()
+while (plr.Character == char or not (plr.Character and plr.Character:FindFirstChild("HumanoidRootPart"))) and os.clock() - t1 < 12 do task.wait(0.2) end
+task.wait(0.6)
+check(plr.Character ~= char, "no respawn")
+check(plr.Character.HumanoidRootPart.Position.Y < -300, "a taken player who reset woke on the surface: " .. tostring(plr.Character.HumanoidRootPart.Position))
 return "warnings 1-5 in order, then taken to the drowned festival; the letter dropped where they stood"
 --@ Client
 task.wait(0.5)

@@ -87,6 +87,10 @@ local Config = {
 	CluePromptHold = 0.5,
 	AltarPromptHold = 1.5,
 	PromptDistance = 9,
+
+	-- Closed playtest: only members of this Roblox group may join a live server (0 = anyone). Studio is never gated.
+	-- 5099606 = Raumania (owner Holding_accountx1; Noptable Founder, Catlyn Co-Founder)
+	PlaytestGroupId = 5099606,
 }
 
 return Config
