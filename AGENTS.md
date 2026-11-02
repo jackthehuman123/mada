@@ -29,14 +29,15 @@ Read this whole file first. Then do the start-of-session routine below.
 1. Update `docs/PROGRESS.md`: what's done, **how you verified it**, what's next, known bugs.
 2. Log every choice the docs didn't settle in `docs/DECISIONS.md` (one line each: decision, why, how to change it).
 3. `git add` + `git commit` with a message like `M2: camcorder record + playback`. Don't push unless the human asks.
-4. Tell the human to **save the place in Studio** (File → Save, or Publish). World geometry and inserted models live in the place, not in git.
+4. Tell the human to **save the place in Studio** (File → Save, or Publish). World-builder's geometry and inserted models live in the place, not in git (the graybox layout itself is also in `src/server/World/Build.luau`, see §4).
 
 ## 4. Where things live — the rule that prevents lost work
 
 | What | Source of truth | How you change it |
 | --- | --- | --- |
 | All Luau code | `src/` in git | Edit the files. Rojo syncs them into Studio. **Never** edit Rojo-managed scripts with the MCP `multi_edit` tool or inside Studio: Rojo overwrites them on the next sync. |
-| World: terrain, buildings, props, lighting | `src/server/World/Build.luau` in git (the server builds it at startup; see `docs/FACTORY.md`) | Edit `Build.luau`. Never build by hand in Studio: hand edits are lost on the next build. Tag everything gameplay touches. |
+| World, graybox layer: layout, gameplay objects, tags | `src/server/World/Build.luau` in git. The server builds it only when the place has no world yet (`Workspace` attribute `WorldBuilt`); the factory tests always run on it. | Main agent edits `Build.luau`. `tools/worldgen/00_graybox.luau` bakes it into the open place. |
+| World, art layer: terrain dressing, models, props, lighting polish | The published place (world-builder, `tools/worldgen/NN_area.luau` scripts) | Keep the graybox's names, tags and positions so code and tests keep working. Save the place. |
 | Player-facing text (clues, dialogue, UI strings) | `src/shared/Content/*.luau` | Data modules only, never hard-coded in logic. |
 | Tunable numbers (timers, distances, battery) | `src/shared/Config.luau` | Never inline magic numbers. |
 | Asset IDs and where they're used | `docs/ASSETS.md` | Add a row for every asset you insert. |
@@ -98,9 +99,27 @@ Studio's built-in MCP server gives you these tools (names as Roblox documents th
 - Anything involving publishing, game settings on roblox.com, Team Create, permissions, Robux, uploading files, or the human's account.
 - A design choice that would change the story, an ending, or what a character is. For everything else, use the default from the **Open questions** section of the brief, and log it.
 
-## 10. Definition of done (any task)
+## 10. The agent team (Claude Code subagents)
 
-- `python tools/factory/test.py` says **PASS** (it builds the place from git, plays it in its own Studio window and runs `tests/`). Add or extend a test for every acceptance check you build.
+Specialist subagents live in `.claude/agents/`. The main agent is the **gameplay programmer and lead**: it owns `src/` (except `Content/` text and `Tags.luau` additions), plans each milestone, and delegates:
+
+| Subagent | Use it for | Touches Studio? |
+| --- | --- | --- |
+| `world-builder` | Terrain, houses, props, lighting, lantern paths, the art pass; free models and generated meshes | Yes |
+| `qa-tester` | After every milestone: acceptance checks, console errors, code review, unsafe-script scan, content rules, story accuracy. Read-only. | Yes |
+| `story-keeper` | All clue, dialogue, text-card and ending text in `src/shared/Content/` | No |
+| `voice-over` | Voice scripts; TTS files if an audio MCP is connected | No |
+| `sound-designer` | Ambience, SFX, music: Creator Store first, generated if needed | Only when inserting sounds |
+
+Rules for delegating:
+- **Only one agent uses Roblox Studio at a time.** There is one open place and one playtest. Never run `world-builder`, `qa-tester` or the main agent's Studio work in parallel with each other. Agents that don't touch Studio (`story-keeper`, `voice-over`, `sound-designer` while it's only writing lists or generating files) can run in parallel with Studio work.
+- Give each subagent a self-contained task: the milestone, the exact section of the brief, the files involved, and what "done" means.
+- A milestone isn't done until `qa-tester` reports **PASS**. Fix its findings, then ask it to re-check.
+- Record each subagent's report in `docs/PROGRESS.md` (short) and any DRAFT items in `docs/DECISIONS.md`.
+
+## 11. Definition of done (any task)
+
+- `python tools/factory/test.py` says **PASS** (it builds the place from git, plays it in its own Studio window and runs `tests/`). Add or extend a test for every acceptance check you build. Don't run it while another agent is using Studio (§10): it opens a second Studio window for ~2 minutes.
 
 - Code is in `src/`, synced, and committed.
 - A playtest starts with **no errors from our scripts** in `get_console_output`.

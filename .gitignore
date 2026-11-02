@@ -11,6 +11,7 @@ art/exports/
 .DS_Store
 Thumbs.db
 .vscode/settings.json
+*:Zone.Identifier
 
 # Factory test runner output (tools/factory/test.py)
 build/

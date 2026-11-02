@@ -2,11 +2,12 @@
 
 Làng Vọng uses the same architecture as Noptable's Roblox factory (the setup his other games run on). Two rules:
 
-1. **Everything comes from git.** Code is in `src/`. The graybox **world is built by the server from code**
-   (`src/server/World/Build.luau`, called by `Services/WorldService` at startup when the place doesn't have it yet).
-   A brand-new place, a live server and a test run all get the same village. Nothing important lives only inside
-   a place file, so nothing is lost when someone forgets to save, and two people can't overwrite each other's world.
-   Inserted assets (M7 art pass) are placed the same way: by code, by tag, logged in `ASSETS.md`.
+1. **Gameplay comes from git.** Code is in `src/`. The **graybox layer of the world is code too**
+   (`src/server/World/Build.luau`, called by `Services/WorldService` at startup only when the place has no world yet).
+   A test run and a brand-new place get the same village; `tools/worldgen/00_graybox.luau` bakes it into the shared
+   place. The **art layer** (world-builder's dressing and inserted models) lives in the published place, as
+   `docs/SETUP.md` §4 describes: save the place after every session. Keep the graybox's names, tags and positions
+   when dressing it, so code and tests keep working.
 2. **Every change is tested automatically before it's committed.** One command builds the place from git, opens it
    in its own Studio window, plays it, checks every milestone's acceptance test, takes screenshots and closes the window.
 
@@ -36,10 +37,18 @@ check(gui.Viewfinder.Visible, "no VHS overlay")
 --@ Shot lane -120,7,-26 -> 120,4,-14  -- screenshot from a camera at the first point looking at the second
 ```
 
+## Working with Catlyn's setup (`docs/SETUP.md`, `.claude/agents/`)
+
+- The runner works next to Claude Code's own Roblox Studio MCP connection (checked 2026-11-02: three Studio MCP
+  connections were open during passing runs). It opens a separate Studio window, so run it only when no other agent
+  is using Studio (AGENTS.md §10). `qa-tester` runs it first, then checks by hand what the tests don't cover.
+- The tests run on the graybox from git, not on the art in the shared place. Before the art pass (M7) we need a way
+  to test the dressed world too (open question in `DECISIONS.md`).
+
 ## Working on it day to day
 
 - Edit code in `src/` (as before; `rojo serve` + the plugin still works for live editing in your own Studio).
-- Change the village in `src/server/World/Build.luau`, not by hand in Studio (hand edits are lost on the next build).
+- Change the graybox layout in `src/server/World/Build.luau`; dress it in the shared place (world-builder) and save the place.
 - Before committing: `python tools/factory/test.py` must say PASS.
 - Debug in a playtest: chat `/lv phase Open`, `/lv time 23.9`, `/lv goto SenHouse`, `/lv clue all`, `/lv battery 20`, `/lv reset`.
 

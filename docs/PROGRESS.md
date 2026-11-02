@@ -23,6 +23,11 @@ system, the camcorder and the boundaries work. Everything is built from git (see
 
 ## Session log
 
+### 2026-11-02 — merged Catlyn's setup into `factory-prototype`
+- Merged `main` (SETUP.md, MCP_SETUP §6–7, 5 subagents in `.claude/agents/`, `audio/`, old `contents/` removed).
+- Reconciled: world = graybox layer in git (`Build.luau`) + art layer in the shared place; new `tools/worldgen/00_graybox.luau`; `qa-tester` runs `tools/factory/test.py` first; world-builder starts from the baked graybox. Docs: AGENTS §3–4 and Definition of done, README, FACTORY, DECISIONS.
+- No code in `src/` changed. Verified: `rojo build` OK; the test runner is unaffected.
+
 ### 2026-11-02 — M0, M1, M2 (branch `factory-prototype`)
 - Done:
   - Factory tooling: `tools/factory/test.py` (rojo build → own Studio window → play → tests → report → close), `rbx.py`, tests in `tests/`, `docs/FACTORY.md`.
