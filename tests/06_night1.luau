@@ -145,8 +145,11 @@ while os.clock() - t0 < 4 do
 	task.wait(0.2)
 end
 check(all:find("[Lanterns] second drift", 1, true), "no second lantern drift at 23:00")
-local n = #workspace.World:WaitForChild("NightLanterns"):GetChildren()
-eq(n, 4, "lanterns on the water in the second drift")
+-- (Bà Thu sets them on the water Config.LanternStaggerSeconds apart, so wait for all four)
+local f = workspace.World:WaitForChild("NightLanterns")
+local t1 = os.clock()
+while #f:GetChildren() < 4 and os.clock() - t1 < 18 do task.wait(0.2) end
+eq(#f:GetChildren(), 4, "lanterns on the water in the second drift")
 dbg("speed", 1)
 dbg("reset")
 task.wait(1)

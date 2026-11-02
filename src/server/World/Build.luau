@@ -447,13 +447,27 @@ local function dressing(parent: Instance)
 	local m = model(parent, "Dressing")
 	local rng = Random.new(15)
 	local function banana(at: Vector3)
+		-- a tapered trunk, leaves that rise and then droop, one dry brown leaf, and a hanging flower stalk
 		local h = rng:NextNumber(6, 9)
-		P(m, { Name = "BananaTrunk", Shape = Enum.PartType.Cylinder, Size = Vector3.new(h, 0.9, 0.9),
-			CFrame = CFrame.new(at + Vector3.new(0, h / 2, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(120, 110, 70), Material = M.Wood, CanCollide = false })
-		for k = 1, 6 do
-			local a = k / 6 * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
-			P(m, { Name = "BananaLeaf", Size = Vector3.new(1.6, 0.12, 5.5), CFrame = CFrame.new(at + Vector3.new(0, h, 0)) * CFrame.Angles(0, a, 0)
-				* CFrame.new(0, 0.2, -2.4) * CFrame.Angles(math.rad(-25), 0, 0), Color = rgb(60, 110, 50), Material = M.Grass, CanCollide = false })
+		P(m, { Name = "BananaTrunk", Shape = Enum.PartType.Cylinder, Size = Vector3.new(h * 0.55, 1.2, 1.2),
+			CFrame = CFrame.new(at + Vector3.new(0, h * 0.275, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(112, 108, 72), Material = M.Wood, CanCollide = false })
+		P(m, { Name = "BananaTrunk", Shape = Enum.PartType.Cylinder, Size = Vector3.new(h * 0.5, 0.85, 0.85),
+			CFrame = CFrame.new(at + Vector3.new(0, h * 0.75, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(124, 122, 78), Material = M.Wood, CanCollide = false })
+		local n = rng:NextInteger(6, 8)
+		for k = 1, n do
+			local a = k / n * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
+			local dry = k == 1
+			local col = if dry then rgb(122, 98, 58) else rgb(58 + rng:NextInteger(0, 18), 112 + rng:NextInteger(0, 22), 48)
+			local up = math.rad(rng:NextNumber(30, 45))
+			local base = CFrame.new(at + Vector3.new(0, h, 0)) * CFrame.Angles(0, a, 0)
+			local inner = base * CFrame.Angles(up, 0, 0) * CFrame.new(0, 0, -1.6)
+			P(m, { Name = "BananaLeaf", Size = Vector3.new(1.9, 0.1, 3.2), CFrame = inner, Color = col, Material = M.Grass, CanCollide = false, CanQuery = false })
+			local tip = inner * CFrame.new(0, 0, -1.6) * CFrame.Angles(math.rad(if dry then -110 else -55), 0, 0) * CFrame.new(0, 0, -1.4)
+			P(m, { Name = "BananaLeaf", Size = Vector3.new(1.6, 0.1, 2.8), CFrame = tip, Color = col, Material = M.Grass, CanCollide = false, CanQuery = false })
+		end
+		if rng:NextNumber() < 0.4 then
+			P(m, { Name = "BananaFlower", Shape = Enum.PartType.Ball, Size = Vector3.new(0.7, 1.1, 0.7), Position = at + Vector3.new(0.9, h - 1.4, 0.4),
+				Color = rgb(110, 40, 60), CanCollide = false, CanQuery = false })
 		end
 	end
 	local function jar(at: Vector3)
@@ -463,7 +477,7 @@ local function dressing(parent: Instance)
 			CFrame = CFrame.new(at + Vector3.new(0, 2.15, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(30, 45, 50), Material = M.Glass, CanCollide = false })
 	end
 	for _, hs in HOUSES do
-		jar(Vector3.new(hs.x - 9.5, 0, HOUSE_Z - 11.5))
+		jar(Vector3.new(hs.x - 9.5, 0.8, HOUSE_Z - 11.5)) -- on the porch
 		banana(Vector3.new(hs.x + rng:NextNumber(-8, 8), 0, HOUSE_Z + rng:NextNumber(13, 20)))
 	end
 	for k = 1, 8 do -- along the lane's lake side, between the houses' yards and the shore
