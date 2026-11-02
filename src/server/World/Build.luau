@@ -110,7 +110,7 @@ local function terrainPass()
 		t:FillBall(Vector3.new(298 + (z % 20) * 0.2, 2, z), 11, M.Rock)
 	end
 	-- the cut the carp steps go down through, from the back yard to the cove's water
-	t:FillBlock(CFrame.new(350, -4, -1), Vector3.new(12, 12, 24), M.Air)
+	t:FillBlock(CFrame.new(350, -4, -1), Vector3.new(16, 14, 26), M.Air) -- (wide: voxel smoothing slumps a narrow cut over the steps)
 	-- inside each house: the land's surface sits at y ~ 2 (a full voxel fills up to the next one's centre), above the
 	-- floor (top y = 1), so grass covered every floor. Clear the top voxel layer inside the walls; the floor hides it
 	for _, hs in HOUSES do
@@ -291,8 +291,15 @@ local function cove(parent: Instance)
 	for k = 0, 6 do -- stone steps from the yard down into the cove's water
 		P(steps, { Name = "Step", Size = Vector3.new(7, 1, 4), Position = Vector3.new(350, 0.5 - k * 1.3, 8 - k * 4), Color = rgb(140, 136, 126), Material = M.Slate })
 	end
+	-- a stone landing at the top, level with the grass (y ~ 2), and two weathered posts either side of it
+	P(steps, { Name = "Landing", Size = Vector3.new(9, 2, 4), Position = Vector3.new(350, 1, 12), Color = rgb(128, 124, 114), Material = M.Slate })
+	for _, sx in { -1, 1 } do
+		P(steps, { Name = "StonePost", Size = Vector3.new(1.2, 4, 1.2), Position = Vector3.new(350 + sx * 5.2, 3, 12.5), Color = rgb(112, 110, 100), Material = M.Slate })
+		P(steps, { Name = "StoneCap", Size = Vector3.new(1.6, 0.5, 1.6), Position = Vector3.new(350 + sx * 5.2, 5.25, 12.5), Color = rgb(98, 96, 88), Material = M.Slate })
+	end
 	steps.PrimaryPart = P(steps, { Name = "Door", Size = Vector3.new(4, 1, 1), Position = Vector3.new(350, 1, 14), Transparency = 1, CanCollide = false, CanQuery = false })
-	P(parent, { Name = "CovePath", Size = Vector3.new(6, 0.4, 56), CFrame = CFrame.new(Vector3.new(345, 0.2, 44)), Color = rgb(120, 100, 76), Material = M.Ground, CanCollide = false })
+	-- the trodden path through the bamboo, on the grass (its surface is at y ~ 2)
+	P(parent, { Name = "CovePath", Size = Vector3.new(6, 0.2, 56), CFrame = CFrame.new(Vector3.new(345, 2.05, 44)), Color = rgb(120, 100, 76), Material = M.Ground, CanCollide = false, CanQuery = false })
 end
 
 -- Night 1 lantern paths (§4 beat 3, §5.4): from the water in front of the shrine, out onto the lake, along it and in
