@@ -59,9 +59,15 @@ eq(dbg("get").phase, "Open", "phase after picking up Bin's camera")
 eq(s.beat, 7, "beat")
 check(s.tapes, "the group has no tapes")
 near(dbg("get").clock, Config.OpenPhaseStartHour, 0.01, "clock at Open")
-local logs = {}
-for _, m in game:GetService("LogService"):GetLogHistory() do table.insert(logs, m.message) end
-local all = table.concat(logs, "\n")
+local all = ""
+local t1 = os.clock()
+repeat -- (beat 7's line can land in the log a moment after the phase changes)
+	local logs = {}
+	for _, m in game:GetService("LogService"):GetLogHistory() do table.insert(logs, m.message) end
+	all = table.concat(logs, "\n")
+	if all:find("[Night1] beat 7", 1, true) then break end
+	task.wait(0.2)
+until os.clock() - t1 > 3
 for n = 1, 7 do check(all:find("[Night1] beat " .. n, 1, true), "no '[Night1] beat " .. n .. "' line") end
 return "picked up Bin's camera -> Open at 21:00 with the tapes; console has [Night1] beat 1..7"
 --@ Client
