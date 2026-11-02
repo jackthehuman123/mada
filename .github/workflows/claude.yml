@@ -1,0 +1,67 @@
+# Claude on GitHub for Làng Vọng (this repo only). How to use it: docs/ASK_CLAUDE.md
+#
+# Write "@claude ..." in an issue, an issue comment, a pull request comment or a review, and Claude answers there.
+# If you ask for a change, Claude commits it to a new branch named claude/... and posts a link to open a pull request.
+# It never merges and never pushes to main: a person reviews and merges.
+#
+# Safety:
+# - Runs on GitHub's machines, not on anyone's computer. Its GitHub token works for this repo only and expires after the run.
+# - Only people with write access to this repo can trigger it (the action checks; the `if:` below checks again).
+# - No web browsing (no WebFetch / WebSearch): text from the web can't steer it.
+# - It can't open Roblox Studio, so it can't run tools/factory/test.py. Run the tests yourself before merging its work.
+
+name: Claude
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+# one run at a time per issue / pull request
+concurrency:
+  group: claude-${{ github.event.issue.number || github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  claude:
+    if: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Claude
+        uses: anthropics/claude-code-action@v1
+        with:
+          # Pick ONE of these two secrets (docs/ASK_CLAUDE.md, step 2): Catlyn's own plan or key. Leave the other unset.
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          base_branch: main
+          branch_prefix: claude/
+          claude_args: |
+            --max-turns 15
+            --model claude-sonnet-5-5
+            --disallowedTools WebFetch,WebSearch
+            --append-system-prompt "You are running as the @claude bot on GitHub for the Làng Vọng repo. Follow CLAUDE.md, including its section 'Running as the GitHub bot'. Work on this repo only. Never merge, never push to main, never touch .github/workflows. There is no Roblox Studio here: you cannot run tools/factory/test.py, so say clearly that the tests still have to be run by a person."

@@ -10,6 +10,7 @@ This repo holds the design and the prototype code. It's set up so a coding agent
 | --- | --- |
 | `AGENTS.md` | Instructions for any coding agent. Start here. |
 | `CLAUDE.md` | Claude Code entry point (imports `AGENTS.md`). |
+| `docs/ASK_CLAUDE.md` | Asking Claude on GitHub: write `@claude` in an issue or pull request (setup + how to). |
 | `.claude/agents/` | Specialist subagents: world-builder, qa-tester, story-keeper, voice-over, sound-designer. |
 | `docs/PROTOTYPE_BRIEF.md` | The build spec: scope, rules, numbers, map, milestones, defaults. |
 | `docs/design/` | Catlyn's design docs: story, gameplay, characters, threats, timeline, release plan. |

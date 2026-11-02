@@ -1,0 +1,161 @@
+[Server] MessageOutput: [LangVong] world built in 17 ms
+[Server] MessageOutput: [LangVong] debug commands enabled (Studio only)
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] server started (13 services)
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Server] MessageOutput: [LangVong] phase -> Arrival
+[Server] MessageOutput: [Night1] beat 1
+[Server] MessageOutput: [Bin] here
+[Server] MessageOutput: [LangVong] phase -> Night1
+[Server] MessageOutput: [Night1] beat 2
+[Server] MessageOutput: [Dialogue] bathu_night1 1/9 BaThu
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Lanterns] second drift (23:00)
+[Server] MessageOutput: [Lanterns] HeadHouse's lantern is on the water
+[Server] MessageOutput: [LangVong] phase -> Finale
+[Server] MessageOutput: [LangVong] phase -> Ending
+[Server] MessageOutput: [Analytics] summary ending=silence run=0m27s open=0m25s first_clue=0m09s clues=2 mementos=0 tapes=0 letter_found=- letter_given=- thu_at_steps=- warnings=0 taken=0 rescued=0 hints=0
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageOutput: [LangVong] phase -> Arrival
+[Server] MessageOutput: [Night1] beat 1
+[Server] MessageOutput: [Bin] here
+[Server] MessageOutput: [Lanterns] FishHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] PuppetHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] TeacherHouse's lantern is on the water
+[Server] MessageOutput: [LangVong] phase -> Night1
+[Server] MessageOutput: [Night1] beat 2
+[Server] MessageOutput: [Dialogue] bathu_night1 1/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 2/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 3/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 4/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 5/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 6/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 7/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 8/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 9/9 BaThu
+[Server] MessageOutput: [Night1] beat 3
+[Server] MessageOutput: [Lanterns] HeadHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] FishHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] PuppetHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] TeacherHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] HeadHouse's lantern arrived; window lit
+[Server] MessageOutput: [Lanterns] FishHouse's lantern arrived; window lit
+[Server] MessageOutput: [Lanterns] PuppetHouse's lantern arrived; window lit
+[Server] MessageOutput: [Lanterns] TeacherHouse's lantern arrived; window lit
+[Server] MessageOutput: [Night1] beat 4
+[Server] MessageOutput: [Dialogue] bark bin_wanders
+[Server] MessageOutput: [Bin] gone
+[Server] MessageOutput: [Night1] beat 5
+[Server] MessageOutput: [Night1] the causeway is under water
+[Server] MessageOutput: [Night1] beat 6
+[Server] MessageOutput: [Night1] beat 7
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Hint] Shrine (stuck)
+[Server] MessageOutput: [Dialogue] bathu_repeat_1 1/4 BaThu
+[Server] MessageOutput: [Dialogue] bathu_repeat_1 2/4 BaThu
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Hint] TeacherHouse (stuck)
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Mystery] the letter was found
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Sen] hunting inpositivity
+[Server] MessageOutput: [Sen] warning 1
+[Server] MessageOutput: [Sen] warning 2
+[Server] MessageOutput: [Sen] warning 3
+[Server] MessageOutput: [Sen] warning 4
+[Server] MessageOutput: [Sen] warning 5
+[Server] MessageOutput: [Mystery] the letter dropped
+[Server] MessageOutput: [Sen] inpositivity was taken
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Ending] the letter was given to Bà Thu
+[Server] MessageOutput: [Dialogue] bathu_letter 1/5 
+[Server] MessageOutput: [Dialogue] bathu_letter 2/5 
+[Server] MessageOutput: [Dialogue] bathu_letter 3/5 
+[Server] MessageOutput: [Dialogue] bathu_letter 4/5 BaThu
+[Server] MessageOutput: [Dialogue] bathu_letter: "Write: Sen"
+[Server] MessageOutput: [Dialogue] bathu_letter 5/5 
+[Server] MessageOutput: [Analytics] name_written 
+[Server] MessageWarning: [Ending] no walking path for Bà Thu; she takes the lane
+[Server] MessageOutput: [Ending] Bà Thu walks to the steps (14 points)
+[Server] MessageOutput: [Hint] Shrine (stuck)
+[Server] MessageOutput: [Ending] Bà Thu reached the bottom step
+[Server] MessageOutput: [Analytics] thu_at_steps 
+[Server] MessageOutput: [LangVong] phase -> Finale
+[Server] MessageOutput: [Ending] Sen comes up, holding hands with Minh, Hạnh, Tí, Khoa and Bin
+[Server] MessageOutput: [Ending] Bà Thu takes her daughter's hand
+[Server] MessageOutput: [Bin] asleep on the bank
+[Server] MessageOutput: [Ending] home
+[Server] MessageOutput: [LangVong] phase -> Ending
+[Server] MessageOutput: [Analytics] summary ending=home run=0m19s open=0m01s first_clue=0m01s clues=1 mementos=0 tapes=0 letter_found=0m01s letter_given=0m05s thu_at_steps=0m14s warnings=5 taken=1 rescued=0 hints=1
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Lanterns] second drift (23:00)
+[Server] MessageOutput: [Lanterns] HeadHouse's lantern is on the water
+[Server] MessageOutput: [LangVong] phase -> Finale
+[Server] MessageOutput: [Lanterns] FishHouse's lantern is on the water
+[Server] MessageOutput: [Ending] Sen reaches up at the steps (1 there)
+[Server] MessageOutput: [Ending] 1 held on; Bin goes free
+[Server] MessageOutput: [Lanterns] PuppetHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] TeacherHouse's lantern is on the water
+[Server] MessageOutput: [Bin] asleep on the bank
+[Server] MessageOutput: [Ending] stay
+[Server] MessageOutput: [LangVong] phase -> Ending
+[Server] MessageOutput: [Analytics] summary ending=stay run=0m12s open=0m01s first_clue=- clues=0 mementos=0 tapes=0 letter_found=- letter_given=- thu_at_steps=- warnings=0 taken=0 rescued=0 hints=0
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Lanterns] second drift (23:00)
+[Server] MessageOutput: [Lanterns] HeadHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] FishHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] PuppetHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] TeacherHouse's lantern is on the water
+[Server] MessageOutput: [LangVong] phase -> Finale
+[Server] MessageOutput: [Ending] every lantern goes out
+[Server] MessageOutput: [Ending] silence
+[Server] MessageOutput: [LangVong] phase -> Ending
+[Server] MessageOutput: [Analytics] summary ending=silence run=0m02s open=0m01s first_clue=- clues=0 mementos=0 tapes=0 letter_found=- letter_given=- thu_at_steps=- warnings=0 taken=0 rescued=0 hints=0
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Client] MessageOutput: [LangVong] client started (7 controllers)
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Client] MessageWarning: [Roblox][sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Actions.ExecuteLuauActions] The execute_luau changed camera type. Resetting from Enum.CameraType.Scriptable back to Enum.CameraType.Custom
+[Client] MessageOutput: [LangVong] client sees phase Arrival
+[Client] MessageOutput: [LangVong] client sees phase Night1
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Finale
+[Client] MessageOutput: [LangVong] client sees phase Ending
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageOutput: [LangVong] client sees phase Arrival
+[Client] MessageOutput: [LangVong] client sees phase Night1
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageWarning: [Roblox][sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Actions.ExecuteLuauActions] The execute_luau changed camera type. Resetting from Enum.CameraType.Scriptable back to Enum.CameraType.Custom
+[Client] MessageWarning: [Roblox][sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Actions.ExecuteLuauActions] The execute_luau changed camera type. Resetting from Enum.CameraType.Scriptable back to Enum.CameraType.Custom
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Finale
+[Client] MessageOutput: [LangVong] client sees phase Ending
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Finale
+[Client] MessageOutput: [LangVong] client sees phase Ending
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Finale
+[Client] MessageOutput: [LangVong] client sees phase Ending
+[Client] MessageOutput: [LangVong] client sees phase Intro

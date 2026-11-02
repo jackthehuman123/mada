@@ -1,0 +1,15 @@
+[Server] MessageOutput: [LangVong] world built in 16 ms
+[Server] MessageOutput: [LangVong] debug commands enabled (Studio only)
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] server started (6 services)
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Server] MessageOutput: [LangVong] phase -> Arrival
+[Server] MessageOutput: [LangVong] phase -> Arrival
+[Client] MessageError: GaramondBold is not a valid member of "Enum.Font"
+[Client] MessageInfo: Stack Begin
+[Client] MessageInfo: Script 'Players.inpositivity.PlayerScripts.Client.Controllers.UIController', Line 219 - function build
+[Client] MessageInfo: Script 'Players.inpositivity.PlayerScripts.Client.Controllers.UIController', Line 251 - function Init
+[Client] MessageInfo: Script 'Players.inpositivity.PlayerScripts.Client', Line 24
+[Client] MessageInfo: Stack End
+[Client] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type

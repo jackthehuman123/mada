@@ -1,0 +1,24 @@
+[Server] MessageOutput: [LangVong] world built in 16 ms
+[Server] MessageOutput: [LangVong] debug commands enabled (Studio only)
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] server started (13 services)
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Mystery] the letter was found
+[Server] MessageOutput: [Hint] SenHouse (stuck)
+[Server] MessageOutput: [Mystery] the carp rise at the steps
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Client] MessageOutput: [LangVong] client started (7 controllers)
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Intro

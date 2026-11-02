@@ -1,0 +1,31 @@
+[Server] MessageOutput: [LangVong] world built in 15 ms
+[Server] MessageOutput: [LangVong] debug commands enabled (Studio only)
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] server started (6 services)
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Server] MessageOutput: [LangVong] phase -> Arrival
+[Server] MessageOutput: [LangVong] phase -> Night1
+[Server] MessageOutput: [Night1] the scripted beats are not built yet (M3): waiting, then Open
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [LangVong] phase -> Finale
+[Server] MessageOutput: [LangVong] phase -> Ending
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Client] MessageOutput: [LangVong] client started (4 controllers)
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Client] MessageWarning: Infinite yield possible on 'ReplicatedStorage.Remotes:WaitForChild("Message")'
+[Client] MessageInfo: Stack Begin
+[Client] MessageInfo: Script 'ReplicatedStorage.Shared.Remotes', Line 54 - function event
+[Client] MessageInfo: Script 'Players.inpositivity.PlayerScripts.Client.Controllers.PhaseController', Line 23 - function Start
+[Client] MessageInfo: Stack End
+[Client] MessageWarning: [Roblox][sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Actions.ExecuteLuauActions] The execute_luau changed camera type. Resetting from Enum.CameraType.Scriptable back to Enum.CameraType.Custom
+[Client] MessageWarning: [Roblox][sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Actions.ExecuteLuauActions] The execute_luau changed camera type. Resetting from Enum.CameraType.Scriptable back to Enum.CameraType.Custom
+[Client] MessageOutput: [LangVong] client sees phase Arrival
+[Client] MessageOutput: [LangVong] client sees phase Night1
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Finale
+[Client] MessageOutput: [LangVong] client sees phase Ending
+[Client] MessageOutput: [LangVong] client sees phase Intro

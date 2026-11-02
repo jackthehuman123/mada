@@ -1,0 +1,43 @@
+[Server] MessageError: Ceramic is not a valid member of "Enum.Material"
+[Server] MessageInfo: Stack Begin
+[Server] MessageInfo: Script 'ServerScriptService.Server.World.Build', Line 385 - function furnish
+[Server] MessageInfo: Script 'ServerScriptService.Server.World.Build', Line 522
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.WorldService', Line 18 - function Init
+[Server] MessageInfo: Script 'ServerScriptService.Server', Line 25
+[Server] MessageInfo: Stack End
+[Server] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Server] MessageError: ServerScriptService.Server.Services.DebugService:125: no location Shrine or no character
+[Server] MessageInfo: Stack Begin
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 125 - function run
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 156
+[Server] MessageInfo: Stack End
+[Server] MessageOutput: [LangVong] phase -> Arrival
+[Server] MessageError: ServerScriptService.Server.Services.DebugService:125: no location Shrine or no character
+[Server] MessageInfo: Stack Begin
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 125 - function run
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 156
+[Server] MessageInfo: Stack End
+[Server] MessageOutput: [LangVong] phase -> Arrival
+[Server] MessageError: ServerScriptService.Server.Services.NightOneDirector:221: attempt to index nil with 'Exists'
+[Server] MessageInfo: Stack Begin
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.NightOneDirector', Line 221 - function State
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 54 - function run
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 156
+[Server] MessageInfo: Stack End
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageError: ServerScriptService.Server.Services.DebugService:125: no location Dock or no character
+[Server] MessageInfo: Stack Begin
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 125 - function run
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 156
+[Server] MessageInfo: Stack End
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageError: ServerScriptService.Server.Services.DebugService:125: no location Shrine or no character
+[Server] MessageInfo: Stack Begin
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 125 - function run
+[Server] MessageInfo: Script 'ServerScriptService.Server.Services.DebugService', Line 156
+[Server] MessageInfo: Stack End
+[Client] MessageOutput: [LangVong] client started (7 controllers)
+[Client] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Client] MessageOutput: [LangVong] client sees phase Arrival
+[Client] MessageOutput: [LangVong] client sees phase Open

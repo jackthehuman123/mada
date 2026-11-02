@@ -1,0 +1,49 @@
+[Server] MessageOutput: [LangVong] world built in 16 ms
+[Server] MessageOutput: [LangVong] debug commands enabled (Studio only)
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] server started (10 services)
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Server] MessageOutput: [LangVong] phase -> Arrival
+[Server] MessageOutput: [Night1] beat 1
+[Server] MessageOutput: [Bin] here
+[Server] MessageOutput: [LangVong] phase -> Night1
+[Server] MessageOutput: [Night1] beat 2
+[Server] MessageOutput: [Dialogue] bathu_night1 1/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 2/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 3/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 4/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 5/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 6/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 7/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 8/9 BaThu
+[Server] MessageOutput: [Dialogue] bathu_night1 9/9 BaThu
+[Server] MessageOutput: [Night1] beat 3
+[Server] MessageOutput: [Lanterns] HeadHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] FishHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] PuppetHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] TeacherHouse's lantern is on the water
+[Server] MessageOutput: [Lanterns] HeadHouse's lantern arrived; window lit
+[Server] MessageOutput: [Lanterns] FishHouse's lantern arrived; window lit
+[Server] MessageOutput: [Lanterns] PuppetHouse's lantern arrived; window lit
+[Server] MessageOutput: [Lanterns] TeacherHouse's lantern arrived; window lit
+[Server] MessageOutput: [Night1] beat 4
+[Server] MessageOutput: [Dialogue] bark bin_wanders
+[Server] MessageOutput: [Bin] gone
+[Server] MessageOutput: [Night1] beat 5
+[Server] MessageOutput: [Night1] the causeway is under water
+[Server] MessageOutput: [Night1] beat 6
+[Server] MessageOutput: [Night1] beat 7
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Dialogue] bathu_repeat_1 1/4 BaThu
+[Server] MessageOutput: [Dialogue] bathu_repeat_1 2/4 BaThu
+[Server] MessageOutput: [Dialogue] bathu_repeat_1 3/4 BaThu
+[Server] MessageOutput: [Dialogue] bathu_repeat_1 4/4 BaThu
+[Client] MessageOutput: [LangVong] client started (6 controllers)
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Client] MessageOutput: [LangVong] client sees phase Arrival
+[Client] MessageOutput: [LangVong] client sees phase Night1
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageWarning: [Roblox][sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Actions.ExecuteLuauActions] The execute_luau changed camera type. Resetting from Enum.CameraType.Scriptable back to Enum.CameraType.Custom
+[Client] MessageWarning: [Roblox][sabuiltin_Assistant.rbxm.Assistant.Packages._Index.AssistantUI.AssistantUI.Actions.ExecuteLuauActions] The execute_luau changed camera type. Resetting from Enum.CameraType.Scriptable back to Enum.CameraType.Custom
