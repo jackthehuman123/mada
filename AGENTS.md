@@ -98,7 +98,25 @@ Studio's built-in MCP server gives you these tools (names as Roblox documents th
 - Anything involving publishing, game settings on roblox.com, Team Create, permissions, Robux, uploading files, or the human's account.
 - A design choice that would change the story, an ending, or what a character is. For everything else, use the default from the **Open questions** section of the brief, and log it.
 
-## 10. Definition of done (any task)
+## 10. The agent team (Claude Code subagents)
+
+Specialist subagents live in `.claude/agents/`. The main agent is the **gameplay programmer and lead**: it owns `src/` (except `Content/` text and `Tags.luau` additions), plans each milestone, and delegates:
+
+| Subagent | Use it for | Touches Studio? |
+| --- | --- | --- |
+| `world-builder` | Terrain, houses, props, lighting, lantern paths, the art pass; free models and generated meshes | Yes |
+| `qa-tester` | After every milestone: acceptance checks, console errors, code review, unsafe-script scan, content rules, story accuracy. Read-only. | Yes |
+| `story-keeper` | All clue, dialogue, text-card and ending text in `src/shared/Content/` | No |
+| `voice-over` | Voice scripts; TTS files if an audio MCP is connected | No |
+| `sound-designer` | Ambience, SFX, music: Creator Store first, generated if needed | Only when inserting sounds |
+
+Rules for delegating:
+- **Only one agent uses Roblox Studio at a time.** There is one open place and one playtest. Never run `world-builder`, `qa-tester` or the main agent's Studio work in parallel with each other. Agents that don't touch Studio (`story-keeper`, `voice-over`, `sound-designer` while it's only writing lists or generating files) can run in parallel with Studio work.
+- Give each subagent a self-contained task: the milestone, the exact section of the brief, the files involved, and what "done" means.
+- A milestone isn't done until `qa-tester` reports **PASS**. Fix its findings, then ask it to re-check.
+- Record each subagent's report in `docs/PROGRESS.md` (short) and any DRAFT items in `docs/DECISIONS.md`.
+
+## 11. Definition of done (any task)
 
 - Code is in `src/`, synced, and committed.
 - A playtest starts with **no errors from our scripts** in `get_console_output`.

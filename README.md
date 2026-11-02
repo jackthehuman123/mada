@@ -10,6 +10,7 @@ This repo holds the design and the prototype code. It's set up so a coding agent
 | --- | --- |
 | `AGENTS.md` | Instructions for any coding agent. Start here. |
 | `CLAUDE.md` | Claude Code entry point (imports `AGENTS.md`). |
+| `.claude/agents/` | Specialist subagents: world-builder, qa-tester, story-keeper, voice-over, sound-designer. |
 | `docs/PROTOTYPE_BRIEF.md` | The build spec: scope, rules, numbers, map, milestones, defaults. |
 | `docs/design/` | Catlyn's design docs: story, gameplay, characters, threats, timeline, release plan. |
 | `docs/MCP_SETUP.md` | Setting up Rojo and the Roblox Studio MCP server; free assets and 3D models. |
@@ -18,6 +19,7 @@ This repo holds the design and the prototype code. It's set up so a coding agent
 | `docs/DECISIONS.md` | Choices the agent made and drafts waiting for review. |
 | `src/` | Luau code, synced into Studio by Rojo. |
 | `tools/worldgen/` | Scripts the agent runs in Studio to build the world. |
+| `audio/` | Generated voice-over, music and SFX files waiting to be uploaded to Roblox. |
 
 ## Getting started (builder)
 

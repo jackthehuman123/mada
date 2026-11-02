@@ -11,3 +11,4 @@ art/exports/
 .DS_Store
 Thumbs.db
 .vscode/settings.json
+*:Zone.Identifier
