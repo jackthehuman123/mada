@@ -5,7 +5,8 @@
 --   agents: the BindableFunction ServerScriptService.Debug, e.g. Debug:Invoke("goto", "Shrine") from execute_luau
 --           (Server context). The factory test runner (tools/factory/test.py) uses it.
 -- Commands: get | phase <Phase> | time <hour> | clue <ClueId|all> | goto <Location> | battery <0-100> | reset |
---           inshrine | locations
+--           inshrine | locations | speed <n> (Night 1 runs n times faster) | night1 (the director's state) |
+--           pickup (pick up Bin's camera) | talk (talk to Bà Thu) | next (move the dialogue on)
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -32,6 +33,8 @@ end
 local function run(caller: Player?, cmd: string, arg: any): any
 	local GameState = require(script.Parent:WaitForChild("GameStateService")) :: any
 	local ClueService = require(script.Parent:WaitForChild("ClueService")) :: any
+	local Director = require(script.Parent:WaitForChild("NightOneDirector")) :: any
+	local DialogueService = require(script.Parent:WaitForChild("DialogueService")) :: any
 	local player = caller or Players:GetPlayers()[1]
 	if cmd == "get" then
 		local batteries = {}
@@ -39,7 +42,20 @@ local function run(caller: Player?, cmd: string, arg: any): any
 			batteries[p.Name] = p:GetAttribute("Battery")
 		end
 		return { phase = GameState.GetPhase(), clock = GameState.GetClock(), clues = ClueService.Found(), batteries = batteries,
-			players = #Players:GetPlayers() }
+			players = #Players:GetPlayers(), beat = ReplicatedStorage:GetAttribute("Night1Beat") }
+	elseif cmd == "speed" then
+		ReplicatedStorage:SetAttribute("DebugTimeScale", tonumber(arg) or 1)
+	elseif cmd == "night1" then
+		return Director.State()
+	elseif cmd == "pickup" then
+		Director.PickUpCamera(player)
+	elseif cmd == "talk" then
+		assert(player, "no player")
+		task.spawn(DialogueService.TalkToThu, player)
+	elseif cmd == "next" then
+		for _, p in Players:GetPlayers() do
+			DialogueService.Advance(p)
+		end
 	elseif cmd == "phase" then
 		GameState.SetPhase(arg)
 	elseif cmd == "time" then

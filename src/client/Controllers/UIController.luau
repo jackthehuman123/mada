@@ -1,6 +1,6 @@
 --!strict
 -- The one ScreenGui ("LangVongUI") and its pieces: text cards, the bottom message line, the fade, the clue panel,
--- the journal (key J or the button), and the camcorder's VHS viewfinder. Other controllers call these functions;
+-- the journal (key J or the button), the dialogue box, and the camcorder's VHS viewfinder (with tape static). Other controllers call these functions;
 -- what the text says comes from Shared.Content, never from here.
 
 local Players = game:GetService("Players")
@@ -49,6 +49,12 @@ UI.vfTime = nil :: TextLabel?
 UI.vfBattery = nil :: TextLabel?
 UI.vfMode = nil :: TextLabel?
 UI.clipChooser = nil :: Frame?
+UI.vfStatic = nil :: Frame?
+UI.onDialogueClick = nil :: (() -> ())?
+
+local dialogueFrame: Frame
+local dialogueSpeaker: TextLabel
+local dialogueText: TextLabel
 
 function UI.Gui(): ScreenGui
 	return gui
@@ -91,6 +97,31 @@ function UI.Fade(seconds: number)
 	back:Play()
 	back.Completed:Wait()
 	fadeFrame.Visible = false
+end
+
+function UI.ShowDialogue(speaker: string, text: string)
+	dialogueSpeaker.Text = speaker
+	dialogueText.Text = text
+	dialogueFrame.Visible = true
+end
+
+function UI.HideDialogue()
+	dialogueFrame.Visible = false
+end
+
+-- the end of a tape: grey bars flicker over the viewfinder (call every frame while it lasts)
+function UI.Static(on: boolean)
+	local s = UI.vfStatic :: Frame
+	s.Visible = on
+	if on then
+		for _, bar in s:GetChildren() do
+			if bar:IsA("Frame") then
+				local g = math.random(60, 230)
+				bar.BackgroundColor3 = rgb(g, g, g)
+				bar.BackgroundTransparency = math.random() * 0.5
+			end
+		end
+	end
 end
 
 function UI.ShowClue(clueId: string)
@@ -191,6 +222,12 @@ local function build()
 	UI.vfTime = vhs("Time", UDim2.new(1, -70, 0, 70), Vector2.new(1, 0))
 	UI.vfBattery = vhs("Battery", UDim2.new(1, -70, 1, -70), Vector2.new(1, 1))
 	UI.viewfinder = vf
+	local static = new("Frame", { Name = "Static", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = false, ZIndex = 3, Parent = vf })
+	for k = 0, 39 do
+		new("Frame", { Name = "Bar", Size = UDim2.new(1, 0, 1 / 40, 1), Position = UDim2.fromScale(0, k / 40), BorderSizePixel = 0,
+			BackgroundColor3 = rgb(128, 128, 128), ZIndex = 3, Parent = static })
+	end
+	UI.vfStatic = static
 
 	-- clip chooser for playback (T)
 	local chooser = new("Frame", { Name = "Clips", Size = UDim2.fromOffset(240, 190), Position = UDim2.new(0.5, 0, 1, -40), AnchorPoint = Vector2.new(0.5, 1),
@@ -210,6 +247,26 @@ local function build()
 	messageLabel = new("TextLabel", { Name = "Message", Size = UDim2.new(0.6, 0, 0, 40), Position = UDim2.new(0.5, 0, 1, -110), AnchorPoint = Vector2.new(0.5, 1),
 		BackgroundTransparency = 1, TextColor3 = rgb(236, 228, 210), TextStrokeTransparency = 0.3, Font = Enum.Font.Garamond, TextSize = 28,
 		Visible = false, ZIndex = 6, Parent = gui })
+
+	-- the dialogue box: who's speaking and their line; click it (or press Enter) to move on
+	dialogueFrame = new("TextButton", { Name = "Dialogue", Size = UDim2.new(0.62, 0, 0, 130), Position = UDim2.new(0.5, 0, 1, -170),
+		AnchorPoint = Vector2.new(0.5, 1), BackgroundColor3 = rgb(14, 16, 20), BackgroundTransparency = 0.2, AutoButtonColor = false, Text = "",
+		Visible = false, ZIndex = 7, Parent = gui })
+	corner(dialogueFrame, 6)
+	dialogueSpeaker = new("TextLabel", { Name = "Speaker", Size = UDim2.new(1, -40, 0, 30), Position = UDim2.fromOffset(20, 10), BackgroundTransparency = 1,
+		TextColor3 = rgb(240, 170, 100), Font = Enum.Font.Merriweather, TextSize = 22, TextXAlignment = Enum.TextXAlignment.Left, Text = "",
+		ZIndex = 8, Parent = dialogueFrame })
+	dialogueText = new("TextLabel", { Name = "Line", Size = UDim2.new(1, -40, 1, -70), Position = UDim2.fromOffset(20, 40), BackgroundTransparency = 1,
+		TextColor3 = rgb(236, 228, 210), Font = Enum.Font.Garamond, TextSize = 26, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 8, Parent = dialogueFrame })
+	new("TextLabel", { Name = "Hint", Size = UDim2.new(1, -40, 0, 20), Position = UDim2.new(0, 20, 1, -26), BackgroundTransparency = 1,
+		TextColor3 = rgb(150, 150, 150), Font = Enum.Font.Garamond, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Right,
+		Text = Text.UI.next, ZIndex = 8, Parent = dialogueFrame })
+	dialogueFrame.Activated:Connect(function()
+		if UI.onDialogueClick then
+			UI.onDialogueClick()
+		end
+	end)
 
 	-- the clue panel: a scrap of paper
 	cluePanel = new("Frame", { Name = "CluePanel", Size = UDim2.fromOffset(520, 340), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),

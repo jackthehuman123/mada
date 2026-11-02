@@ -8,6 +8,8 @@
 --   HiddenOnCamera (Bà Thu...): visible to eyes and the live viewfinder, gone on playback
 -- A recording is the camera's path sampled at 10 Hz plus the CameraOnly things that were in view (brief §5.2);
 -- playback flies a scriptable camera along that path through the world as it is now (see DECISIONS).
+-- Bin's tapes (§5.3, Content/Tapes) play through the same code once the group has his camera (attribute BinTapes):
+-- an authored path, handheld shake, ghost figures that exist only on the tape, and static at the end.
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -21,10 +23,12 @@ local Analytics = require(Shared:WaitForChild("Analytics"))
 local Config = require(Shared:WaitForChild("Config"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
 local Tags = require(Shared:WaitForChild("Tags"))
+local Tapes = require(Shared:WaitForChild("Content"):WaitForChild("Tapes"))
 local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 
 type Sample = { t: number, cf: CFrame }
-type Clip = { samples: { Sample }, events: { { id: string, t: number } }, length: number }
+type Clip = { samples: { Sample }, events: { { id: string, t: number } }, length: number,
+	ghosts: { Tapes.Ghost }?, staticFrom: number?, handheld: boolean?, name: string?, stamp: string? }
 
 local Camcorder = {}
 
@@ -38,6 +42,11 @@ local savedFov = 70
 local savedWalk: number? = nil
 local baseTransparency: { [BasePart]: number } = {}
 local savedMode: Enum.CameraMode? = nil
+local ghostFolder: Folder? = nil
+local staticOn = false
+local playingName = ""
+local playingStamp: string? = nil -- on playback the HUD shows the time the clip was recorded
+local playGen = 0 -- bumped by each playback, so an older playback's cleanup can't stop a newer one
 
 -- the player's own body: hidden while watching a tape (the camera that recorded it never filmed its holder)
 local function hideSelf(hidden: boolean)
@@ -87,7 +96,7 @@ local function updateHud()
 	if not UI or not UI.viewfinder then
 		return
 	end
-	UI.vfTime.Text = clockText()
+	UI.vfTime.Text = if playing and playingStamp then playingStamp else clockText()
 	local b = battery()
 	UI.vfBattery.Text = if b <= 0 then Text.UI.noBattery else string.format("%s %d%%", Text.UI.battery, math.floor(b + 0.5))
 	if playing then
@@ -159,8 +168,60 @@ function Camcorder.ToggleRecord()
 	else
 		recording = true
 		recStart = os.clock()
-		current = { samples = {}, events = {}, length = 0 }
+		current = { samples = {}, events = {}, length = 0, stamp = clockText() }
 	end
+end
+
+-- an authored tape as a clip: its key positions sampled at the recording rate
+local function tapeClip(tape: Tapes.Tape): Clip
+	local samples: { Sample } = {}
+	local keys = tape.keys
+	local step = 1 / Config.CameraSampleHz
+	local t = 0
+	local k = 1
+	while t <= tape.length + 1e-6 do
+		while k < #keys - 1 and keys[k + 1].t <= t do
+			k += 1
+		end
+		local a, b = keys[k], keys[math.min(k + 1, #keys)]
+		local f = if b.t > a.t then math.clamp((t - a.t) / (b.t - a.t), 0, 1) else 0
+		local s = f * f * (3 - 2 * f) -- ease in and out between keys
+		table.insert(samples, { t = t, cf = CFrame.lookAt(a.pos:Lerp(b.pos, s), a.look:Lerp(b.look, s)) })
+		t += step
+	end
+	return { samples = samples, events = {}, length = tape.length, ghosts = tape.ghosts, staticFrom = tape.staticFrom,
+		handheld = tape.handheld, name = tape.id, stamp = tape.stamp }
+end
+
+-- figures that exist only on a tape, built locally (never on the server, never seen by eyes)
+local function ghost(template: string, cf: CFrame): Model?
+	if template ~= "GirlInWater" then
+		warn(`[LangVong] unknown tape ghost {template}`)
+		return nil
+	end
+	-- a small girl standing in the water up to her waist, looking up; her hair hides her face (characters.md)
+	local m = Instance.new("Model")
+	m.Name = "Ghost_GirlInWater"
+	local function piece(name: string, size: Vector3, offset: CFrame, color: Color3, ball: boolean?)
+		local p = Instance.new("Part")
+		p.Name = name
+		p.Anchored, p.CanCollide, p.CanQuery, p.CastShadow = true, false, false, false
+		p.Size = size
+		p.Shape = if ball then Enum.PartType.Ball else Enum.PartType.Block
+		p.Color = color
+		p.Material = Enum.Material.SmoothPlastic
+		p.CFrame = cf * offset
+		p.Parent = m
+	end
+	local cloth, skin, hair = Color3.fromRGB(86, 96, 100), Color3.fromRGB(150, 150, 146), Color3.fromRGB(12, 12, 14)
+	piece("Body", Vector3.new(1.2, 2.2, 0.7), CFrame.new(0, -0.4, 0), cloth)
+	piece("ArmL", Vector3.new(0.35, 1.6, 0.35), CFrame.new(-0.8, -0.2, 0), cloth)
+	piece("ArmR", Vector3.new(0.35, 1.6, 0.35), CFrame.new(0.8, -0.2, 0), cloth)
+	local up = CFrame.new(0, 1.25, 0) * CFrame.Angles(math.rad(18), 0, 0) -- head tipped back: looking up the steps
+	piece("Head", Vector3.new(1, 1, 1), up, skin, true)
+	piece("Hair", Vector3.new(1.15, 1.5, 1.1), up * CFrame.new(0, -0.15, -0.05), hair)
+	m.Parent = ghostFolder
+	return m
 end
 
 local function stopPlayback()
@@ -168,6 +229,14 @@ local function stopPlayback()
 		return
 	end
 	playing = false
+	playingName = ""
+	playingStamp = nil
+	if ghostFolder then
+		ghostFolder:Destroy()
+		ghostFolder = nil
+	end
+	staticOn = false
+	UI.Static(false)
 	local cam = Workspace.CurrentCamera
 	cam.CameraType = Enum.CameraType.Custom
 	cam.FieldOfView = savedFov
@@ -182,15 +251,22 @@ local function stopPlayback()
 	savedWalk = nil
 end
 
-function Camcorder.Play(index: number)
-	local clip = clips[index]
-	if not clip or playing or battery() <= 0 then
+local function playClip(clip: Clip)
+	if playing or battery() <= 0 then
 		return
 	end
 	Camcorder.Lower()
 	UI.clipChooser.Visible = false
 	playing = true
-	Analytics.track("camera_playback", { clip = index })
+	playGen += 1
+	local my = playGen
+	playingName = clip.name or "clip"
+	playingStamp = clip.stamp
+	local folder = Instance.new("Folder")
+	folder.Name = "TapeGhosts"
+	folder.Parent = Workspace
+	ghostFolder = folder
+	local pending = table.clone(clip.ghosts or {})
 	local cam = Workspace.CurrentCamera
 	savedFov = cam.FieldOfView
 	cam.CameraType = Enum.CameraType.Scriptable
@@ -207,7 +283,7 @@ function Camcorder.Play(index: number)
 	local t0 = os.clock()
 	local samples = clip.samples
 	local i = 1
-	while playing do
+	while playing and playGen == my do
 		local t = os.clock() - t0
 		while i < #samples and samples[i + 1].t <= t do
 			i += 1
@@ -217,11 +293,48 @@ function Camcorder.Play(index: number)
 			break
 		end
 		local a, b = samples[i], samples[i + 1]
-		cam.CFrame = a.cf:Lerp(b.cf, math.clamp((t - a.t) / math.max(b.t - a.t, 1e-3), 0, 1))
+		local cf = a.cf:Lerp(b.cf, math.clamp((t - a.t) / math.max(b.t - a.t, 1e-3), 0, 1))
+		if clip.handheld then -- a person holding it: a slow sway and a little breathing
+			cf = cf * CFrame.new(0, math.sin(t * 2.3) * 0.04, 0)
+				* CFrame.Angles(math.sin(t * 1.7) * 0.012, math.sin(t * 1.3) * 0.016, math.sin(t * 2.1) * 0.006)
+		end
+		cam.CFrame = cf
+		for k = #pending, 1, -1 do
+			if pending[k].t <= t then
+				ghost(pending[k].template, pending[k].cf)
+				table.remove(pending, k)
+			end
+		end
+		if clip.staticFrom and t >= clip.staticFrom then
+			staticOn = true
+			UI.Static(true)
+		end
 		RunService.RenderStepped:Wait()
 	end
 	task.wait(0.3)
-	stopPlayback()
+	if playGen == my then
+		stopPlayback()
+	end
+end
+
+function Camcorder.Play(index: number)
+	local clip = clips[index]
+	if clip then
+		Analytics.track("camera_playback", { clip = index })
+		playClip(clip)
+	end
+end
+
+function Camcorder.HasTapes(): boolean
+	return ReplicatedStorage:GetAttribute("BinTapes") == true
+end
+
+function Camcorder.PlayTape(n: number)
+	local tape = Tapes[n]
+	if tape and Camcorder.HasTapes() then
+		Analytics.track("tape_playback", { tape = tape.id })
+		playClip(tapeClip(tape))
+	end
 end
 
 function Camcorder.StopPlayback()
@@ -235,7 +348,7 @@ local function showChooser()
 			c:Destroy()
 		end
 	end
-	if #clips == 0 then
+	if #clips == 0 and not Camcorder.HasTapes() then
 		local l = Instance.new("TextLabel")
 		l.Size = UDim2.new(1, -16, 0, 40)
 		l.BackgroundTransparency = 1
@@ -261,6 +374,31 @@ local function showChooser()
 			task.spawn(Camcorder.Play, i)
 		end)
 	end
+	if Camcorder.HasTapes() then
+		for n, tape in Tapes do
+			local b = Instance.new("TextButton")
+			b.Name = "Tape" .. n
+			b.LayoutOrder = 100 + n
+			b.Size = UDim2.new(1, -16, 0, 44)
+			b.BackgroundColor3 = Color3.fromRGB(70, 36, 30)
+			b.TextColor3 = Color3.fromRGB(240, 225, 200)
+			b.Font = Enum.Font.Code
+			b.TextSize = 20
+			b.Text = string.format("▶ %s %s  %02ds", Text.UI.binTape, tape.title, tape.length)
+			b.ZIndex = 6
+			b.Parent = chooser
+			b.Activated:Connect(function()
+				task.spawn(Camcorder.PlayTape, n)
+			end)
+		end
+	end
+	local rows = 0
+	for _, c in chooser:GetChildren() do
+		if c:IsA("TextButton") or c:IsA("TextLabel") then
+			rows += 1
+		end
+	end
+	chooser.Size = UDim2.fromOffset(260, 14 + 50 * math.max(1, rows))
 	chooser.Visible = true
 end
 
@@ -270,7 +408,9 @@ function Camcorder.State(): { [string]: any }
 	return { raised = raised, recording = recording, playing = playing, clips = #clips,
 		cameraOnlyT = foot and foot.Transparency or -1, hiddenOnCameraT = thu and thu.Transparency or -1,
 		fov = Workspace.CurrentCamera.FieldOfView, battery = battery(),
-		lastClipEvents = clips[#clips] and #clips[#clips].events or 0 }
+		lastClipEvents = clips[#clips] and #clips[#clips].events or 0,
+		tapes = Camcorder.HasTapes(), playingName = playingName, static = staticOn,
+		ghosts = ghostFolder and #ghostFolder:GetChildren() or 0 }
 end
 
 function Camcorder.Init()
@@ -358,6 +498,18 @@ function Camcorder.Start()
 				Camcorder.ToggleRecord()
 			elseif cmd == "play" then
 				task.spawn(Camcorder.Play, tonumber(arg) or #clips)
+			elseif cmd == "tape" then
+				task.spawn(Camcorder.PlayTape, tonumber(arg) or 1)
+			elseif cmd == "chooser" then
+				showChooser()
+				local names = {}
+				for _, c in UI.clipChooser:GetChildren() do
+					if c:IsA("TextButton") then
+						table.insert(names, c.Name)
+					end
+				end
+				UI.clipChooser.Visible = false
+				return names
 			elseif cmd == "stopplay" then
 				stopPlayback()
 			elseif cmd == "look" then -- point the camera at a world position (tests)

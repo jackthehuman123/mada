@@ -2,8 +2,9 @@
 -- Owns the run's phase and clock (PROTOTYPE_BRIEF §3).
 -- Phase is replicated as an attribute on ReplicatedStorage ("Phase"), clock as "ClockHour" (number, e.g. 21.5).
 -- The machine reacts to the current phase every tick, so a debug jump to any phase just works.
---   Lobby -> Intro (text card) -> Arrival (until a player reaches the shrine) -> Night1 -> Open (21:00 -> 24:00)
---   -> Finale -> Ending (text card) -> reset -> Intro
+--   Lobby -> Intro (text card) -> Arrival (until a player reaches the shrine) -> Night1 (NightOneDirector's beats;
+--   it moves on to Open itself) -> Open (21:00 -> 24:00) -> Finale -> Ending (text card) -> reset -> Intro
+-- Other services follow the phase through OnPhase(fn).
 
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
@@ -23,6 +24,7 @@ local GameStateService = {}
 
 local phaseStart = os.clock()
 local resetHooks: { () -> () } = {}
+local phaseHooks: { (Phase) -> () } = {}
 
 local function setClock(hour: number)
 	ReplicatedStorage:SetAttribute("ClockHour", hour)
@@ -61,8 +63,6 @@ function GameStateService.SetPhase(phase: Phase)
 		setClock(Config.ArrivalStartHour)
 	elseif phase == "Night1" then
 		setClock(Config.Night1StartHour)
-		print("[Night1] the scripted beats are not built yet (M3): waiting, then Open")
-		message(Text.Messages.night1Placeholder)
 	elseif phase == "Open" then
 		setClock(Config.OpenPhaseStartHour)
 		message(Text.Messages.findBin)
@@ -72,6 +72,14 @@ function GameStateService.SetPhase(phase: Phase)
 		card("ending_silence")
 		Analytics.track("ending", { type = "Im lặng", t = os.clock() })
 	end
+	for _, fn in phaseHooks do
+		task.spawn(fn, phase)
+	end
+end
+
+-- called (in its own thread) every time the phase changes, with the new phase
+function GameStateService.OnPhase(fn: (Phase) -> ())
+	table.insert(phaseHooks, fn)
 end
 
 -- is this point inside a part's box?
@@ -132,12 +140,6 @@ local function tick(dt: number)
 				break
 			end
 		end
-	elseif phase == "Night1" then
-		local span = Config.Night1PlaceholderSeconds
-		setClock(Config.Night1StartHour + (Config.OpenPhaseStartHour - Config.Night1StartHour) * math.min(t / span, 1))
-		if t >= span then
-			GameStateService.SetPhase("Open")
-		end
 	elseif phase == "Open" then
 		local hour = GameStateService.GetClock() + (Config.MidnightHour - Config.OpenPhaseStartHour) / Config.OpenPhaseRealSeconds * dt
 		setClock(math.min(hour, Config.MidnightHour))
@@ -156,6 +158,9 @@ local function tick(dt: number)
 end
 
 function GameStateService.Init()
+	for _, name in { Remotes.Names.Message, Remotes.Names.ShowTextCard, Remotes.Names.Fade } do
+		Remotes.event(name) -- made before any client asks for them (no "infinite yield" warning at start)
+	end
 	ReplicatedStorage:SetAttribute("Phase", "Lobby")
 	setClock(Config.ArrivalStartHour)
 	Players.PlayerRemoving:Connect(function()

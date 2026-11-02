@@ -1,6 +1,7 @@
 --!strict
 -- Any way out of the village brings players back to the lake shore (PROTOTYPE_BRIEF §4 beat 5, §8): walking into a
--- BoundaryTeleport part fades that player's screen and puts them at the ShoreReturn point.
+-- BoundaryTeleport part fades that player's screen and puts them at the ShoreReturn point. A boundary with a
+-- "Message" attribute (the flooded causeway) also shows that line to the player.
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -15,7 +16,7 @@ local BoundaryService = {}
 
 local busy: { [Player]: boolean } = {}
 
-function BoundaryService.Return(player: Player)
+function BoundaryService.Return(player: Player, message: string?)
 	local root = player.Character and player.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
 	local back = CollectionService:GetTagged(Tags.ShoreReturn)[1] :: BasePart?
 	if not root or not back or busy[player] then
@@ -23,6 +24,9 @@ function BoundaryService.Return(player: Player)
 	end
 	busy[player] = true
 	Remotes.event(Remotes.Names.Fade):FireClient(player, Config.BoundaryFadeSeconds)
+	if message then
+		Remotes.event(Remotes.Names.Message):FireClient(player, message)
+	end
 	task.delay(Config.BoundaryFadeSeconds / 2, function()
 		if root.Parent then
 			root.AssemblyLinearVelocity = Vector3.zero
@@ -41,13 +45,15 @@ local function watch(part: Instance)
 		local character = hit:FindFirstAncestorOfClass("Model")
 		local player = character and Players:GetPlayerFromCharacter(character)
 		if player then
-			BoundaryService.Return(player)
+			local msg = part:GetAttribute("Message")
+			BoundaryService.Return(player, if typeof(msg) == "string" then msg else nil)
 		end
 	end)
 end
 
 function BoundaryService.Init()
 	Remotes.event(Remotes.Names.Fade)
+	Remotes.event(Remotes.Names.Message)
 	Players.PlayerRemoving:Connect(function(p)
 		busy[p] = nil
 	end)

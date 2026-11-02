@@ -59,5 +59,5 @@ check(gui.Viewfinder.Visible, "no VHS overlay")
 | `tools/factory/test.py` | The test runner (build → own Studio window → play → tests → report → close) |
 | `tools/factory/rbx.py` | Minimal client for Studio's built-in MCP server (also usable by hand: `python rbx.py list`) |
 | `tools/factory/mute_studio.ps1` | Mutes the Studio window a test run opens |
-| `tests/*.luau` | The acceptance checks, one file per area (boot, world, clues, camcorder, phases) |
+| `tests/*.luau` | The acceptance checks, one file per area (boot, world, clues, camcorder, phases, Night 1) |
 | `src/server/World/Build.luau` | The graybox village (brief §8), every gameplay object tagged |

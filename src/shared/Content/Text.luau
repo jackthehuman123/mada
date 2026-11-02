@@ -12,7 +12,8 @@ local Text = {
 	Messages = {
 		findBin = "Find Bin.", -- brief §4 beat 7
 		causewayFlooded = "The causeway is under water.", -- brief §4 beat 5
-		night1Placeholder = "(Night 1 is not built yet: M3)",
+		binCamera = "Bin's camera. Still recording.", -- story.md §13 "still recording". DRAFT: needs Catlyn review
+		binTapesHint = "Press T to watch Bin's tapes.",
 	},
 	UI = {
 		look = "Look",
@@ -25,6 +26,17 @@ local Text = {
 		noBattery = "NO BATTERY",
 		clips = "Clips",
 		noClips = "No clips recorded.",
+		binTape = "Bin's tape",
+		talk = "Talk",
+		pickUp = "Pick up",
+		next = "Click or press Enter",
+	},
+	Speakers = {
+		BaThu = "Bà Thu",
+		Bin = "Bin",
+	},
+	Objects = {
+		binCamera = "Bin's camera",
 	},
 	Places = { -- journal group headings, by Location
 		Shrine = "The shrine",

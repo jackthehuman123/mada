@@ -31,6 +31,8 @@ local Tags = {
 	-- NPCs
 	NpcBaThu = "NpcBaThu",
 	NpcBin = "NpcBin",
+	BinCamera = "BinCamera", -- §4 beat 6: floating in the reeds by the shrine; picking it up gives the group Bin's tapes
+	Flood = "Flood", -- §4 beat 5: the water over the causeway
 }
 
 return Tags

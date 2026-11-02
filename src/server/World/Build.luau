@@ -20,6 +20,7 @@ local Config = require(Shared:WaitForChild("Config"))
 
 local SHORE_Z, LANE_Z, HOUSE_Z = -50, -20, 30
 local WATER_Y = -1 -- the lake's surface; the land is at y = 0
+local DOCK_X = -140
 
 -- the lane, west to east. child = the lost child whose lantern comes to this house (brief §6)
 local HOUSES = {
@@ -141,7 +142,8 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 	end
 	-- a lost child's house has a lantern stop on the shore below it (brief §5.4)
 	if child then
-		local stop = P(parent, { Name = "LanternStop_" .. (loc :: string), Size = Vector3.new(2, 1, 2), Position = Vector3.new(x, WATER_Y + 0.5, SHORE_Z - 5),
+		local sx = if math.abs(x - DOCK_X) < 6 then x + 8 else x -- the fish seller's lantern stops beside the dock, not under it
+		local stop = P(parent, { Name = "LanternStop_" .. (loc :: string), Size = Vector3.new(2, 1, 2), Position = Vector3.new(sx, WATER_Y + 0.5, SHORE_Z - 5),
 			Transparency = 1, CanCollide = false, CanQuery = false })
 		tag(stop, Tags.LanternStop, { House = loc, Child = child })
 	end
@@ -191,7 +193,7 @@ end
 local function dock(parent: Instance)
 	local m = model(parent, "Dock", "Dock")
 	for k = 0, 6 do
-		P(m, { Name = "Plank", Size = Vector3.new(6, 0.5, 4.6), Position = Vector3.new(-140, 0.6, SHORE_Z + 2 - k * 5), Color = rgb(116, 86, 58), Material = M.WoodPlanks })
+		P(m, { Name = "Plank", Size = Vector3.new(6, 0.5, 4.6), Position = Vector3.new(DOCK_X, 0.6, SHORE_Z + 2 - k * 5), Color = rgb(116, 86, 58), Material = M.WoodPlanks })
 	end
 	for _, sx in { -1, 1 } do
 		for k = 0, 2 do
@@ -251,6 +253,26 @@ local function cove(parent: Instance)
 	end
 	steps.PrimaryPart = P(steps, { Name = "Door", Size = Vector3.new(4, 1, 1), Position = Vector3.new(350, 1, 14), Transparency = 1, CanCollide = false, CanQuery = false })
 	P(parent, { Name = "CovePath", Size = Vector3.new(6, 0.4, 56), CFrame = CFrame.new(Vector3.new(345, 0.2, 44)), Color = rgb(120, 100, 76), Material = M.Ground, CanCollide = false })
+end
+
+-- Night 1 lantern paths (§4 beat 3, §5.4): from the water in front of the shrine, out onto the lake, along it and in
+-- to each lost child's LanternStop. Invisible waypoints tagged LanternPath (attributes House, Index), in order.
+local function lanternPaths(parent: Instance)
+	local m = model(parent, "LanternPaths")
+	for _, stop in CollectionService:GetTagged(Tags.LanternStop) do
+		local house = stop:GetAttribute("House")
+		local x = (stop :: BasePart).Position.X
+		local points = {
+			Vector3.new(-330, WATER_Y + 0.6, SHORE_Z - 34),
+			Vector3.new(-300, WATER_Y + 0.6, SHORE_Z - 44 - (x + 200) * 0.02),
+			Vector3.new(x, WATER_Y + 0.6, SHORE_Z - 44),
+			Vector3.new(x, WATER_Y + 0.6, SHORE_Z - 14),
+		}
+		for i, p in points do
+			tag(P(m, { Name = `Path_{house}_{i}`, Size = Vector3.new(1, 1, 1), Position = p, Transparency = 1, CanCollide = false, CanQuery = false }),
+				Tags.LanternPath, { House = house, Index = i })
+		end
+	end
 end
 
 local function farShore(parent: Instance)
@@ -358,6 +380,8 @@ return function()
 			tag(photo, Tags.Clue, { ClueId = "teacher_classphoto" })
 		end
 	end
+	world.Parent = Workspace -- (the lantern paths read the LanternStops through CollectionService)
+	lanternPaths(world)
 	shrine(world)
 	dock(world)
 	reeds(world, Vector3.new(-280, 0, SHORE_Z - 8), 26)

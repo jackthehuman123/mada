@@ -9,7 +9,7 @@ local Config = {
 	IntroSeconds = 30,
 	ArrivalStartHour = 18.5,
 	Night1StartHour = 19,
-	Night1PlaceholderSeconds = 8, -- until the Night 1 director exists (M3): Night1 just waits this long
+	Night1BeatHours = { 18.5, 19, 19.5, 20, 20.3, 20.6, 21 }, -- the clock as each Night 1 beat starts (§4: 19:00 -> 21:00)
 	OpenPhaseRealSeconds = 35 * 60, -- in-game 21:00 -> 24:00
 	OpenPhaseStartHour = 21,
 	MidnightHour = 24,
@@ -17,8 +17,27 @@ local Config = {
 	FinaleSeconds = 4, -- placeholder until the endings exist (M6)
 	EndingResetSeconds = 30,
 
+	-- Dialogue (§4 beat 2, §5.4)
+	DialogueAutoSeconds = 14, -- a line moves on by itself if nobody clicks (nobody gets stuck on an AFK player)
+	DialogueAdvanceCooldown = 0.4,
+	TalkPromptDistance = 10,
+
 	-- Lanterns and hints (§5.4)
-	LanternDriftSeconds = 75,
+	LanternDriftSeconds = 75, -- brief: 60-90 s from the shrine to a house
+	LanternStaggerSeconds = 4, -- Bà Thu sets them on the water one after another
+	LanternFloatY = -0.4, -- the lake's surface is at y = -1
+
+	-- Bin (§4 beats 1, 4)
+	BinWalkSpeed = 11,
+	BinFollowDistance = 7,
+	BinCatchUpDistance = 60, -- further than this from everyone: he jumps to the nearest player (teleports, debug goto)
+	BinWanderMinSeconds = 4,
+	BinWanderMaxSeconds = 20, -- §4 beat 4: he vanishes when nobody can see him, or after 20 s
+	BinSeenDistance = 120,
+	BinCameraHintSeconds = 120, -- §1: nobody stuck for long: the camera's light gets a subtitle after this
+
+	-- Bin's tapes (§5.3)
+	TapeStaticSeconds = 1.5,
 	HintAfterSeconds = 240,
 
 	-- Camcorder (§5.2)
