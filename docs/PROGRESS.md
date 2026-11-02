@@ -35,6 +35,11 @@ system, the camcorder and the boundaries work. Everything is built from git (see
   - **Finale:** Sen and the children rising in Về nhà get a warm lantern rim (Highlight + a light in front), so they read as children and not dark blocks. Her face stays under her hair.
 - Verified by: `python tools/factory/test.py` → PASS 9/9, 0 console errors (report 20261103-021157; shots `06_night1-lit-windows`, `09_endings-finale-home`).
 - Not checked by a person yet: the four new sounds; the house look at real speed.
+- **Closed playtest gate** (`PlaytestGate`, `Config.PlaytestGroupId` = 5099606): a live server kicks anyone not in the group; Studio is never gated; a failed group check lets the player in. Built `build/langvong-playtest.rbxl` for the first publish (a new experience can only be created from Studio's Publish dialog).
+- **Multiplayer fixes** (found reading the join/leave paths; the tests mostly use one player):
+  - The letter could be lost for the run: dropped (Backspace, or its holder taken) its non-colliding handle fell through the world; a holder who reset, died or left took it with them. Now a dropped letter lies still on the ground, a holder who dies or leaves drops it where they stood, and a letter gone from the world is back under Sen's altar. New check in `07_mystery`.
+  - A taken player who reset their character woke on the surface (out of the drowned festival). Now they wake in the festival again. New check in `08_sen`.
+  - If the last player who wasn't taken left, the taken waited in the festival until midnight. Now leaving re-checks "everyone taken" → Im lặng.
 - Next: the human playtest (2–4 players); Creator Store models for the art layer in the shared place, exported with `tools/art/export` (needs Lune trusted: `rokit trust lune-org/lune`).
 
 ### 2026-11-02 — M4–M8: the whole run (branch `full-game`, off `m3-night1`; not merged)
