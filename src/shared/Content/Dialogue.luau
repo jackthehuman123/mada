@@ -1,6 +1,6 @@
 --!strict
 -- Dialogue lines for Bà Thu and Bin (PROTOTYPE_BRIEF §4, §5.4, §5.7). Story facts only from story.md.
--- Bà Thu repeats her stories with one small new detail per repeat. Every line here is DRAFT: needs Catlyn review.
+-- Bà Thu repeats her stories with one small new detail per repeat. Every line here approved by Catlyn 2026-11-02.
 -- Sources: story.md §13 (the shrine scene: welcome, tea, the taken children, the old festival, the bedtime story
 -- word for word, "My daughter's staying with relatives"), §2 (the festival, the market boat), §10 (the children),
 -- §12 (her lanterns copied off the red paper); characters.md (voices: Thu warm, slow, repeats herself; Bin cheerful).
@@ -10,15 +10,15 @@ export type Line = { speaker: string, text: string, draft: boolean, choice: stri
 export type Conversation = { id: string, lines: { Line } }
 
 local function thu(text: string): Line
-	return { speaker = "BaThu", text = text, draft = true }
+	return { speaker = "BaThu", text = text, draft = false }
 end
 
 local function bin(text: string): Line
-	return { speaker = "Bin", text = text, draft = true }
+	return { speaker = "Bin", text = text, draft = false }
 end
 
 local function say(text: string): Line
-	return { speaker = "", text = text, draft = true }
+	return { speaker = "", text = text, draft = false }
 end
 
 local Dialogue: { [string]: Conversation } = {
@@ -58,7 +58,8 @@ local Dialogue: { [string]: Conversation } = {
 		say("You unfold the letter and read it out to her, because she can't read it herself: \"Sen never came here. Where is she?\""),
 		say("Bà Thu listens for a long time. Then she stops smiling, and she cries for her daughter."),
 		say("She takes out a half-finished paper fish and finishes it, her hands going so fast."),
-		{ speaker = "BaThu", text = "Write her name on it for me.", draft = true, choice = "Write: Sen" },
+		-- the words she used to say to her husband (story.md §15)
+		{ speaker = "BaThu", text = "Write to Sen for me.", draft = false, choice = "Write: Sen" },
 		say("Sen. The first time that name has ever been written anywhere in Làng Vọng."),
 	} },
 	-- §4 beat 1 and 4: Bin's two lines (barks, shown without stopping anyone)
