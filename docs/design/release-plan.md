@@ -6,7 +6,7 @@ To discuss. A possible starting point, in three updates:
 | --- | --- | --- |
 | Chapter 1 | The intro, Night 1, the shrine, and two houses | A cliffhanger: Bin's footage, and the one house that stays dark |
 | Chapter 2 | The other two houses, Sen's house, the letter | Bà Thu's camera reveal |
-| Full game | The finale and all three endings | The uploaded video |
+| Full game | The finale and both endings (Ở lại cut, 2026-11-02) | The uploaded video |
 
 **The catch:** the puzzle only works once players have the whole story, so early chapters must feel complete on their own, not like half a puzzle.
 

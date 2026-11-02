@@ -61,8 +61,8 @@ Picking up a memento plays a short scene of that child's last day.
 | Ending | Triggered when |
 | --- | --- |
 | **Về nhà (Going home)**, the true ending | Players gave Bà Thu the letter, and lead her to the carp steps by midnight on Rằm |
-| **Ở lại (Stay)**, tragic | Players reach the carp steps at midnight, but Bà Thu doesn't know the truth. Any player who holds on to Sen's hand stays, and Bin goes free. |
-| **Im lặng (Silence)**, tragic | Players aren't at the carp steps at midnight, or everyone pulls away from Sen |
+| ~~**Ở lại (Stay)**, tragic~~ (cut by Catlyn, 2026-11-02: the endings are binary) | ~~Players reach the carp steps at midnight, but Bà Thu doesn't know the truth. Any player who holds on to Sen's hand stays, and Bin goes free.~~ |
+| **Im lặng (Silence)**, tragic | Anything else at midnight, or everyone taken: every lantern goes out and Sen takes the players one by one (story doc §16) |
 
 What happens in each ending is told in the story doc.
 

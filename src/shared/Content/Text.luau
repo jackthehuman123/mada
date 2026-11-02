@@ -4,24 +4,25 @@
 
 local Text = {
 	Cards = {
-		-- brief §3: the rumor video the channel watched. DRAFT: needs Catlyn review
+		-- brief §3: the rumor video the channel watched. Approved by Catlyn 2026-11-02
 		intro = "From a video the channel watched last week:\n\n\"In Làng Vọng, the lanterns light themselves.\"",
-		-- the endings (brief §7), the teller's voice, adapted from story.md §15 and §16. DRAFT: needs Catlyn review
+		-- the endings (brief §7), the teller's voice, adapted from story.md §15 and §16. Approved by Catlyn 2026-11-02
+		-- (ending_stay: Ở lại is cut, Config.StayEnding)
 		ending_home = "That was all Sen ever wanted, I think. Someone to say her name and hold on to her.\n\nIn the morning the causeway was dry, and Bin woke up on the bank with his camera in his arms.\n\n(Về nhà)",
 		ending_stay = "Some say Sen came up at the steps alone and reached for the nearest hand. The ones who held on went down with her. The ones who let go made it home, and they missed their friends every day of their lives.\n\n(Ở lại)",
-		ending_silence = "Some say every lantern on the lake went out at once, and the quiet came down over the whole village. Weeks later somebody found a camera on some old steps, with nothing on it but static and, very faint, festival music.\n\n(Im lặng)",
+		ending_silence = "Some say every lantern on the lake went out at once, and the quiet came down over the whole village, and Sen came for them one by one until morning. Bin was never found. Weeks later somebody found a camera on some old steps, with nothing on it but static and, very faint, festival music.\n\n(Im lặng)",
 	},
 	Messages = {
 		findBin = "Find Bin.", -- brief §4 beat 7
 		causewayFlooded = "The causeway is under water.", -- brief §4 beat 5
-		binCamera = "Bin's camera. Still recording.", -- story.md §13 "still recording". DRAFT: needs Catlyn review
+		binCamera = "Bin's camera. Still recording.", -- story.md §13 "still recording". Approved by Catlyn 2026-11-02
 		binTapesHint = "Press T to watch Bin's tapes.",
-		letterFound = "A letter, folded very small, under the altar.", -- DRAFT
-		incenseUsed = "The incense smoke drifts out over the water.", -- DRAFT
-		taken = "The water closes over you.", -- DRAFT: the taken player's own screen
-		rescued = "Incense smoke, and the shrine's lanterns. You're back.", -- DRAFT
-		humming = "♪ hm, hm, %s, hm ♪", -- §5.5 step 4: a children's tune with the player's name in it. DRAFT
-		holdOrLet = "Sen is reaching for your hand.", -- the Stay ending's choice. DRAFT
+		letterFound = "A letter, folded very small, under the altar.", -- approved 2026-11-02
+		incenseUsed = "The incense smoke drifts out over the water.", -- approved 2026-11-02
+		taken = "The water closes over you.", -- the taken player's own screen. Approved 2026-11-02
+		rescued = "Incense smoke, and the shrine's lanterns. You're back.", -- approved 2026-11-02
+		humming = "♪ hm, hm, %s, hm ♪", -- §5.5 step 4: a children's tune with the player's name in it. Approved 2026-11-02
+		holdOrLet = "Sen is reaching for your hand.", -- the Stay ending's choice (cut, unused)
 	},
 	UI = {
 		look = "Look",

@@ -25,6 +25,9 @@ local function make(def: Sounds.Sound): Sound
 	return s
 end
 
+-- music plays only through the finale and its ending card; a reset stops it
+local music: { [Sound]: boolean } = {}
+
 function SoundController.Play(id: string, pos: Vector3?)
 	local UI = require(script.Parent:WaitForChild("UIController")) :: any
 	local def = Sounds[id]
@@ -50,6 +53,12 @@ function SoundController.Play(id: string, pos: Vector3?)
 	end
 	s.Parent = holder
 	s:Play()
+	if def.music then
+		music[s] = true
+		s.Destroying:Connect(function()
+			music[s] = nil
+		end)
+	end
 	local life = def.seconds or (if def.loop then 10 else nil)
 	if life then
 		task.delay(life, function()
@@ -115,6 +124,14 @@ end
 function SoundController.Start()
 	Remotes.event(Remotes.Names.Sfx).OnClientEvent:Connect(function(id: string, pos: Vector3?)
 		SoundController.Play(id, pos)
+	end)
+	ReplicatedStorage:GetAttributeChangedSignal("Phase"):Connect(function()
+		local phase = ReplicatedStorage:GetAttribute("Phase")
+		if phase ~= "Finale" and phase ~= "Ending" then
+			for s in music do
+				s:Destroy()
+			end
+		end
 	end)
 	for _, a in { "Phase", "FinaleStatic" } do
 		ReplicatedStorage:GetAttributeChangedSignal(a):Connect(updateAmbience)

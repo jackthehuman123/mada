@@ -36,6 +36,21 @@ function Figures.Sen(cf: CFrame, parent: Instance?, lookUp: number?): Model
 	return m
 end
 
+-- Sen's hand, small and wet, reaching up (Bin's tape); cf: the wrist, pointing the way it reaches
+function Figures.Hand(cf: CFrame, parent: Instance?): Model
+	local m = Instance.new("Model")
+	m.Name = "Hand"
+	local skin = rgb(150, 150, 146)
+	local palm = piece(m, "Palm", Vector3.new(0.32, 0.4, 0.12), cf * CFrame.new(0, 0.2, 0), skin)
+	piece(m, "Wrist", Vector3.new(0.24, 0.7, 0.2), cf * CFrame.new(0, -0.35, 0), rgb(86, 96, 100)) -- her sleeve
+	for i = -1, 1 do
+		piece(m, "Finger", Vector3.new(0.07, 0.26, 0.07), cf * CFrame.new(i * 0.1, 0.52, 0), skin)
+	end
+	m.PrimaryPart = palm
+	m.Parent = parent
+	return m
+end
+
 -- one of the lost children (or Bin), a dark silhouette; height in studs (6-12 year olds: 3.4-4.4)
 function Figures.Child(cf: CFrame, name: string, height: number, parent: Instance?): Model
 	local m = Instance.new("Model")

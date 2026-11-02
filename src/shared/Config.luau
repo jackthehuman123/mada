@@ -43,10 +43,12 @@ local Config = {
 
 	-- Endings (§5.7, §7)
 	ThuWalkSpeed = 7, -- studs/s, from the shrine through her back yard to the carp steps
+	StayEnding = false, -- Ở lại is cut (Catlyn, 2026-11-02): midnight without Về nhà is always Im lặng
 	StayRadius = 22, -- players this close to the carp steps at midnight are "at the steps"
 	StayChoiceSeconds = 15,
 	FinaleHomeSeconds = 40, -- game seconds of the Về nhà finale before the dawn card
 	FinaleSilenceSeconds = 10,
+	SilenceTakeGapSeconds = 2.5, -- Im lặng: Sen takes the players one by one, this far apart
 	FinaleStaySeconds = 22,
 
 	-- Bin's tapes (§5.3)

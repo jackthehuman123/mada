@@ -112,7 +112,7 @@ git config user.email "<your GitHub email>"
 
 Then, **inside `mada`**:
 ```
-rokit install          # answer "yes" to trust rojo-rbx/rojo
+rokit install          # answer "yes" to trust rojo-rbx/rojo and lune-org/lune
 rojo plugin install    # prints nothing when it succeeds
 ```
 

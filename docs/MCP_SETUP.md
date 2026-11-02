@@ -23,7 +23,7 @@ Three pieces work together:
 4. **Rokit** (Roblox toolchain manager):
    - Windows (PowerShell): `irm https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.ps1 | iex`
    - macOS: `curl -sSf https://raw.githubusercontent.com/rojo-rbx/rokit/main/scripts/install.sh | bash`
-5. In the repo folder: `rokit install` (installs the Rojo version pinned in `rokit.toml`), then `rojo plugin install` (installs the matching Rojo plugin into Studio).
+5. In the repo folder: `rokit install` (installs the Rojo and Lune versions pinned in `rokit.toml`; answer yes to trusting them), then `rojo plugin install` (installs the matching Rojo plugin into Studio).
 6. Optional formatters/linters: `rokit add JohnnyMorganz/StyLua` and `rokit add Kampfkarren/selene`.
 
 ## 2. Create the place

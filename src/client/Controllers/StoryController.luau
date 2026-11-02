@@ -78,10 +78,13 @@ function StoryController.Start()
 			UI.HideClue()
 			UI.ToggleJournal(false)
 		end
-		UI.SetTaken(player:GetAttribute("Taken") == true and player:GetAttribute("Stayed") ~= true)
+		-- no "Light a lantern" once the night is over (Im lặng takes everyone in the finale)
+		local over = ReplicatedStorage:GetAttribute("Phase") == "Finale" or ReplicatedStorage:GetAttribute("Phase") == "Ending"
+		UI.SetTaken(player:GetAttribute("Taken") == true and player:GetAttribute("Stayed") ~= true and not over)
 	end
 	player:GetAttributeChangedSignal("Taken"):Connect(onTaken)
 	player:GetAttributeChangedSignal("Stayed"):Connect(onTaken)
+	ReplicatedStorage:GetAttributeChangedSignal("Phase"):Connect(onTaken)
 	onTaken()
 	RunService.Heartbeat:Connect(function()
 		if player:GetAttribute("Taken") == true then

@@ -118,8 +118,37 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 	local m = model(parent, loc or ("House_" .. tostring(x)), loc)
 	local c = Vector3.new(x, 0, HOUSE_Z)
 	local W, D, H = 22, 18, 10
-	local wall = loc == "SenHouse" and rgb(150, 140, 120) or rgb(196, 184, 150)
+	-- aged limewash and old tiles, a little different on every house; Sen's is greyer and neglected
+	local k = (x // 55) % 3
+	local wall = if loc == "SenHouse" then rgb(150, 140, 120) else ({ rgb(206, 178, 118), rgb(196, 170, 124), rgb(210, 188, 140) })[k + 1]
+	local tile = if loc == "SenHouse" then rgb(96, 62, 52) else ({ rgb(150, 70, 52), rgb(138, 74, 56), rgb(160, 82, 58) })[k + 1]
+	local wood = rgb(92, 64, 44)
 	P(m, { Name = "Floor", Size = Vector3.new(W, 1, D), Position = c + Vector3.new(0, 0.5, 0), Color = rgb(120, 92, 64), Material = M.WoodPlanks })
+	-- dressing (no gameplay): a brick plinth, gable ends and a ridge under the roof, a porch with posts, shutters
+	local brick = rgb(118, 74, 58)
+	P(m, { Name = "Plinth", Size = Vector3.new(W + 0.6, 1.6, 0.3), Position = c + Vector3.new(0, 0.8, D / 2 + 0.15), Color = brick, Material = M.Brick, CanCollide = false })
+	for _, sx in { -1, 1 } do
+		P(m, { Name = "Plinth", Size = Vector3.new(0.3, 1.6, D + 0.6), Position = c + Vector3.new(sx * (W / 2 + 0.15), 0.8, 0), Color = brick, Material = M.Brick, CanCollide = false })
+		P(m, { Name = "Plinth", Size = Vector3.new((W - 6) / 2, 1.6, 0.3), Position = c + Vector3.new(sx * (W / 2 - (W - 6) / 4), 0.8, -D / 2 - 0.15), Color = brick, Material = M.Brick, CanCollide = false })
+	end
+	for _, sx in { -1, 1 } do
+		for _, sz in { -1, 1 } do
+			-- a wedge's high edge is its local +Z: turn the south halves round so both rise to the ridge
+			P(m, { ClassName = "WedgePart", Name = "Gable", Size = Vector3.new(1, 5, D / 2),
+				CFrame = CFrame.new(c + Vector3.new(sx * (W / 2 - 0.5), H + 3.5, sz * D / 4)) * CFrame.Angles(0, if sz > 0 then math.pi else 0, 0),
+				Color = wall, Material = M.Plaster })
+		end
+	end
+	P(m, { Name = "Ridge", Size = Vector3.new(W + 3.4, 0.7, 0.9), Position = c + Vector3.new(0, H + 6.4, 0), Color = tile:Lerp(rgb(0, 0, 0), 0.25), Material = M.Slate })
+	P(m, { Name = "Porch", Size = Vector3.new(W + 2, 0.8, 5), Position = c + Vector3.new(0, 0.4, -D / 2 - 2.5), Color = rgb(128, 84, 64), Material = M.Brick })
+	P(m, { Name = "PorchRoof", Size = Vector3.new(W + 3, 0.5, 6), CFrame = CFrame.new(c + Vector3.new(0, H - 0.6, -D / 2 - 2.6)) * CFrame.Angles(math.rad(-12), 0, 0),
+		Color = tile, Material = M.Slate })
+	for _, px in { -W / 2, -3.5, 3.5, W / 2 } do
+		P(m, { Name = "Post", Size = Vector3.new(0.7, H - 2.2, 0.7), Position = c + Vector3.new(px, (H - 2.2) / 2 + 0.8, -D / 2 - 4.6), Color = wood, Material = M.Wood })
+	end
+	for _, wx in { -8.8, -4.2 } do
+		P(m, { Name = "Shutter", Size = Vector3.new(1.2, 2.8, 0.2), Position = c + Vector3.new(wx, 6, -D / 2 - 0.2), Color = wood, Material = M.WoodPlanks, CanCollide = false })
+	end
 	P(m, { Name = "WallBack", Size = Vector3.new(W, H, 1), Position = c + Vector3.new(0, H / 2 + 1, D / 2 - 0.5), Color = wall, Material = M.Plaster })
 	for _, sx in { -1, 1 } do
 		P(m, { Name = "WallSide", Size = Vector3.new(1, H, D), Position = c + Vector3.new(sx * (W / 2 - 0.5), H / 2 + 1, 0), Color = wall, Material = M.Plaster })
@@ -127,7 +156,7 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 		P(m, { Name = "WallFront", Size = Vector3.new((W - 6) / 2, H, 1), Position = c + Vector3.new(sx * (W / 2 - (W - 6) / 4), H / 2 + 1, -D / 2 + 0.5),
 			Color = wall, Material = M.Plaster })
 		P(m, { Name = "Roof", Size = Vector3.new(W + 3, 0.8, D / 2 + 3), CFrame = CFrame.new(c + Vector3.new(0, H + 3.4, sx * (D / 4 + 0.6)))
-			* CFrame.Angles(sx * math.rad(-28), 0, 0), Color = rgb(150, 70, 52), Material = M.Slate })
+			* CFrame.Angles(sx * math.rad(28), 0, 0), Color = tile, Material = M.Slate })
 	end
 	P(m, { Name = "Lintel", Size = Vector3.new(6, 2, 1), Position = c + Vector3.new(0, H, -D / 2 + 0.5), Color = wall, Material = M.Plaster })
 	-- the window beside the door: dark until a lantern reaches this house (M3); Sen's never lights

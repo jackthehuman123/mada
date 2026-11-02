@@ -4,7 +4,7 @@
 
 - `AGENTS.md` (imported above) is the full instruction set and applies to you. Everything below is Claude-specific.
 - The Roblox Studio MCP server is usually registered as `Roblox_Studio`, so its tools appear as `mcp__Roblox_Studio__<tool>` (for example `mcp__Roblox_Studio__execute_luau`). If none appear, run `/mcp` to check status, then follow `docs/MCP_SETUP.md`.
-- When the human says "continue" or "begin", start with the start-of-session routine in `AGENTS.md`, then work on the next unchecked task in `docs/PROGRESS.md`.
+- When the human says "continue" or "begin", start with the start-of-session routine in `AGENTS.md`, then work on the first open issue in `docs/ISSUES.md` that fits this session (Studio or not).
 - Use the task list for the milestone's tasks so the human can see progress.
 - For a whole milestone, plan first (list files to create, tags, remotes, test steps), then build. Keep each commit to one coherent step.
 - Code goes through normal file edits in `src/`. Use MCP for the world, assets, playtests, console and screenshots, not for editing Rojo-managed scripts.
@@ -15,11 +15,11 @@
 When you run on GitHub (someone wrote `@claude` in an issue or a pull request; set up in `.github/workflows/claude.yml`,
 explained in `docs/ASK_CLAUDE.md`):
 - There is no Roblox Studio and no MCP. Skip the start-of-session Studio and Rojo checks in `AGENTS.md` §2; read
-  `docs/PROGRESS.md` and the files the request is about instead.
+  `docs/ISSUES.md`, `docs/PROGRESS.md` and the files the request is about instead.
 - Answer questions in the thread. Make changes only when asked; they go to your own `claude/...` branch. Never merge,
   never push to `main`, never edit `.github/workflows/`.
 - `AGENTS.md` still applies in full: no invented story (facts only from `docs/design/story.md`), player-facing text in
-  `src/shared/Content/` marked DRAFT and logged in `docs/DECISIONS.md`, no gore, update `docs/PROGRESS.md`.
+  `src/shared/Content/` marked DRAFT and logged in `docs/DECISIONS.md`, no gore, update `docs/PROGRESS.md` and `docs/ISSUES.md`.
 - You can't playtest or run `tools/factory/test.py`. End every change with what a person must check in Studio
   (and which test, if one exists).
 - Keep answers short; one request per run. Work on this repo only.
@@ -28,12 +28,10 @@ explained in `docs/ASK_CLAUDE.md`):
 
 Làng Vọng gets built by every Claude session that works in this repo, so treat each session as a chance to move the
 build forward, not only to answer:
-- **Where the build is:** the newest work is on branch `full-game` (built on `m3-night1` and `factory-prototype`; not
-  merged into `main` yet). Its `docs/PROGRESS.md` is the real state: M0–M6 done, M7/M8 partly. Read it there
-  (`git fetch` then `git show origin/full-game:docs/PROGRESS.md`) before planning work, and base build work on that branch.
-- **What's open** (in that file's "Next" and the unchecked milestones): the art pass with Creator Store models, music
-  for the finale and sounds for Tí's clay whistle and Khoa's drum, the optional Quiet Man / Silence, and every DRAFT in
-  `docs/DECISIONS.md` marked "Needs Catlyn".
+- **Where the build is:** `main` (every branch merged 2026-11-02). `docs/PROGRESS.md` is the history: M0–M6 done,
+  M7/M8 partly. Base build work on a branch off `main`.
+- **What's open:** `docs/ISSUES.md`. Pick the first open issue whose *Needs* fits this session; skip *Waiting on
+  Catlyn* and *Parked*. Close issues there when done and add any new problem you find.
 - **When a request is done and the session has room left,** offer the next open task that fits, in one line. When the
   human has asked for build work, take the next task without waiting to be asked again.
 - **On GitHub (the bot):** end each answer with one next build step small enough for a single run, and say

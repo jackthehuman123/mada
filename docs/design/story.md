@@ -180,7 +180,7 @@ That night they filmed her lanterns going out across the lake. One by one, each 
 
 Then the boy Bin went off by himself to film the water, and he didn't come back. The others ran for the causeway and it was under water. Every path out of the village brought them back to the lake.
 
-They found Bin's camera floating in the reeds by the shrine, still recording. The last thing on it was a set of stone steps going down into dark water, and at the bottom, a little girl standing in the water, looking up.
+They found Bin's camera floating in the reeds by the shrine, still recording. The last thing on it was a set of stone steps going down into dark water, and at the bottom, a little girl standing in the water, looking up. Then the picture breaks up, and when it comes back she's closer. And closer. A small hand comes up and takes his. The camera goes into the water, and there's no sound at all, not even a shout. Through all that static you can just make out the two of them, the girl and the boy, going down together into the dark.
 
 I knew those steps too.
 
