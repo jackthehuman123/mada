@@ -10,6 +10,7 @@ This repo holds the design and the prototype code. It's set up so a coding agent
 | --- | --- |
 | `AGENTS.md` | Instructions for any coding agent. Start here. |
 | `CLAUDE.md` | Claude Code entry point (imports `AGENTS.md`). |
+| `docs/ASK_CLAUDE.md` | Asking Claude on GitHub: write `@claude` in an issue or pull request (setup + how to). |
 | `.claude/agents/` | Specialist subagents: world-builder, qa-tester, story-keeper, voice-over, sound-designer. |
 | `docs/PROTOTYPE_BRIEF.md` | The build spec: scope, rules, numbers, map, milestones, defaults. |
 | `docs/design/` | Catlyn's design docs: story, gameplay, characters, threats, timeline, release plan. |
@@ -24,6 +25,8 @@ This repo holds the design and the prototype code. It's set up so a coding agent
 | `audio/` | Generated voice-over, music and SFX files waiting to be uploaded to Roblox. |
 
 ## Getting started (builder)
+
+**Fastest:** clone `mada`, open Claude Code in the folder and type **`/setup`**. It checks the tools, switches to the newest build, checks the game runs, and offers the next task.
 
 1. Follow **`docs/SETUP.md`** once (Windows or macOS): install Git, Claude Code and Rokit; SSH key; clone `mada`; `rokit install`; `rojo plugin install`; open the shared place; enable Studio's MCP server and Quick-connect Claude Code.
 2. Each session:
