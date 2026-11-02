@@ -1,0 +1,49 @@
+[Server] MessageOutput: [LangVong] world built in 19 ms
+[Server] MessageOutput: [LangVong] debug commands enabled (Studio only)
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] server started (13 services)
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Server] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Server] MessageOutput: [LangVong] phase -> Open
+[Server] MessageOutput: [Mystery] the letter was found
+[Server] MessageOutput: [Sen] hunting inpositivity
+[Server] MessageOutput: [Sen] warning 1
+[Server] MessageOutput: [Sen] warning 2
+[Server] MessageOutput: [Sen] warning 3
+[Server] MessageOutput: [Sen] warning 4
+[Server] MessageOutput: [Sen] warning 5
+[Server] MessageOutput: [Sen] inpositivity was taken
+[Server] MessageOutput: [Mystery] the letter dropped
+[Server] MessageOutput: [Hint] Shrine (taken)
+[Server] MessageOutput: [Sen] inpositivity was brought back
+[Server] MessageOutput: [Sen] hunting inpositivity
+[Server] MessageOutput: [Sen] warning 1
+[Server] MessageOutput: [Sen] warning 2
+[Server] MessageOutput: [Sen] withdraws (incense)
+[Server] MessageOutput: [Sen] warning cancelled at step 3
+[Server] MessageOutput: [Sen] hunting inpositivity
+[Server] MessageOutput: [Sen] warning 1
+[Server] MessageOutput: [Sen] warning cancelled at step 2
+[Server] MessageOutput: [Sen] hunting inpositivity
+[Server] MessageOutput: [Sen] warning 1
+[Server] MessageOutput: [Sen] warning 2
+[Server] MessageOutput: [Sen] warning 3
+[Server] MessageOutput: [Sen] warning 4
+[Server] MessageOutput: [Sen] warning 5
+[Server] MessageOutput: [Sen] inpositivity was taken (for good)
+[Server] MessageOutput: [Hint] Shrine (stuck)
+[Server] MessageOutput: [LangVong] phase -> Finale
+[Server] MessageOutput: [Ending] every lantern goes out
+[Server] MessageOutput: [Ending] silence
+[Server] MessageOutput: [LangVong] phase -> Ending
+[Server] MessageOutput: [Analytics] summary ending=silence run=0m19s open=0m05s first_clue=0m05s clues=1 mementos=0 tapes=0 letter_found=0m05s letter_given=- thu_at_steps=- warnings=15 taken=2 rescued=1 hints=2
+[Server] MessageOutput: [Analytics] session_end 
+[Server] MessageOutput: [Analytics] session_start 
+[Server] MessageOutput: [LangVong] phase -> Intro
+[Client] MessageOutput: [LangVong] client started (7 controllers)
+[Client] MessageOutput: [LangVong] client sees phase Intro
+[Client] MessageWarning: ContentId: rbxassetid://203785492 failed due to: Asset type does not match requested type
+[Client] MessageOutput: [LangVong] client sees phase Open
+[Client] MessageOutput: [LangVong] client sees phase Finale
+[Client] MessageOutput: [LangVong] client sees phase Ending
+[Client] MessageOutput: [LangVong] client sees phase Intro
