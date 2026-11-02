@@ -22,8 +22,7 @@ Only a repo admin can do steps 1 and 2.
 1. **Install the Claude GitHub app on this repo.** Go to https://github.com/apps/claude → *Install* (or *Configure*) →
    choose **Only select repositories** → pick `mada` → *Install*.
 2. **Add one secret** so Claude can run. In the repo: *Settings → Secrets and variables → Actions → New repository
-   secret*. Use **one** of these, **from Catlyn's own Claude account** (the bot runs on the repo owner's usage, not
-   on Noptable's):
+   secret*. Use **one** of these, **from Catlyn's own Claude account**:
    - `CLAUDE_CODE_OAUTH_TOKEN`: uses Catlyn's Claude Pro/Max subscription. On her computer with Claude Code installed,
      run `claude setup-token` in a terminal, sign in with her account, and paste the token it prints as the secret's
      value. Usage counts against her plan.
@@ -78,8 +77,16 @@ take several. When it has changed files, the comment ends with a branch name and
 - It follows `AGENTS.md`: no gore, no invented story, anything it writes for players is marked DRAFT and logged in
   `docs/DECISIONS.md`.
 - It forgets between comments except for what's in the issue or pull request thread, so keep a topic in one thread.
-- Usage limits: each run is capped at 15 minutes (and 15 steps) and uses Claude Opus 5.5. It uses the
-  plan or API key from setup step 2, plus GitHub Actions minutes (private repos get a free monthly allowance). Change
-  `--max-turns` / `--model` in `.github/workflows/claude.yml` if you want more.
+- Usage limits: each run is capped at 15 minutes (and 15 steps). It uses the plan or API key from setup step 2, plus
+  GitHub Actions minutes (private repos get a free monthly allowance).
+- **The bot watches its own weekly budget.** After every request it adds up what it has used since Monday and works out
+  where that pace ends by Sunday. If it would run past the weekly budget, it posts one heads-up a day in the thread,
+  tagging the repo owner: pause the bigger requests until Monday, or switch to Sonnet. Two repo variables control this
+  (*Settings → Secrets and variables → Actions → Variables*):
+  - `CLAUDE_MODEL`: the model. Not set = Opus 5.5. Set it to `claude-sonnet-5-5` for the lighter model; delete it to go back.
+  - `WEEKLY_BUDGET_USD`: the weekly budget in dollars (not set = 40). With a subscription token this is Claude Code's
+    estimate of what the same use would cost on the API, a gauge for how fast the week's allowance is going; raise or
+    lower it until the heads-up comes at the right time.
+  The run log (*Actions* tab → the run → *Budget guard*) shows each request's cost and the week's total.
 - To switch it off: *Settings → Actions → General → Disable actions*, or delete `.github/workflows/claude.yml`.
 - If it never answers: check *Actions* tab → the "Claude" run for an error (usually a missing secret or the app not installed).
