@@ -33,6 +33,7 @@ Remotes.Names = {
 	MenuAction = "MenuAction", -- client -> server: (action, arg) create/join/leave/setOpen/begin/solo/backToMenu
 	MenuState = "MenuState", -- server -> clients: ({ teams }) every team in this server; MenuNotice for one player
 	MenuNotice = "MenuNotice", -- server -> client: (text) why something didn't work
+	LookPitch = "LookPitch", -- client -> server: (degrees) where this player looks up/down; others' poses follow
 }
 
 local function getFolder(): Folder

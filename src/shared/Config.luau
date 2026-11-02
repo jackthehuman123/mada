@@ -99,6 +99,22 @@ local Config = {
 	MenuCameraTo = Vector3.new(-70, 6, 0),
 	MenuCameraDrift = 40, -- studs the camera slides west and back
 	MenuCameraDriftSeconds = 60,
+
+	-- First person and bodies (I-12): locked first person, your own arms and legs visible, poses everyone sees
+	FirstPersonCameraOffset = Vector3.new(0, 0, -1.1), -- forward of the head, so looking down shows the body, not its inside
+	LookPitchSendHz = 8, -- how often a client tells the server where it's looking (others' heads and arms follow)
+	LookPitchMax = 70, -- degrees up or down
+	BobAmount = 0.08, -- studs of head bob at walking speed
+	BobSpeed = 7, -- radians per second of head bob at walking speed
+	SwayRoll = 1.6, -- degrees the camera leans when strafing
+	BreathAmount = 0.025, -- studs of idle breathing
+	PoseLerp = 12, -- how fast heads and arms follow (per second)
+
+	-- Music (I-13): a quiet bed in the open village; tension from Sen's warning step 2, a chase from step 4
+	MusicFadeSeconds = 2.5,
+	MusicTensionStep = 2,
+	MusicChaseStep = 4,
+	MusicHoldSeconds = 9, -- after the last warning step, how long tension/chase music lasts before fading back
 }
 
 return Config

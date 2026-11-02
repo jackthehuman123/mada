@@ -121,7 +121,82 @@ function SoundController.Ambience(): { string }
 	return out
 end
 
+-- the music layer (I-13): one track at a time, crossfaded. Tension/chase come from Sen's warnings to this player
+local Config = require(Shared:WaitForChild("Config"))
+local TweenService = game:GetService("TweenService")
+local layer: { [string]: Sound } = {}
+local tensionUntil, chaseUntil = 0, 0
+
+local function wantedMusic(): string?
+	local phase = ReplicatedStorage:GetAttribute("Phase")
+	local player = Players.LocalPlayer
+	if ReplicatedStorage:GetAttribute("FinaleStatic") == true or phase == "Finale" or phase == "Ending" then
+		return nil -- the finale has its own music, and Im lặng is silence
+	end
+	if not player:GetAttribute("InRun") then
+		return if ReplicatedStorage:GetAttribute("ServerKind") == "Run" then nil else "music_menu"
+	end
+	if player:GetAttribute("Taken") == true then
+		return nil
+	end
+	local now = os.clock()
+	if now < chaseUntil then
+		return "music_chase"
+	elseif now < tensionUntil then
+		return "music_tension"
+	elseif phase == "Open" then
+		return "music_bed"
+	end
+	return nil
+end
+
+local function updateMusic()
+	local want = wantedMusic()
+	local fade = TweenInfo.new(Config.MusicFadeSeconds)
+	for id, s in layer do
+		if id ~= want then
+			layer[id] = nil
+			local t = TweenService:Create(s, fade, { Volume = 0 })
+			t.Completed:Connect(function()
+				s:Destroy()
+			end)
+			t:Play()
+		end
+	end
+	if want and not layer[want] and Sounds[want] and Sounds[want].asset ~= "" then
+		local s = make(Sounds[want])
+		s.Name = "Music_" .. want
+		s.Volume = 0
+		s.Parent = SoundService
+		s:Play()
+		layer[want] = s
+		TweenService:Create(s, fade, { Volume = Sounds[want].volume or 0.5 }):Play()
+	end
+end
+
+function SoundController.Music(): string?
+	for id in layer do
+		return id
+	end
+	return nil
+end
+
 function SoundController.Start()
+	Remotes.event(Remotes.Names.SenWarning).OnClientEvent:Connect(function(step: number)
+		local now = os.clock()
+		if step >= Config.MusicChaseStep then
+			chaseUntil = now + Config.MusicHoldSeconds
+		elseif step >= Config.MusicTensionStep then
+			tensionUntil = now + Config.MusicHoldSeconds
+		end
+		updateMusic()
+	end)
+	task.spawn(function()
+		while true do
+			updateMusic()
+			task.wait(0.5)
+		end
+	end)
 	Remotes.event(Remotes.Names.Sfx).OnClientEvent:Connect(function(id: string, pos: Vector3?)
 		SoundController.Play(id, pos)
 	end)
