@@ -6,7 +6,7 @@ what's left.
 
 ## How to use it
 
-1. **Start of session:** read this file on the newest build branch (now `complete-game`, see I-01). Note whether this
+1. **Start of session:** read this file on `main` (everything is merged there since 2026-11-02). Note whether this
    session has Studio (`list_roblox_studios` answers) or not (GitHub bot, or a computer without Studio).
 2. **Pick** the first issue under *Open* whose **Needs** fits: `Studio` issues only in a local session with Studio;
    `no Studio` issues anywhere. Skip anything under *Waiting on Catlyn* or *Parked*.
@@ -21,13 +21,17 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 
 ## Open
 
-### I-01 · Branches have drifted apart; merge them
-- **Needs:** human (pushing and merging). Claude can prepare the merges locally and explain conflicts.
-- **State (2026-11-02):** `complete-game` = `full-game` + 1 commit (fast-forward, no conflicts). `main` has the GitHub
-  bot (`.github/workflows/claude.yml`) and `/setup`, which `full-game` lacks; `full-game` has 6 commits `main` lacks.
-  `bot-fixes` (bot fixes, off `main`) and `claude/issue-6-20261102-1840` (`docs/HANDOFF.md`, now mostly done) are open.
-- **Done when:** `full-game` fast-forwarded to `complete-game`; `main` merged into `full-game` (or the reverse) with
-  `test.py` still PASS; `bot-fixes` PR reviewed by Catlyn; the issue-6 branch merged or closed.
+### I-01 · Run the tests on the merged `main`
+- **Needs:** Studio.
+- **What:** `main` got `complete-game` and `bot-fixes` merged on 2026-11-02 on a laptop without Studio. The merge had
+  no conflicts and only docs/bot files differ from `complete-game` (PASS 9/9), but nobody has run it since.
+- **Done when:** `python tools/factory/test.py` on `main` → PASS 9/9, 0 console errors.
+
+### I-08 · Catlyn's first playtest: write down what went wrong
+- **Needs:** no Studio to write the issues; then each fix as its own issue.
+- **What:** Catlyn played the prototype on 2026-11-02 and found "a lot of bad things". Ask her for the list, then add
+  each one here as its own issue (I-09, I-10, …) with what she saw, where, and what "fixed" looks like.
+- **Done when:** every problem she reports is an open issue here.
 
 ### I-02 · Art pass: Creator Store models in the shared place
 - **Needs:** Studio (`world-builder` subagent).
@@ -89,6 +93,10 @@ Studio isn't usable on the loaner laptop (2026-11); W-01 to W-04 wait for a comp
 - **Ở lại (Stay) ending** — cut by Catlyn 2026-11-02 (`Config.StayEnding`). Don't bring it back unless she asks.
 
 ## Done
+
+- **2026-11-02** · Branches merged into `main`: `complete-game` (which holds `full-game`, `m3-night1`,
+  `factory-prototype`) and `bot-fixes`. No conflicts. `claude/issue-6-20261102-1840` (`docs/HANDOFF.md`) not merged:
+  this file replaces its checklist. Tests not rerun yet (I-01).
 
 - **2026-11-03** · Tests on Catlyn's 11-02 changes (Ở lại cut, Im lặng one by one, Tape 2) → `test.py` PASS 9/9,
   0 console errors (`complete-game` 29d6bc2).
