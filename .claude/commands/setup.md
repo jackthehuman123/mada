@@ -32,7 +32,7 @@ The game is built on branches, newest last: `factory-prototype` → `m3-night1` 
 
 ## 3. Roblox toolchain
 
-1. `rokit install` (answer yes to trusting `rojo-rbx/rojo`). Check `rojo --version` matches `rokit.toml`.
+1. `rokit install` (answer yes to trusting `rojo-rbx/rojo` and `lune-org/lune`). Check `rojo --version` matches `rokit.toml`.
 2. `rojo plugin install`. If it fails, follow `docs/SETUP.md` §3 (open Studio once, or install `Rojo.rbxm` by hand).
 
 ## 4. Studio ↔ Claude
@@ -60,8 +60,9 @@ the human needs to do.
 1. Read `docs/PROGRESS.md` on this branch (the "Next" line and the unchecked milestones) and `docs/DECISIONS.md` rows
    marked "Needs Catlyn".
 2. Tell the human in a few lines: which branch, that it runs, what's done, what's open.
-3. Offer the next open task that fits this session (with Studio here, prefer the art pass, sounds and music, the
-   playtest, or the Quiet Man), and the DRAFT texts waiting for their review. If they say go, start it, following
+3. Offer the next open task that fits this session (with Studio here, prefer running the tests on the unverified
+   changes in PROGRESS.md, then the art pass, sounds and music, or the playtest), and any rows still waiting for
+   Catlyn (staging to look at, sounds to listen to). If they say go, start it, following
    `CLAUDE.md` and `AGENTS.md`.
 
 Optional, only if they ask: `@claude` on GitHub (`docs/ASK_CLAUDE.md`) needs the repo owner to install the Claude

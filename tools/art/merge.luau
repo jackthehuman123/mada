@@ -2,7 +2,7 @@
 -- Puts the exported art layer (art/World.rbxm, art/Environment.rbxm; see export.luau) into a place built by Rojo,
 -- so the factory tests run on the dressed world. Called by `python tools/factory/test.py --art`.
 --
---   lune run tools/art/merge <in.rbxl> <out.rbxl>
+--   lune run tools/art/merge <in.rbxl> <out.rbxl> [art dir]
 --
 -- Sets Workspace's WorldBuilt attribute, so WorldService keeps the art and doesn't build the graybox over it.
 
@@ -12,7 +12,7 @@ local roblox = require("@lune/roblox")
 
 local IN = process.args[1] or "build/langvong.rbxl"
 local OUT = process.args[2] or IN
-local ART = "art"
+local ART = process.args[3] or "art"
 
 for _, f in { `{ART}/World.rbxm`, `{ART}/Environment.rbxm` } do
 	if not fs.isFile(f) then

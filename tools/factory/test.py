@@ -178,7 +178,7 @@ def main():
     art = "--art" in sys.argv
     if art:  # the dressed world from art/ instead of the graybox from Build.luau
         if not os.path.exists(LUNE):
-            raise SystemExit("--art needs Lune: run `rokit add lune-org/lune` (or `rokit install`) in this folder")
+            raise SystemExit("--art needs Lune: run `rokit install` in this folder (answer yes to trusting lune-org/lune)")
         r = subprocess.run([LUNE, "run", str(ROOT / "tools" / "art" / "merge.luau"), str(place), str(place)],
                            capture_output=True, text=True, encoding="utf-8", cwd=ROOT)
         print(r.stdout.strip())

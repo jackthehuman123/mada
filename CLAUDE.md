@@ -31,9 +31,12 @@ build forward, not only to answer:
 - **Where the build is:** the newest work is on branch `full-game` (built on `m3-night1` and `factory-prototype`; not
   merged into `main` yet). Its `docs/PROGRESS.md` is the real state: M0–M6 done, M7/M8 partly. Read it there
   (`git fetch` then `git show origin/full-game:docs/PROGRESS.md`) before planning work, and base build work on that branch.
-- **What's open** (in that file's "Next" and the unchecked milestones): the art pass with Creator Store models, music
-  for the finale and sounds for Tí's clay whistle and Khoa's drum, the optional Quiet Man / Silence, and every DRAFT in
-  `docs/DECISIONS.md` marked "Needs Catlyn".
+- **What's open** (in that file's "Next" and the unchecked milestones): first, run the tests on Catlyn's 2026-11-02
+  changes (Im lặng takes players one by one, Bin's new Tape 2, `test.py --art`; nobody has run them yet); then the
+  art pass with Creator Store models (export it with `tools/art/`, test with `--art`), music for the finale and
+  sounds for Tí's clay whistle and Khoa's drum. Catlyn reviewed every DRAFT text on 2026-11-02; what's left for her in
+  `docs/DECISIONS.md` needs Studio or a file from her (Tape 2 and finale staging once seen, the sounds once heard,
+  the map image). The Quiet Man / Silence is left out until after the first playtest.
 - **When a request is done and the session has room left,** offer the next open task that fits, in one line. When the
   human has asked for build work, take the next task without waiting to be asked again.
 - **On GitHub (the bot):** end each answer with one next build step small enough for a single run, and say

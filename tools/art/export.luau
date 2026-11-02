@@ -3,7 +3,7 @@
 -- (DECISIONS 2026-11-02: art is tested both ways, by these files and by a hand playthrough).
 --
 --   1. In Studio, with the shared place open: File > Save to File As... > build/art-source.rbxl
---   2. lune run tools/art/export                (or: lune run tools/art/export path/to/place.rbxl)
+--   2. lune run tools/art/export                (or: lune run tools/art/export path/to/place.rbxl [out dir])
 --   3. Commit art/ . Then: python tools/factory/test.py --art
 --
 -- Writes art/World.rbxm (Workspace.World) and art/Environment.rbxm (the Terrain, and the Lighting settings and
@@ -15,7 +15,7 @@ local process = require("@lune/process")
 local roblox = require("@lune/roblox")
 
 local SRC = process.args[1] or "build/art-source.rbxl"
-local OUT = "art"
+local OUT = process.args[2] or "art"
 local SCRIPTS = { Script = true, LocalScript = true, ModuleScript = true }
 -- the Lighting properties the art pass may tune (stored as attributes on Environment.Lighting)
 local LIGHT_PROPS = { "Ambient", "OutdoorAmbient", "Brightness", "ColorShift_Bottom", "ColorShift_Top",

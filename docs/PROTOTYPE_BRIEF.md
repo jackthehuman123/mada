@@ -26,7 +26,7 @@ The build spec for the first playable prototype. Design intent lives in `docs/de
 - Player roles (host, researcher, sound, camera) — players use their own avatars.
 - Hungry ghosts (*cô hồn*), rice and salt.
 - The *Ở lại (Stay)* ending — cut (Catlyn, 2026-11-02): the endings are Về nhà or Im lặng.
-- The Quiet Man / Silence threat — optional M8.
+- The Quiet Man / Silence threat — optional M8; left out for now (Catlyn, 2026-11-02), revisit after the first playtest.
 - Final art. Graybox is fine until M7.
 - Mobile-specific UI tuning. Desktop first, but use ProximityPrompts and on-screen buttons so mobile isn't broken.
 
@@ -223,7 +223,7 @@ Each milestone must be demonstrable by the agent through MCP (playtest + console
 | **M5** | Sen + taken | With one player alone at the water: warning steps 1–5 fire in order, then taken → drowned festival. Rescue via shrine incense returns them. Incense makes her withdraw. Shrine is safe. |
 | **M6 ★** | Endings | Debug clock to 23:50. Path A: give letter → write name → Bà Thu walks to the steps → *Về nhà* plays. Path B: do nothing → *Im lặng* at midnight. Server resets afterwards. *Full run playable start to finish.* |
 | **M7** | Art + audio | Graybox replaced with sanitized free assets / generated meshes, all logged in `ASSETS.md`; ambient night sound, water, radio static, distant festival drums at the finale. No scripts inside inserted assets (check with `search_game_tree` for Script classes under `Workspace.World`). Client stays smooth on the dev machine. |
-| **M8** | Playtest build | Analytics summary prints at the end. Optional extras if time: the Quiet Man/Silence zone in Sen's house (hide-only, radio warning, caught → wake at the gate). Human publishes a private test place. |
+| **M8** | Playtest build | Analytics summary prints at the end. Optional extra, left out for now (Catlyn, 2026-11-02): the Quiet Man/Silence zone in Sen's house (hide-only, radio warning, caught → wake at the gate). Human publishes a private test place. |
 
 ## 12. Open questions and defaults
 

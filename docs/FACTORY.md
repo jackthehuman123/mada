@@ -20,7 +20,7 @@ python tools/factory/test.py --keep     # leave the Studio window open to look a
 python tools/factory/test.py --art      # the same tests on the art layer (art/*.rbxm) instead of the graybox
 ```
 
-Needs: Roblox Studio (installed, logged in), `rokit install` in this folder (Rojo; Lune for `--art`), Python 3.10+.
+Needs: Roblox Studio (installed, logged in), `rokit install` in this folder (Rojo, and Lune for `--art`), Python 3.10+.
 Windows today.
 It talks to Studio through Studio's own MCP server (`tools/factory/rbx.py`), so no Rojo plugin, no `rojo serve`
 and no Claude MCP registration is needed for tests. Output: `tools/factory/reports/<time>/report.md` with a table
