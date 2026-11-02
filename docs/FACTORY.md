@@ -17,9 +17,11 @@ Làng Vọng uses the same architecture as Noptable's Roblox factory (the setup 
 python tools/factory/test.py            # every test in tests/
 python tools/factory/test.py 04         # only tests starting with 04
 python tools/factory/test.py --keep     # leave the Studio window open to look around
+python tools/factory/test.py --art      # the same tests on the art layer (art/*.rbxm) instead of the graybox
 ```
 
-Needs: Roblox Studio (installed, logged in), `rokit install` in this folder (Rojo), Python 3.10+. Windows today.
+Needs: Roblox Studio (installed, logged in), `rokit install` in this folder (Rojo; Lune for `--art`), Python 3.10+.
+Windows today.
 It talks to Studio through Studio's own MCP server (`tools/factory/rbx.py`), so no Rojo plugin, no `rojo serve`
 and no Claude MCP registration is needed for tests. Output: `tools/factory/reports/<time>/report.md` with a table
 of every check, the console errors (any error from our scripts fails the run) and screenshots. Not committed.
@@ -42,8 +44,20 @@ check(gui.Viewfinder.Visible, "no VHS overlay")
 - The runner works next to Claude Code's own Roblox Studio MCP connection (checked 2026-11-02: three Studio MCP
   connections were open during passing runs). It opens a separate Studio window, so run it only when no other agent
   is using Studio (AGENTS.md §10). `qa-tester` runs it first, then checks by hand what the tests don't cover.
-- The tests run on the graybox from git, not on the art in the shared place. Before the art pass (M7) we need a way
-  to test the dressed world too (open question in `DECISIONS.md`).
+- The tests run on the graybox from git by default. The art is tested both ways (Catlyn, 2026-11-02): by the same
+  tests on an export of the art, and by a hand playthrough for looks and mood. See "Testing the art" below.
+
+## Testing the art
+
+The art layer lives in the shared place, so it gets exported into git after each art session:
+
+1. In Studio, with the shared place open: **File → Save to File As… → `build/art-source.rbxl`** (git ignores `build/`).
+2. `lune run tools/art/export` writes `art/World.rbxm` (`Workspace.World`) and `art/Environment.rbxm` (the Terrain,
+   the Lighting settings and effects). Scripts that came inside free models are removed and listed: delete them in
+   the place too.
+3. `python tools/factory/test.py --art` merges those files into the place built from git (`tools/art/merge.luau`)
+   and runs every test on it. It catches art that breaks gameplay: a model blocking a path, a lost tag, a renamed part.
+4. If it passes, commit `art/`. Then play it by hand for the looks (qa-tester screenshots, Catlyn).
 
 ## Working on it day to day
 
@@ -61,3 +75,5 @@ check(gui.Viewfinder.Visible, "no VHS overlay")
 | `tools/factory/mute_studio.ps1` | Mutes the Studio window a test run opens |
 | `tests/*.luau` | The acceptance checks, one file per area (boot, world, clues, camcorder, phases, Night 1, mystery, Sen, endings) |
 | `src/server/World/Build.luau` | The graybox village (brief §8), every gameplay object tagged |
+| `tools/art/export.luau`, `tools/art/merge.luau` | Lune scripts: the shared place's art → `art/*.rbxm`, and back into a test build (`--art`) |
+| `art/World.rbxm`, `art/Environment.rbxm` | The exported art layer (binary, committed) |

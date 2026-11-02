@@ -37,7 +37,7 @@ Read this whole file first. Then do the start-of-session routine below.
 | --- | --- | --- |
 | All Luau code | `src/` in git | Edit the files. Rojo syncs them into Studio. **Never** edit Rojo-managed scripts with the MCP `multi_edit` tool or inside Studio: Rojo overwrites them on the next sync. |
 | World, graybox layer: layout, gameplay objects, tags | `src/server/World/Build.luau` in git. The server builds it only when the place has no world yet (`Workspace` attribute `WorldBuilt`); the factory tests always run on it. | Main agent edits `Build.luau`. `tools/worldgen/00_graybox.luau` bakes it into the open place. |
-| World, art layer: terrain dressing, models, props, lighting polish | The published place (world-builder, `tools/worldgen/NN_area.luau` scripts) | Keep the graybox's names, tags and positions so code and tests keep working. Save the place. |
+| World, art layer: terrain dressing, models, props, lighting polish | The published place (world-builder, `tools/worldgen/NN_area.luau` scripts) | Keep the graybox's names, tags and positions so code and tests keep working. Save the place, then export it to `art/*.rbxm` for `test.py --art` (`docs/FACTORY.md`). |
 | Player-facing text (clues, dialogue, UI strings) | `src/shared/Content/*.luau` | Data modules only, never hard-coded in logic. |
 | Tunable numbers (timers, distances, battery) | `src/shared/Config.luau` | Never inline magic numbers. |
 | Asset IDs and where they're used | `docs/ASSETS.md` | Add a row for every asset you insert. |

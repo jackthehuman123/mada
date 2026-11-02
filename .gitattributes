@@ -1,0 +1,3 @@
+# Roblox model files are binary: never convert their line endings
+*.rbxm binary
+*.rbxl binary

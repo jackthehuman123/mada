@@ -3,6 +3,7 @@
   python tools/factory/test.py            # every test in tests/
   python tools/factory/test.py 02 04      # only tests whose file name starts with these prefixes
   python tools/factory/test.py --keep     # leave the Studio window open afterwards
+  python tools/factory/test.py --art      # run on the art layer (art/*.rbxm, tools/art/export.luau), not the graybox
 
 What it does, every run, from git alone:
   rojo build -> build/langvong.rbxl -> opens it in a NEW Studio window (muted) -> Play -> runs each test's sections
@@ -34,6 +35,7 @@ from rbx import BIN, ROOT_DIR as ROOT, Client
 TOOLS = pathlib.Path(__file__).resolve().parent
 SLUG = "langvong"
 ROJO = shutil.which("rojo") or os.path.expanduser(r"~\.rokit\bin\rojo.exe")
+LUNE = shutil.which("lune") or os.path.expanduser(r"~\.rokit\bin\lune.exe")
 STUDIO = os.path.join(os.path.dirname(BIN), "RobloxStudioBeta.exe")
 NOISE = [r"rbxassetid://", r"DataModel Loading", r"Asset type does not match", r"TextChatService"]
 
@@ -164,7 +166,8 @@ def main():
     out = TOOLS / "reports" / stamp
     out.mkdir(parents=True)
     commit = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
-    dirty = bool(subprocess.run(["git", "status", "--porcelain", "src", "tests"], cwd=ROOT, capture_output=True, text=True).stdout.strip())
+    dirty = bool(subprocess.run(["git", "status", "--porcelain", "src", "tests", "art"], cwd=ROOT, capture_output=True,
+                                text=True).stdout.strip())
 
     place = ROOT / "build" / f"{SLUG}.rbxl"
     place.parent.mkdir(exist_ok=True)
@@ -172,6 +175,17 @@ def main():
                        cwd=ROOT)  # (rokit picks the Rojo version pinned in rokit.toml here)
     if r.returncode:
         raise SystemExit("rojo build failed:\n" + r.stderr)
+    art = "--art" in sys.argv
+    if art:  # the dressed world from art/ instead of the graybox from Build.luau
+        if not os.path.exists(LUNE):
+            raise SystemExit("--art needs Lune: run `rokit add lune-org/lune` (or `rokit install`) in this folder")
+        r = subprocess.run([LUNE, "run", str(ROOT / "tools" / "art" / "merge.luau"), str(place), str(place)],
+                           capture_output=True, text=True, encoding="utf-8", cwd=ROOT)
+        print(r.stdout.strip())
+        if r.returncode:
+            raise SystemExit("art merge failed (is Lune installed? rokit install):\n" + r.stderr + r.stdout)
+    art_commit = subprocess.run(["git", "log", "-1", "--format=%h", "--", "art"], cwd=ROOT, capture_output=True,
+                                text=True).stdout.strip()
     before = studio_pids()
     subprocess.Popen([STUDIO, str(place)])
     results, shots, logs = [], [], []
@@ -210,6 +224,7 @@ def main():
     passed = sorted({x[0] for x in results} - {x[0] for x in failed})
     ok = not failed and not errors
     md = [f"# Làng Vọng test report {stamp}", "", f"- Commit: `{commit}`{' + uncommitted changes' if dirty else ''}",
+          f"- World: {'art layer (`art/`, last changed in `' + (art_commit or 'uncommitted') + '`)' if art else 'graybox (Build.luau)'}",
           f"- Result: **{'PASS' if ok else 'FAIL'}** — {len(passed)} tests passed, {len({x[0] for x in failed})} failed, "
           f"{len(errors)} console errors", "", "| Test | Section | Status | Detail |", "|---|---|---|---|"]
     for t, k, s, d in results:
