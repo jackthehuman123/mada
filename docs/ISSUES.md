@@ -32,6 +32,49 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **What:** Catlyn played the prototype on 2026-11-02 and found "a lot of bad things". Ask her for the list, then add
   each one here as its own issue (I-09, I-10, …) with what she saw, where, and what "fixed" looks like.
 - **Done when:** every problem she reports is an open issue here.
+- **So far (2026-11-02):** I-09 (no menu, no teams), I-10 (houses), I-11 (characters). More to come.
+
+### I-09 · A menu when players join, and teams of up to 4
+- **Needs:** Studio to test; human to set the server size on roblox.com and to test teleports in a published place.
+- **What Catlyn saw:** players drop straight into the game with no menu. She wants: join → menu → Play alone or
+  Create a team (up to 4, open or private, invite friends) → Begin.
+- **How other games do it:** Doors (lobby elevators, 1–4 per run), The Mimic (solo or create a lobby), Apeirophobia
+  (UI party, public or private): a lobby/menu server, then each group teleported to its own reserved server.
+- **Built (branch `playtest-fixes`, not tested):** `MenuService` + `MenuController`. One place, three kinds of
+  server: *Menu* (public: the menu over a slow shot of the lake, teams), *Run* (the reserved server a team is
+  teleported to; starts when the whole team is in, or after 40 s), *Studio* (menu, and Begin starts the run in place).
+  Teams: open (anyone) or private (the leader's friends and invited players); Invite friends sends the team in the
+  invite, and an invited friend in another menu server follows the inviter. "Back to menu" at the ending.
+  Debug `begin` skips the menu; `test.py` uses it; new `tests/10_menu.luau`.
+- **Done when:** in Studio, the menu shows on Play, Play alone and Create team → Begin both start the run, and with
+  2 test players (Test → Clients and Servers) one joins the other's open team; `test.py` PASS 10/10; in the published
+  place, two accounts form a team and land in the same run server, and Back to menu returns them. Text marked DRAFT.
+
+### I-10 · Houses look bad: barely any detail
+- **Needs:** Studio (`world-builder`) for inserting and dressing; scouting works without Studio (`tools/art/scout.luau`).
+- **What Catlyn saw:** "the assets are absolutely horrendous", barely any details. Look for Vietnamese / Southeast
+  Asian / old houses.
+- **Scouted 2026-11-02 (see the shortlist in `ASSETS.md`):** the free Creator Store has almost no Vietnamese
+  village houses. What comes up is Thai, Japanese, Chinese-fantasy or blocky toy houses, which `ASSETS.md` rule 5
+  says read wrong. Plan: (1) `generate_mesh` each house type from a precise prompt (1990s north-central Vietnamese
+  rural house: one storey, ochre lime-plaster walls, red terracotta tile roof, wooden shutters, a front porch on
+  wooden posts, a brick yard) and the props around it; (2) use store models only for small props (water jars, nón lá,
+  baskets, bamboo, dock); (3) if that's still not good enough, a paid pack or a commissioned modeller (Catlyn's call).
+- **Done when:** every house reads as a Vietnamese village house up close (porch, roof tiles, shutters, yard
+  clutter), Catlyn approves screenshots, names/tags/positions kept, `test.py --art` PASS, assets logged.
+
+### I-11 · Characters look bad
+- **Needs:** no Studio to choose the looks and write the code; Studio to see them.
+- **What Catlyn saw:** "the modeling of the characters was very bad". All of them: Bà Thu, Bin, Sen, the lost
+  children (today Sen and the children are blocks in `Shared/Figures.luau`).
+- **Plan:** real R15 rigs built in code from a HumanoidDescription (catalog hair, clothes, hats, faces: works in any
+  place without owning the items), so they animate and match the players' avatars. Looks from `characters.md`:
+  Bà Thu small and bent, gray bun, worn áo bà ba; Bin bright jacket, headlamp, camcorder; Sen small, thin, faded
+  soaked áo bà ba, long tangled hair over her face, one plastic sandal; children dark silhouettes. Store NPC models
+  only where much better (e.g. "grandma" 137203388093234, a realistic Asian grandmother; her bag looks branded and
+  must go). Avoid anything that reads as Sadako / The Ring for Sen.
+- **Done when:** each character in a screenshot reads as described in `characters.md`, Catlyn approves, Sen's face
+  stays hidden, `test.py` PASS.
 
 ### I-02 · Art pass: Creator Store models in the shared place
 - **Needs:** Studio (`world-builder` subagent).

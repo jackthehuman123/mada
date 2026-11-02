@@ -36,6 +36,27 @@ Rules for bringing assets in, a search list for the Creator Store, and a log of 
 
 Not found or wrong style → `generate_mesh` with a specific prompt, e.g. *"small handmade paper lantern folded in the shape of a carp, lumpy, faded red and white paper, a candle inside"*.
 
+## Shortlist (scouted 2026-11-02 with `tools/art/scout.luau`, nothing inserted yet)
+
+Free Creator Store models, judged from thumbnails only. Look again in Studio before using any of them.
+
+| Asset ID | Name | For | Verdict |
+| --- | --- | --- | --- |
+| 14769019514 | Oriental Bamboo Conical Hat (RZKU, 3.5k tris, 0 scripts) | nón lá on porches, Bà Thu's mat | Good |
+| 137203388093234 | grandma (Bank_Biker, 18.7k tris) | Bà Thu base | Realistic Asian grandmother; remove the bag (looks branded), recolour to a worn áo bà ba. Check rig and scale |
+| 124926625809038 | Fishing Village Kit / Stilt Houses, Pier & Boats | dock, boats | Toy-like and bright; props only, if at all |
+| 103169988462307 | Fishing Village & Dock Kit (180k tris) | boat, dock planks | Heavy; take single props |
+| 8518538975 | Vietnamese House (127k tris) | — | An overgrown shell, too heavy. No |
+| 5141896074, 13593241424, 4151631784 | Thai / Chinese / Japanese houses | — | Wrong country (rule 5). No |
+| 2100050345 | Ghost Girl | — | Reads as Sadako (The Ring) and is adult-sized. No |
+
+Avatar catalog items (usable on NPC rigs through a HumanoidDescription, no ownership needed): Nón Lá conical hat
+110467700930899, Headlamp 26733587 (Bin). Áo bà ba isn't in the catalog by that name; look for plain button
+shirts with loose pants, or upload our own clothing texture (a human step).
+
+Search words that worked better than "vietnamese house": `old lady`, `grandma npc`, `asian old woman`, `conical hat`,
+`fishing village`, `abandoned house`. For houses, plan on `generate_mesh` (I-10).
+
 ## Asset log
 
 | Asset ID | Name in place | Source (Creator Store / generated / imported) | Creator | Used where | Sanitized? | Notes |

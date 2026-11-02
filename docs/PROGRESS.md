@@ -27,6 +27,21 @@ system, the camcorder and the boundaries work. Everything is built from git (see
 
 ## Session log
 
+### 2026-11-02 (evening) — Catlyn's playtest: menu + teams built; houses and characters scouted (branch `playtest-fixes`, off `main`; not merged)
+- On the loaner laptop: no Studio, no Python. **Nothing here has been run in Studio.**
+- Catlyn's first two playtest issues logged: I-09 (no menu, no teams), I-10 (houses), I-11 (characters).
+- **I-09 built:** `Services/MenuService.luau`, `Controllers/MenuController.luau`, `GameStateService.BeginRun`
+  (Lobby no longer starts by itself), `Config` menu numbers, `Remotes` MenuAction/MenuState/MenuNotice, `Text.Menu`
+  (all DRAFT), debug `begin`/`teams`, `test.py` presses `begin` at startup, `tests/10_menu.luau`. Research: Doors,
+  The Mimic, Apeirophobia and DevForum lobby threads all use a menu/lobby server and teleport each group to a reserved
+  server (`TeleportOptions.ShouldReserveServer`), which is what this does in one place.
+- Verified only statically: `rojo build` OK; `luau-lsp analyze` with the Roblox type definitions: no errors in the
+  new/changed code (main already has 83 analyzer errors from older files, unchanged).
+- **Scouting without Studio:** new `tools/art/scout.luau` (Lune) searches the Creator Store and saves thumbnails.
+  Houses: nothing Vietnamese worth inserting (Thai, Japanese, toy-like); plan in I-10 is generated meshes + store props.
+  Characters: plan in I-11 is HumanoidDescription rigs from catalog items; shortlist in `ASSETS.md`.
+- Next: on a computer with Studio, test I-09 (`test.py`, then 2 clients), then I-11 and I-10.
+
 ### 2026-11-03 — verified Catlyn's 11-02 changes; last sounds; houses and finale readable (branch `complete-game`, off `full-game`; not merged)
 - Verified first, before any change: `python tools/factory/test.py` on `full-game` 6b9cfb7 → PASS 9/9, 0 console errors. That covers what was written on the loaner without Studio: Ở lại cut (midnight at the steps → Im lặng, the player is taken, no choice and no lantern button), Im lặng taking players one by one, Bin's Tape 2 (hand + under-water shots).
 - Done:
