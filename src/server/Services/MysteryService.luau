@@ -148,6 +148,37 @@ function MysteryService.LetterFound(): boolean
 	return letterFound
 end
 
+-- a letter on the ground lies still where it landed (its handle doesn't collide, so loose it would fall through
+-- the world); picked up, it is loose again
+local function settle(tool: Tool)
+	local handle = tool:FindFirstChild("Handle") :: BasePart?
+	if not handle then
+		return
+	end
+	local parent = tool.Parent
+	if parent and not parent:IsA("Backpack") and not parent:FindFirstChildOfClass("Humanoid") then -- (Workspace is a Model too)
+		local params = RaycastParams.new()
+		params.FilterDescendantsInstances = { tool }
+		params.IgnoreWater = false
+		params.RespectCanCollide = true -- not the invisible zones
+		local from = handle.Position + Vector3.new(0, 3, 0)
+		local hit = Workspace:Raycast(from, Vector3.new(0, -60, 0), params)
+		handle.Anchored = true
+		handle.CFrame = CFrame.new(if hit then hit.Position + Vector3.new(0, 0.1, 0) else handle.Position)
+	else
+		handle.Anchored = false
+	end
+end
+
+local function altarsOn()
+	for _, altar in CollectionService:GetTagged(Tags.SenAltar) do
+		local p = altar:FindFirstChild("LookUnder") :: ProximityPrompt?
+		if p then
+			p.Enabled = true
+		end
+	end
+end
+
 function MysteryService.TakeLetter(player: Player)
 	if letterFound then
 		return
@@ -155,6 +186,20 @@ function MysteryService.TakeLetter(player: Player)
 	letterFound = true
 	local tool = makeLetter()
 	letterTool = tool
+	tool.AncestryChanged:Connect(function()
+		if letterTool ~= tool then
+			return
+		end
+		if tool:IsDescendantOf(game) then
+			settle(tool)
+		else
+			-- lost some other way (fell out of the world): it is back under Sen's altar, as if never taken
+			letterTool = nil
+			letterFound = false
+			altarsOn()
+			print("[Mystery] the letter was lost; it is back under the altar")
+		end
+	end)
 	tool.Parent = player:FindFirstChildOfClass("Backpack") or player
 	Analytics.track("letter_found", { t = math.floor(os.clock() - (ReplicatedStorage:GetAttribute("RunStart") or os.clock()) :: number), by = player.Name })
 	ClueService.Inspect(player, "sen_letter")
@@ -165,19 +210,28 @@ end
 function MysteryService.DropLetter(player: Player, at: Vector3)
 	if letterTool and MysteryService.LetterHolder() == player then
 		local tool = letterTool :: Tool
-		tool.Parent = world()
 		local handle = tool:FindFirstChild("Handle") :: BasePart?
 		if handle then
 			handle.CFrame = CFrame.new(at + Vector3.new(0, 0.5, 0))
 		end
+		tool.Parent = world() -- settle() puts it on the ground
 		print("[Mystery] the letter dropped")
 	end
 end
 
 function MysteryService.ConsumeLetter()
-	if letterTool then
-		letterTool:Destroy()
-		letterTool = nil
+	local tool = letterTool
+	letterTool = nil -- first, so its AncestryChanged doesn't send it back to the altar
+	if tool then
+		tool:Destroy()
+	end
+end
+
+-- whoever holds the letter and leaves or dies drops it where they stood (it would go with them otherwise)
+local function dropFrom(p: Player)
+	local root = p.Character and p.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	if root and MysteryService.LetterHolder() == p then
+		MysteryService.DropLetter(p, root.Position - Vector3.new(0, 2.5, 0))
 	end
 end
 
@@ -321,12 +375,7 @@ function MysteryService.Reset()
 	MysteryService.ConsumeLetter()
 	table.clear(mementosSeen)
 	lastProgress = os.clock()
-	for _, altar in CollectionService:GetTagged(Tags.SenAltar) do
-		local p = altar:FindFirstChild("LookUnder") :: ProximityPrompt?
-		if p then
-			p.Enabled = true
-		end
-	end
+	altarsOn()
 	for _, d in world():GetChildren() do
 		if d.Name == "Carp" or d.Name == "Hint" then
 			d:Destroy()
@@ -353,6 +402,29 @@ function MysteryService.Start()
 	end
 	Remotes.event(Remotes.Names.ClueFound) -- (made by ClueService too; we only listen)
 	ClueService.OnFound(MysteryService.Progress)
+	local function watch(p: Player)
+		p.CharacterAdded:Connect(function(char)
+			local h = char:WaitForChild("Humanoid", 10) :: Humanoid?
+			if h then
+				h.Died:Connect(function()
+					dropFrom(p)
+				end)
+			end
+		end)
+	end
+	Players.PlayerAdded:Connect(watch)
+	for _, p in Players:GetPlayers() do
+		watch(p)
+		if p.Character then
+			local h = p.Character:FindFirstChildOfClass("Humanoid")
+			if h then
+				h.Died:Connect(function()
+					dropFrom(p)
+				end)
+			end
+		end
+	end
+	Players.PlayerRemoving:Connect(dropFrom)
 	local steps = location("CarpSteps")
 	local bottom = Vector3.new(350, 0, -16)
 	while true do

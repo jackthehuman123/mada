@@ -95,6 +95,38 @@ local t0 = os.clock()
 while not workspace.World:FindFirstChild("Carp") and os.clock() - t0 < 3 do task.wait(0.1) end
 check(workspace.World:FindFirstChild("Carp"), "no carp at the steps")
 return "carp rise when someone climbs down the steps"
+--@ Server
+-- the letter can't be lost: dropped, it lies on the ground; gone from the world, it is back under the altar; its holder
+-- dying drops it where they stood
+local plr = game.Players:GetPlayers()[1]
+local letter = plr.Backpack:FindFirstChild("Letter") or (plr.Character and plr.Character:FindFirstChild("Letter"))
+check(letter, "no letter to drop")
+letter.Handle.CFrame = CFrame.new(240, 6, 0) -- by Sen's house, in the air (as Backspace drops it); terrain filled to y = 0 surfaces near y = 2
+letter.Parent = workspace
+task.wait(1)
+check(letter.Parent == workspace and letter.Handle.Anchored, "the dropped letter isn't lying still")
+check(letter.Handle.Position.Y > -1 and letter.Handle.Position.Y < 4, "the dropped letter isn't on the ground: " .. tostring(letter.Handle.Position))
+letter:Destroy()
+task.wait(0.2)
+check(not dbg("mystery").letterFound, "a letter gone from the world wasn't put back under the altar")
+local prompt
+for _, d in workspace.World:GetDescendants() do
+	if d:IsA("ProximityPrompt") and d.Name == "LookUnder" then prompt = d end
+end
+check(prompt and prompt.Enabled, "the altar's prompt didn't come back")
+dbg("letter")
+local char = plr.Character
+local spot = char.HumanoidRootPart.Position
+char.Humanoid.Health = 0
+task.wait(0.5)
+local s = dbg("mystery")
+check(s.letterFound and s.letterHolder == nil, "the letter went with its dead holder")
+local dropped = workspace.World:FindFirstChild("Letter")
+check(dropped and (dropped.Handle.Position - spot).Magnitude < 8, "the letter didn't drop where its holder died")
+local t0 = os.clock()
+while (plr.Character == char or not (plr.Character and plr.Character:FindFirstChild("HumanoidRootPart"))) and os.clock() - t0 < 12 do task.wait(0.2) end
+check(plr.Character ~= char, "no respawn")
+return "the letter lies where it's dropped, returns to the altar if lost, drops where its holder dies"
 --@ Shot carp-steps 350,6,14 -> 350,-2,-14
 --@ Shot teacher-house -24,7,23 -> -30,2,36
 --@ Server
