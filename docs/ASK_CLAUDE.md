@@ -78,7 +78,7 @@ take several. When it has changed files, the comment ends with a branch name and
 - It follows `AGENTS.md`: no gore, no invented story, anything it writes for players is marked DRAFT and logged in
   `docs/DECISIONS.md`.
 - It forgets between comments except for what's in the issue or pull request thread, so keep a topic in one thread.
-- Usage limits: each run is capped at 15 steps and 15 minutes and uses Claude Sonnet, to keep it light. It uses the
+- Usage limits: each run is capped at 15 minutes (and 15 steps) and uses Claude Opus 5.5. It uses the
   plan or API key from setup step 2, plus GitHub Actions minutes (private repos get a free monthly allowance). Change
   `--max-turns` / `--model` in `.github/workflows/claude.yml` if you want more.
 - To switch it off: *Settings → Actions → General → Disable actions*, or delete `.github/workflows/claude.yml`.
