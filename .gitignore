@@ -11,3 +11,8 @@ art/exports/
 .DS_Store
 Thumbs.db
 .vscode/settings.json
+
+# Factory test runner output (tools/factory/test.py)
+build/
+tools/factory/reports/
+__pycache__/
