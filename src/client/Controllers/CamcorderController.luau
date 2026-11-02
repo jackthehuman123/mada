@@ -9,9 +9,11 @@
 -- A recording is the camera's path sampled at 10 Hz plus the CameraOnly things that were in view (brief §5.2);
 -- playback flies a scriptable camera along that path through the world as it is now (see DECISIONS).
 -- Bin's tapes (§5.3, Content/Tapes) play through the same code once the group has his camera (attribute BinTapes):
--- an authored path, handheld shake, ghost figures that exist only on the tape, and static at the end.
+-- an authored path, handheld shake, ghost figures that exist only on the tape (they can move and fade), bursts of
+-- static, a murky underwater picture, and static at the end.
 
 local CollectionService = game:GetService("CollectionService")
+local Lighting = game:GetService("Lighting")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
@@ -29,7 +31,8 @@ local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 
 type Sample = { t: number, cf: CFrame }
 type Clip = { samples: { Sample }, events: { { id: string, t: number } }, length: number,
-	ghosts: { Tapes.Ghost }?, staticFrom: number?, handheld: boolean?, name: string?, stamp: string? }
+	ghosts: { Tapes.Ghost }?, staticFrom: number?, handheld: boolean?, name: string?, stamp: string?,
+	glitches: { Tapes.Glitch }?, underwaterFrom: number? }
 
 local Camcorder = {}
 
@@ -44,6 +47,8 @@ local savedWalk: number? = nil
 local baseTransparency: { [BasePart]: number } = {}
 local savedMode: Enum.CameraMode? = nil
 local ghostFolder: Folder? = nil
+local murk: ColorCorrectionEffect? = nil -- the underwater picture on a tape
+local playT = 0 -- seconds into the clip that's playing
 local staticOn = false
 local playingName = ""
 local playingStamp: string? = nil -- on playback the HUD shows the time the clip was recorded
@@ -192,20 +197,55 @@ local function tapeClip(tape: Tapes.Tape): Clip
 		t += step
 	end
 	return { samples = samples, events = {}, length = tape.length, ghosts = tape.ghosts, staticFrom = tape.staticFrom,
-		handheld = tape.handheld, name = tape.id, stamp = tape.stamp }
+		handheld = tape.handheld, name = tape.id, stamp = tape.stamp, glitches = tape.glitches, underwaterFrom = tape.underwaterFrom }
 end
 
 -- figures that exist only on a tape, built locally (never on the server, never seen by eyes)
 local function ghost(template: string, cf: CFrame): Model?
-	if template ~= "GirlInWater" then
+	local m: Model
+	if template == "GirlInWater" then
+		-- a small girl standing in the water up to her waist, looking up; her hair hides her face (characters.md)
+		m = Figures.Sen(cf, nil, 18)
+	elseif template == "GirlClose" then
+		m = Figures.Sen(cf, nil, 45) -- right below the camera, head tipped far back; still only hair
+	elseif template == "SenHand" then
+		m = Figures.Hand(cf, nil)
+	elseif template == "GirlSinking" then
+		m = Figures.Sen(cf, nil, 0)
+	elseif template == "BinSinking" then
+		-- Bin under the water: a dark shape, his orange jacket just readable
+		m = Figures.Child(cf, "Bin", 4.6, nil)
+		local body = m:FindFirstChild("Body") :: BasePart?
+		if body then
+			body.Color = Color3.fromRGB(110, 62, 30)
+		end
+	else
 		warn(`[LangVong] unknown tape ghost {template}`)
 		return nil
 	end
-	-- a small girl standing in the water up to her waist, looking up; her hair hides her face (characters.md)
-	local m = Figures.Sen(cf, nil, 18)
-	m.Name = "Ghost_GirlInWater"
+	m.Name = "Ghost_" .. template
 	m.Parent = ghostFolder
 	return m
+end
+
+-- a ghost on the tape this frame: where it is along its move, how faded; gone after untilT
+type Live = { g: Tapes.Ghost, m: Model, base: { [BasePart]: number } }
+local function stepGhost(l: Live, t: number): boolean
+	local g = l.g
+	if g.untilT and t >= g.untilT then
+		l.m:Destroy()
+		return false
+	end
+	if g.to and g.dur then
+		l.m:PivotTo(g.cf:Lerp(g.to, math.clamp((t - g.t) / g.dur, 0, 1)))
+	end
+	if g.fadeAt then
+		local f = math.clamp((t - g.fadeAt) / (g.fadeSeconds or 1), 0, 1)
+		for p, b in l.base do
+			p.Transparency = b + (1 - b) * f
+		end
+	end
+	return true
 end
 
 local function stopPlayback()
@@ -218,6 +258,10 @@ local function stopPlayback()
 	if ghostFolder then
 		ghostFolder:Destroy()
 		ghostFolder = nil
+	end
+	if murk then
+		murk:Destroy()
+		murk = nil
 	end
 	staticOn = false
 	UI.Static(false)
@@ -251,6 +295,7 @@ local function playClip(clip: Clip)
 	folder.Parent = Workspace
 	ghostFolder = folder
 	local pending = table.clone(clip.ghosts or {})
+	local live: { Live } = {}
 	local cam = Workspace.CurrentCamera
 	savedFov = cam.FieldOfView
 	cam.CameraType = Enum.CameraType.Scriptable
@@ -269,6 +314,7 @@ local function playClip(clip: Clip)
 	local i = 1
 	while playing and playGen == my do
 		local t = os.clock() - t0
+		playT = t
 		while i < #samples and samples[i + 1].t <= t do
 			i += 1
 		end
@@ -285,13 +331,47 @@ local function playClip(clip: Clip)
 		cam.CFrame = cf
 		for k = #pending, 1, -1 do
 			if pending[k].t <= t then
-				ghost(pending[k].template, pending[k].cf)
+				local g = pending[k]
+				local m = ghost(g.template, g.cf)
+				if m then
+					local base: { [BasePart]: number } = {}
+					for _, d in m:GetDescendants() do
+						if d:IsA("BasePart") then
+							base[d] = d.Transparency
+						end
+					end
+					table.insert(live, { g = g, m = m, base = base })
+				end
 				table.remove(pending, k)
 			end
 		end
-		if clip.staticFrom and t >= clip.staticFrom then
+		for k = #live, 1, -1 do
+			if not stepGhost(live[k], t) then
+				table.remove(live, k)
+			end
+		end
+		if clip.underwaterFrom and t >= clip.underwaterFrom and not murk then
+			local c = Instance.new("ColorCorrectionEffect")
+			c.Name = "TapeMurk"
+			c.TintColor = Color3.fromRGB(90, 130, 115)
+			c.Brightness = -0.22
+			c.Contrast = 0.25
+			c.Saturation = -0.45
+			c.Parent = Lighting
+			murk = c
+		end
+		local glitch = false
+		for _, gl in clip.glitches or {} do
+			if t >= gl.from and t < gl.to then
+				glitch = true
+			end
+		end
+		if (clip.staticFrom and t >= clip.staticFrom) or glitch then
 			staticOn = true
-			UI.Static(true)
+			UI.Static(true) -- re-rolled every frame, so it flickers
+		elseif staticOn then
+			staticOn = false
+			UI.Static(false)
 		end
 		RunService.RenderStepped:Wait()
 	end
@@ -396,7 +476,8 @@ function Camcorder.State(): { [string]: any }
 		fov = Workspace.CurrentCamera.FieldOfView, battery = battery(),
 		lastClipEvents = clips[#clips] and #clips[#clips].events or 0,
 		tapes = Camcorder.HasTapes(), playingName = playingName, static = staticOn,
-		ghosts = ghostFolder and #ghostFolder:GetChildren() or 0 }
+		ghosts = ghostFolder and #ghostFolder:GetChildren() or 0, playT = if playing then playT else -1,
+		murky = murk ~= nil }
 end
 
 function Camcorder.Init()

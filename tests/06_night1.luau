@@ -91,14 +91,35 @@ check(not workspace:FindFirstChild("Ghost_GirlInWater", true) or workspace.TapeG
 return "tape 2: down the steps; the girl stands in the water"
 --@ Shot tape2
 --@ Client
+-- she's right below the camera now, and her hand reaches up into the frame
 local t0 = os.clock()
-while not cam("state").static and os.clock() - t0 < 5 do task.wait(0.1) end
+while cam("state").playT < 13.2 and os.clock() - t0 < 10 do task.wait(0.05) end
+local s = cam("state")
+check(workspace.TapeGhosts:FindFirstChild("Ghost_GirlClose"), "the girl isn't right below the camera")
+check(workspace.TapeGhosts:FindFirstChild("Ghost_SenHand"), "no hand reaching up")
+check(not s.static, "static over the hand (it should be clear for a moment)")
+return "tape 2: she's right below; her hand reaches up"
+--@ Shot tape2-hand
+--@ Client
+-- under the water: the two shapes sink and fade, murky, with bursts of static
+local t0 = os.clock()
+while cam("state").playT < 16.2 and os.clock() - t0 < 10 do task.wait(0.05) end
+local s = cam("state")
+check(s.murky, "the picture isn't murky under the water")
+eq(s.ghosts, 2, "the girl and Bin sinking")
+check(workspace.TapeGhosts:FindFirstChild("Ghost_GirlSinking") and workspace.TapeGhosts:FindFirstChild("Ghost_BinSinking"), "missing a sinking shape")
+return "tape 2: under the water, the two shapes sink"
+--@ Shot tape2-under
+--@ Client
+local t0 = os.clock()
+while cam("state").playT < 19.8 and os.clock() - t0 < 10 do task.wait(0.05) end
 check(cam("state").static, "tape 2 did not end in static")
-while cam("state").playing and os.clock() - t0 < 8 do task.wait(0.2) end
+while cam("state").playing and os.clock() - t0 < 12 do task.wait(0.2) end
 local s = cam("state")
 check(not s.playing, "tape 2 never ended")
 eq(s.ghosts, 0, "ghosts left after the tape")
 check(not workspace:FindFirstChild("TapeGhosts"), "the tape's ghost folder is still there")
+check(not game:GetService("Lighting"):FindFirstChild("TapeMurk"), "the underwater tint stayed after the tape")
 eq(s.hiddenOnCameraT, 0, "Bà Thu back after the tape")
 return "tape 2 ends in static; the girl is gone with it; Bà Thu back"
 --@ Server
