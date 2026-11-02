@@ -1,0 +1,13 @@
+# Studio / Rojo
+*.rbxl.lock
+*.rbxlx.lock
+sourcemap.json
+# Place files live on Roblox (published) — don't commit them by default
+*.rbxl
+*.rbxlx
+# Optional Blender exports (large)
+art/exports/
+# OS / editors
+.DS_Store
+Thumbs.db
+.vscode/settings.json
