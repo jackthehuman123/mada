@@ -21,12 +21,6 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 
 ## Open
 
-### I-01 · Run the tests on the merged `main`
-- **Needs:** Studio.
-- **What:** `main` got `complete-game` and `bot-fixes` merged on 2026-11-02 on a laptop without Studio. The merge had
-  no conflicts and only docs/bot files differ from `complete-game` (PASS 9/9), but nobody has run it since.
-- **Done when:** `python tools/factory/test.py` on `main` → PASS 9/9, 0 console errors.
-
 ### I-08 · Catlyn's first playtest: write down what went wrong
 - **Needs:** no Studio to write the issues; then each fix as its own issue.
 - **What:** Catlyn played the prototype on 2026-11-02 and found "a lot of bad things". Ask her for the list, then add
@@ -93,6 +87,8 @@ Studio isn't usable on the loaner laptop (2026-11); W-01 to W-04 wait for a comp
 - **Ở lại (Stay) ending** — cut by Catlyn 2026-11-02 (`Config.StayEnding`). Don't bring it back unless she asks.
 
 ## Done
+
+- **I-01 · Run the tests on the merged `main`** — 2026-11-03, merge a49b2c1 (main + the last 7 `complete-game` commits: letter can't be lost, taken players stay taken, playtest gate, floors, carp steps, flood, trees): `python tools/factory/test.py` → PASS 9/9, 0 console errors (report 20261103-034702).
 
 - **2026-11-02** · Branches merged into `main`: `complete-game` (which holds `full-game`, `m3-night1`,
   `factory-prototype`) and `bot-fixes`. No conflicts. `claude/issue-6-20261102-1840` (`docs/HANDOFF.md`) not merged:
