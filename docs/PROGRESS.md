@@ -40,7 +40,14 @@ system, the camcorder and the boundaries work. Everything is built from git (see
 - **Scouting without Studio:** new `tools/art/scout.luau` (Lune) searches the Creator Store and saves thumbnails.
   Houses: nothing Vietnamese worth inserting (Thai, Japanese, toy-like); plan in I-10 is generated meshes + store props.
   Characters: plan in I-11 is HumanoidDescription rigs from catalog items; shortlist in `ASSETS.md`.
-- Next: on a computer with Studio, test I-09 (`test.py`, then 2 clients), then I-11 and I-10.
+- **I-12 built:** `BodyController` (locked first person, own body visible but the head, poses for every R15
+  character from `LookPitch`/`CameraUp`, head bob, mouse freed for panels) and `BodyService` (visible camcorder prop
+  with a REC light, shares `LookPitch`). `CamcorderService` mirrors the viewfinder as `CameraUp`; `hideSelf` sets a
+  local `HideSelf` so tape playback still hides the body. `tests/11_body.luau`.
+- **I-13 built:** music layer in `SoundController` (menu / bed / tension / chase), four licensed tracks picked by
+  name and length (not listened to), alternatives in `ASSETS.md`.
+- Verified statically again (`luau-lsp analyze`: no new errors in the changed code).
+- Next: on a computer with Studio, `test.py` (11 tests), then 2 clients for I-09 and I-12; listen to I-13; then I-11, I-10.
 
 ### 2026-11-03 — verified Catlyn's 11-02 changes; last sounds; houses and finale readable (branch `complete-game`, off `full-game`; not merged)
 - Verified first, before any change: `python tools/factory/test.py` on `full-game` 6b9cfb7 → PASS 9/9, 0 console errors. That covers what was written on the loaner without Studio: Ở lại cut (midnight at the steps → Im lặng, the player is taken, no choice and no lantern button), Im lặng taking players one by one, Bin's Tape 2 (hand + under-water shots).

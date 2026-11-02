@@ -32,7 +32,7 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **What:** Catlyn played the prototype on 2026-11-02 and found "a lot of bad things". Ask her for the list, then add
   each one here as its own issue (I-09, I-10, …) with what she saw, where, and what "fixed" looks like.
 - **Done when:** every problem she reports is an open issue here.
-- **So far (2026-11-02):** I-09 (no menu, no teams), I-10 (houses), I-11 (characters). More to come.
+- **So far (2026-11-02):** I-09 (no menu, no teams), I-10 (houses), I-11 (characters), I-12 (first person), I-13 (music). More to come.
 
 ### I-09 · A menu when players join, and teams of up to 4
 - **Needs:** Studio to test; human to set the server size on roblox.com and to test teleports in a published place.
@@ -75,6 +75,30 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   must go). Avoid anything that reads as Sadako / The Ring for Sen.
 - **Done when:** each character in a screenshot reads as described in `characters.md`, Catlyn approves, Sen's face
   stays hidden, `test.py` PASS.
+
+### I-12 · Cinematic first person: see your own arms, and others see your poses
+- **Needs:** Studio to test and tune (angles, camera offset, bob).
+- **What Catlyn asked:** players locked in first person, able to see their own arms and hands; when they hold their
+  hands up (camera, flashlight) they see it and other players see it too.
+- **Built (branch `playtest-fixes`, not tested):** `Controllers/BodyController.luau` + `Services/BodyService.luau`.
+  Locked first person in a run, camera a little forward of the head (`Config.FirstPersonCameraOffset`), own body
+  visible except head and hat/hair, hidden while looking through the viewfinder. Everyone holds a visible camcorder
+  prop in the right hand (REC light glows when raised). Heads and waists follow where each player looks
+  (`LookPitch`, 8 times a second); with the camcorder up both arms rise to the eye; all players see all poses (R15).
+  Head bob, breathing, a lean when strafing. The mouse is freed while a panel needs clicks. `tests/11_body.luau`.
+- **Open question:** there is no flashlight in the game (only the camcorder; Bin's headlamp is his). Adding one is a
+  design change (how dark the village is): Catlyn's call.
+- **Done when:** in Studio the body reads right in first person (no clipping into the torso when looking down), a
+  second test client sees the arms come up with the camcorder, panels are clickable, `test.py` PASS.
+
+### I-13 · Music: intense and eerie
+- **Needs:** someone to listen (W-01); Studio to hear it in place.
+- **What Catlyn asked:** music designed for fast-paced, intense games, and eerie music.
+- **Built (not listened to):** a music layer in `SoundController`, crossfaded: the menu (a dark music box), a quiet
+  drone bed in the open village, tension from Sen's 2nd warning, a chase from her 4th, fading back 9 s after the last
+  step; silent when taken, in the finale (it has its own) and in Im lặng. Tracks are licensed (APM, DistroKid
+  verified uploads) and chosen by name/length; alternatives in `ASSETS.md`.
+- **Done when:** Catlyn has listened and approved or swapped each of the four (`Content/Sounds.luau` `music_*`).
 
 ### I-02 · Art pass: Creator Store models in the shared place
 - **Needs:** Studio (`world-builder` subagent).

@@ -57,6 +57,24 @@ shirts with loose pants, or upload our own clothing texture (a human step).
 Search words that worked better than "vietnamese house": `old lady`, `grandma npc`, `asian old woman`, `conical hat`,
 `fishing village`, `abandoned house`. For houses, plan on `generate_mesh` (I-10).
 
+### Music candidates (I-13, scouted 2026-11-02 with `scout.luau --audio`, none listened to)
+
+In use (`Content/Sounds.luau`): 140021816582186 menu, 9043359699 bed, 1836290021 tension, 70615932668908 chase.
+Alternatives, if those sound wrong:
+
+| Use | Asset ID | Title (artist, uploader) | Seconds |
+| --- | --- | --- | --- |
+| menu | 133759804695426 | Creepy Music Box (Terra Fantasy, DistroKid) | 185 |
+| menu | 99895453377463 | Existential Dread, deep dark ambient drone (Horrarchive, DistroKid) | 238 |
+| bed | 1847595163 | Creepy B (Mac Prindy, APM "New Drones and Dark Moods") | 103 |
+| bed | 9112775175 | Eerie Ambience 1 (Pro Sound Effects) | 56 |
+| tension | 1836289781 | Unseen Danger (Steve Gray, APM Suspense/Tension) | 160 |
+| tension | 1843585137 | Unarmed (Barry Devorzon, APM Suspense/Tension/Action) | 72 |
+| chase | 84484303568744 | Don't Look Back (Horror Music Archives, DistroKid) | 95 |
+| chase | 71374905925238 | The Chase Protocol (Horror Music Archives, DistroKid) | 147 |
+| chase | 97460960711268 | Corrupted Lullaby (Horror Music Archives, DistroKid) | 155 |
+| sting | 9042971851 | An Ending, A Beginning Sting (APM "Dark Piano Builds") | 11 |
+
 ## Asset log
 
 | Asset ID | Name in place | Source (Creator Store / generated / imported) | Creator | Used where | Sanitized? | Notes |
