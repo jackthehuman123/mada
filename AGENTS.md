@@ -13,23 +13,25 @@ Read this whole file first. Then do the start-of-session routine below.
 3. `docs/design/gameplay.md`, `characters.md`, `threats.md`, `timeline.md`, `release-plan.md` — the design docs (some sections are still "to discuss"; the brief gives the default to use).
 4. `docs/MCP_SETUP.md` — how Claude talks to Roblox Studio and gets free assets.
 5. `docs/ASSETS.md` — asset rules and the log of every asset inserted.
-6. `docs/PROGRESS.md` and `docs/DECISIONS.md` — where the last session stopped and what was decided.
+6. `docs/ISSUES.md` — **the work list:** every open problem, what it needs (Studio or not) and when it's done.
+7. `docs/PROGRESS.md` and `docs/DECISIONS.md` — where the last session stopped and what was decided.
 
 **If documents disagree:** for *mechanics*, `PROTOTYPE_BRIEF.md` wins, then `gameplay.md`, then the others. For *story facts* (who did what, names, ages, what a clue says), `story.md` wins over everything.
 
 ## 2. Start-of-session routine
 
-1. Read `docs/PROGRESS.md` to find the current milestone and the next unchecked task.
+1. Read `docs/ISSUES.md` and pick the first open issue this session can do (Studio or not); `docs/PROGRESS.md` for context.
 2. Check the Studio connection: call the Roblox Studio MCP tool `list_roblox_studios`. If the tool doesn't exist or returns nothing, **stop** and walk the human through `docs/MCP_SETUP.md`. Don't try to work around it.
 3. Check code sync: `rojo --version` works, and `search_game_tree` shows `ServerScriptService.Server` and `ReplicatedStorage.Shared` in the open place. If not, ask the human to run `rojo serve` and click **Connect** in the Rojo plugin.
-4. Make a short task list for the session from the milestone's tasks.
+4. Make a short task list for the session from the issue (or the milestone's tasks).
 
 ## 3. End-of-session / end of each milestone
 
 1. Update `docs/PROGRESS.md`: what's done, **how you verified it**, what's next, known bugs.
-2. Log every choice the docs didn't settle in `docs/DECISIONS.md` (one line each: decision, why, how to change it).
-3. `git add` + `git commit` with a message like `M2: camcorder record + playback`. Don't push unless the human asks.
-4. Tell the human to **save the place in Studio** (File → Save, or Publish). World-builder's geometry and inserted models live in the place, not in git (the graybox layout itself is also in `src/server/World/Build.luau`, see §4).
+2. Update `docs/ISSUES.md`: move finished issues to *Done* (date, commit, how checked); add any new problem you found.
+3. Log every choice the docs didn't settle in `docs/DECISIONS.md` (one line each: decision, why, how to change it).
+4. `git add` + `git commit` with a message like `M2: camcorder record + playback`. Don't push unless the human asks.
+5. Tell the human to **save the place in Studio** (File → Save, or Publish). World-builder's geometry and inserted models live in the place, not in git (the graybox layout itself is also in `src/server/World/Build.luau`, see §4).
 
 ## 4. Where things live — the rule that prevents lost work
 

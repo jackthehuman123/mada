@@ -57,12 +57,10 @@ the human needs to do.
 
 ## 6. Ready: pick up the build
 
-1. Read `docs/PROGRESS.md` on this branch (the "Next" line and the unchecked milestones) and `docs/DECISIONS.md` rows
-   marked "Needs Catlyn".
+1. Read `docs/ISSUES.md` on this branch (the open issues and what each needs) and `docs/PROGRESS.md` for context.
 2. Tell the human in a few lines: which branch, that it runs, what's done, what's open.
-3. Offer the next open task that fits this session (with Studio here, prefer running the tests on the unverified
-   changes in PROGRESS.md, then the art pass, sounds and music, or the playtest), and any rows still waiting for
-   Catlyn (staging to look at, sounds to listen to). If they say go, start it, following
+3. Offer the next open task that fits this session (the first open issue in `docs/ISSUES.md` whose *Needs* fits),
+   and the items under *Waiting on Catlyn*. If they say go, start it, following
    `CLAUDE.md` and `AGENTS.md`.
 
 Optional, only if they ask: `@claude` on GitHub (`docs/ASK_CLAUDE.md`) needs the repo owner to install the Claude
