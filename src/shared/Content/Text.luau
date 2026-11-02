@@ -65,6 +65,35 @@ local Text = {
 		SenHouse = "The house at the end of the lane",
 		CarpSteps = "The stone steps",
 	},
+	-- The menu (docs/ISSUES.md I-09). DRAFT: needs Catlyn review (all of Menu). "%s"/"%d" are filled in by the code.
+	Menu = {
+		title = "Làng Vọng",
+		tagline = "A story-horror game for 1 to 4 players. Best with headphones.",
+		playAlone = "Play alone",
+		createTeam = "Create a team",
+		joinTeam = "Join a team",
+		back = "Back",
+		teamOf = "%s's team", -- the team's name, from its leader's display name
+		leader = "Leader",
+		emptySlot = "Empty",
+		open = "Open: anyone can join",
+		private = "Private: friends and invites only",
+		makeOpen = "Make open",
+		makePrivate = "Make private",
+		invite = "Invite friends",
+		leave = "Leave team",
+		begin = "Begin",
+		waitingLeader = "Waiting for %s to begin.",
+		join = "Join",
+		full = "Full",
+		noTeams = "No teams to join right now. Create one, or invite a friend.",
+		starting = "Starting...",
+		waitingTeam = "Waiting for your team (%d of %d)...", -- in the run server before it starts
+		backToMenu = "Back to menu",
+		cantJoin = "That team is full or private.",
+		teleportFailed = "Couldn't start the game. Try again.",
+		busyStudio = "A team is already playing in this Studio session.", -- Studio only
+	},
 }
 
 return Text

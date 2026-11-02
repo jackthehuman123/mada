@@ -87,6 +87,18 @@ local Config = {
 	CluePromptHold = 0.5,
 	AltarPromptHold = 1.5,
 	PromptDistance = 9,
+
+	-- Menu and teams (docs/ISSUES.md I-09): players join a menu server, form a team, and each team plays in its own
+	-- reserved server of this same place. The menu server's size is set on roblox.com (Places > Settings), not here.
+	TeamMax = 4, -- = MaxPlayers
+	RunWaitForTeamSeconds = 40, -- a run server starts once the whole team has arrived, or this long after the first
+	TeleportTries = 3,
+	InviteDataTries = 10, -- launch data from an invite can take a few seconds to appear (Roblox docs)
+	RespawnSeconds = 3, -- characters don't load by themselves (the menu decides who plays): respawn after a fall
+	MenuCameraFrom = Vector3.new(70, 16, -250), -- out on the lake at dusk, looking back at the village
+	MenuCameraTo = Vector3.new(-70, 6, 0),
+	MenuCameraDrift = 40, -- studs the camera slides west and back
+	MenuCameraDriftSeconds = 60,
 }
 
 return Config

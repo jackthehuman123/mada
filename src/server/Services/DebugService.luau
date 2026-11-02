@@ -4,7 +4,7 @@
 --   chat:   /lv phase Open | /lv time 23.9 | /lv clue all | /lv goto SenHouse | /lv battery 20 | /lv reset
 --   agents: the BindableFunction ServerScriptService.Debug, e.g. Debug:Invoke("goto", "Shrine") from execute_luau
 --           (Server context). The factory test runner (tools/factory/test.py) uses it.
--- Commands: get | phase <Phase> | time <hour> | clue <ClueId|all> | goto <Location> | battery <0-100> | reset |
+-- Commands: get | begin (the caller plays alone: skips the menu) | teams | phase <Phase> | time <hour> | clue <ClueId|all> | goto <Location> | battery <0-100> | reset |
 --           inshrine | locations | speed <n> (Night 1 runs n times faster) | night1 (the director's state) |
 --           pickup (pick up Bin's camera) | talk (talk to Bà Thu) | next (move the dialogue on) |
 --           memento <id> | letter (take the letter) | hint | sen <on|off|now> | take | rescue | incense |
@@ -48,6 +48,13 @@ local function run(caller: Player?, cmd: string, arg: any): any
 		end
 		return { phase = GameState.GetPhase(), clock = GameState.GetClock(), clues = ClueService.Found(), batteries = batteries,
 			players = #Players:GetPlayers(), beat = ReplicatedStorage:GetAttribute("Night1Beat") }
+	elseif cmd == "begin" then
+		assert(player, "no player")
+		local Menu = require(script.Parent:WaitForChild("MenuService")) :: any
+		Menu.BeginSolo(player)
+	elseif cmd == "teams" then
+		local Menu = require(script.Parent:WaitForChild("MenuService")) :: any
+		return Menu.Snapshot()
 	elseif cmd == "speed" then
 		ReplicatedStorage:SetAttribute("DebugTimeScale", tonumber(arg) or 1)
 	elseif cmd == "night1" then

@@ -2,7 +2,7 @@
 -- Owns the run's phase and clock (PROTOTYPE_BRIEF §3).
 -- Phase is replicated as an attribute on ReplicatedStorage ("Phase"), clock as "ClockHour" (number, e.g. 21.5).
 -- The machine reacts to the current phase every tick, so a debug jump to any phase just works.
---   Lobby -> Intro (text card) -> Arrival (until a player reaches the shrine) -> Night1 (NightOneDirector's beats;
+--   Lobby (the menu; MenuService calls BeginRun when a team begins) -> Intro (text card) -> Arrival (until a player reaches the shrine) -> Night1 (NightOneDirector's beats;
 --   it moves on to Open itself) -> Open (21:00 -> 24:00) -> Finale -> Ending (text card) -> reset -> Intro
 -- Other services follow the phase through OnPhase(fn).
 
@@ -108,29 +108,44 @@ function GameStateService.OnReset(fn: () -> ())
 	table.insert(resetHooks, fn)
 end
 
+-- the players in the run (MenuService sets InRun; players still in the menu don't count)
+local function inRun(): { Player }
+	local list = {}
+	for _, p in Players:GetPlayers() do
+		if p:GetAttribute("InRun") then
+			table.insert(list, p)
+		end
+	end
+	return list
+end
+
+-- a team has begun (MenuService): the run starts
+function GameStateService.BeginRun()
+	if GameStateService.GetPhase() == "Lobby" then
+		GameStateService.SetPhase("Intro")
+	end
+end
+
 function GameStateService.Reset()
 	Analytics.track("session_end")
 	for _, fn in resetHooks do
 		task.spawn(fn)
 	end
-	for _, p in Players:GetPlayers() do
+	local players = inRun()
+	for _, p in players do
 		task.spawn(function()
 			p:LoadCharacter()
 		end)
 	end
 	Analytics.reset()
 	Analytics.track("session_start")
-	GameStateService.SetPhase(#Players:GetPlayers() > 0 and "Intro" or "Lobby")
+	GameStateService.SetPhase(#players > 0 and "Intro" or "Lobby")
 end
 
 local function tick(dt: number)
 	local phase = GameStateService.GetPhase()
 	local t = os.clock() - phaseStart
-	if phase == "Lobby" then
-		if #Players:GetPlayers() > 0 then
-			GameStateService.SetPhase("Intro")
-		end
-	elseif phase == "Intro" then
+	if phase == "Intro" then
 		if t >= Config.IntroSeconds then
 			GameStateService.SetPhase("Arrival")
 		end
@@ -177,8 +192,10 @@ function GameStateService.Init()
 	setClock(Config.ArrivalStartHour)
 	Players.PlayerRemoving:Connect(function()
 		task.defer(function()
-			if #Players:GetPlayers() == 0 then
+			if #inRun() == 0 and GameStateService.GetPhase() ~= "Lobby" then
 				GameStateService.SetPhase("Lobby")
+				local Menu = require(script.Parent:WaitForChild("MenuService")) :: any
+				Menu.RunEnded()
 			end
 		end)
 	end)

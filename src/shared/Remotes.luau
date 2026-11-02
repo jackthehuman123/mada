@@ -30,6 +30,9 @@ Remotes.Names = {
 	CameraRaised = "CameraRaised", -- client -> server: (raised: boolean) the viewfinder is up (battery drain)
 	Message = "Message", -- server -> clients: (text) one line at the bottom of the screen
 	Fade = "Fade", -- server -> client: (seconds) fade to black and back (boundary return)
+	MenuAction = "MenuAction", -- client -> server: (action, arg) create/join/leave/setOpen/begin/solo/backToMenu
+	MenuState = "MenuState", -- server -> clients: ({ teams }) every team in this server; MenuNotice for one player
+	MenuNotice = "MenuNotice", -- server -> client: (text) why something didn't work
 }
 
 local function getFolder(): Folder
