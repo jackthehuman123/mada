@@ -69,8 +69,9 @@ function GameStateService.SetPhase(phase: Phase)
 	elseif phase == "Finale" then
 		setClock(Config.MidnightHour)
 	elseif phase == "Ending" then
-		card("ending_silence")
-		Analytics.track("ending", { type = "Im lặng", t = os.clock() })
+		local kind = (ReplicatedStorage:GetAttribute("Ending") :: string?) or "silence"
+		card("ending_" .. kind)
+		Analytics.track("ending", { type = kind })
 	end
 	for _, fn in phaseHooks do
 		task.spawn(fn, phase)
@@ -147,7 +148,9 @@ local function tick(dt: number)
 			GameStateService.SetPhase("Finale")
 		end
 	elseif phase == "Finale" then
-		if t >= Config.FinaleSeconds then
+		-- EndingService plays the finale and moves on to Ending itself; this only catches a finale that got stuck
+		if t >= Config.FinaleFailsafeSeconds then
+			warn("[LangVong] the finale never finished: Ending")
 			GameStateService.SetPhase("Ending")
 		end
 	elseif phase == "Ending" then
@@ -161,6 +164,15 @@ function GameStateService.Init()
 	for _, name in { Remotes.Names.Message, Remotes.Names.ShowTextCard, Remotes.Names.Fade } do
 		Remotes.event(name) -- made before any client asks for them (no "infinite yield" warning at start)
 	end
+	-- analytics events that happen on a client (§10): only these names are accepted
+	local fromClient = { camera_record = true, camera_playback = true, bin_tape_played = true }
+	Remotes.event(Remotes.Names.Track).OnServerEvent:Connect(function(p: Player, name: any, data: any)
+		if typeof(name) == "string" and fromClient[name] then
+			local d = if typeof(data) == "table" then data else {}
+			d.player = p.Name
+			Analytics.track(name, d)
+		end
+	end)
 	ReplicatedStorage:SetAttribute("Phase", "Lobby")
 	setClock(Config.ArrivalStartHour)
 	Players.PlayerRemoving:Connect(function()

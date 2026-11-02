@@ -19,6 +19,12 @@ local ClueService = {}
 local found: { [string]: number } = {}
 local order: { string } = {}
 local startTime = os.clock()
+local foundHooks: { (string) -> () } = {}
+
+-- called with the ClueId every time the group finds a new clue
+function ClueService.OnFound(fn: (string) -> ())
+	table.insert(foundHooks, fn)
+end
 
 function ClueService.Found(): { string }
 	return table.clone(order)
@@ -46,6 +52,9 @@ function ClueService.Inspect(player: Player, clueId: string): boolean
 		Analytics.track("clue_found", { clueId = clueId, t = math.floor(os.clock() - startTime) })
 		Remotes.event(Remotes.Names.ClueFound):FireAllClients(clueId)
 		sync()
+		for _, fn in foundHooks do
+			task.spawn(fn, clueId)
+		end
 	end
 	Remotes.event(Remotes.Names.InspectClue):FireClient(player, clueId)
 	return true

@@ -4,6 +4,7 @@
 -- Night 1 runs 25 times faster here (DebugService "speed"); the tapes play in real time.
 --@ Server
 dbg("speed", 25)
+dbg("sen", "off") -- (Sen would hunt a lone player by the water in the Open phase; 08_sen tests her)
 dbg("phase", "Arrival")
 task.wait(0.5)
 local s = dbg("night1")

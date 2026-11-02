@@ -14,7 +14,7 @@ local Config = {
 	OpenPhaseStartHour = 21,
 	MidnightHour = 24,
 	SecondLanternDriftHour = 23,
-	FinaleSeconds = 4, -- placeholder until the endings exist (M6)
+	FinaleFailsafeSeconds = 180, -- the finale scenes move on to Ending themselves; this only catches a stuck one
 	EndingResetSeconds = 30,
 
 	-- Dialogue (§4 beat 2, §5.4)
@@ -35,6 +35,19 @@ local Config = {
 	BinWanderMaxSeconds = 20, -- §4 beat 4: he vanishes when nobody can see him, or after 20 s
 	BinSeenDistance = 120,
 	BinCameraHintSeconds = 120, -- §1: nobody stuck for long: the camera's light gets a subtitle after this
+
+	-- Mystery (§5.1, §6)
+	MementoLineSeconds = 2.6,
+	CarpStepsRadius = 14, -- the width (studs) of the strip down the carp steps where a player makes the carp rise
+	HintFlickerSeconds = 8,
+
+	-- Endings (§5.7, §7)
+	ThuWalkSpeed = 7, -- studs/s, from the shrine through her back yard to the carp steps
+	StayRadius = 22, -- players this close to the carp steps at midnight are "at the steps"
+	StayChoiceSeconds = 15,
+	FinaleHomeSeconds = 40, -- game seconds of the Về nhà finale before the dawn card
+	FinaleSilenceSeconds = 10,
+	FinaleStaySeconds = 22,
 
 	-- Bin's tapes (§5.3)
 	TapeStaticSeconds = 1.5,

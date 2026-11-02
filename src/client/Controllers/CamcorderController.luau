@@ -20,6 +20,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Analytics = require(Shared:WaitForChild("Analytics"))
+local Figures = require(Shared:WaitForChild("Figures"))
 local Config = require(Shared:WaitForChild("Config"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
 local Tags = require(Shared:WaitForChild("Tags"))
@@ -125,6 +126,7 @@ local function stopRecording()
 			table.remove(clips, 1)
 		end
 		Analytics.track("camera_record", { seconds = math.floor(clip.length * 10) / 10, events = #clip.events })
+		Remotes.event(Remotes.Names.Track):FireServer("camera_record", { seconds = math.floor(clip.length) })
 	end
 end
 
@@ -200,26 +202,8 @@ local function ghost(template: string, cf: CFrame): Model?
 		return nil
 	end
 	-- a small girl standing in the water up to her waist, looking up; her hair hides her face (characters.md)
-	local m = Instance.new("Model")
+	local m = Figures.Sen(cf, nil, 18)
 	m.Name = "Ghost_GirlInWater"
-	local function piece(name: string, size: Vector3, offset: CFrame, color: Color3, ball: boolean?)
-		local p = Instance.new("Part")
-		p.Name = name
-		p.Anchored, p.CanCollide, p.CanQuery, p.CastShadow = true, false, false, false
-		p.Size = size
-		p.Shape = if ball then Enum.PartType.Ball else Enum.PartType.Block
-		p.Color = color
-		p.Material = Enum.Material.SmoothPlastic
-		p.CFrame = cf * offset
-		p.Parent = m
-	end
-	local cloth, skin, hair = Color3.fromRGB(86, 96, 100), Color3.fromRGB(150, 150, 146), Color3.fromRGB(12, 12, 14)
-	piece("Body", Vector3.new(1.2, 2.2, 0.7), CFrame.new(0, -0.4, 0), cloth)
-	piece("ArmL", Vector3.new(0.35, 1.6, 0.35), CFrame.new(-0.8, -0.2, 0), cloth)
-	piece("ArmR", Vector3.new(0.35, 1.6, 0.35), CFrame.new(0.8, -0.2, 0), cloth)
-	local up = CFrame.new(0, 1.25, 0) * CFrame.Angles(math.rad(18), 0, 0) -- head tipped back: looking up the steps
-	piece("Head", Vector3.new(1, 1, 1), up, skin, true)
-	piece("Hair", Vector3.new(1.15, 1.5, 1.1), up * CFrame.new(0, -0.15, -0.05), hair)
 	m.Parent = ghostFolder
 	return m
 end
@@ -321,6 +305,7 @@ function Camcorder.Play(index: number)
 	local clip = clips[index]
 	if clip then
 		Analytics.track("camera_playback", { clip = index })
+		Remotes.event(Remotes.Names.Track):FireServer("camera_playback", { clip = index })
 		playClip(clip)
 	end
 end
@@ -332,7 +317,8 @@ end
 function Camcorder.PlayTape(n: number)
 	local tape = Tapes[n]
 	if tape and Camcorder.HasTapes() then
-		Analytics.track("tape_playback", { tape = tape.id })
+		Analytics.track("bin_tape_played", { tape = tape.id })
+		Remotes.event(Remotes.Names.Track):FireServer("bin_tape_played", { tape = tape.id })
 		playClip(tapeClip(tape))
 	end
 end

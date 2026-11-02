@@ -6,7 +6,9 @@
 --           (Server context). The factory test runner (tools/factory/test.py) uses it.
 -- Commands: get | phase <Phase> | time <hour> | clue <ClueId|all> | goto <Location> | battery <0-100> | reset |
 --           inshrine | locations | speed <n> (Night 1 runs n times faster) | night1 (the director's state) |
---           pickup (pick up Bin's camera) | talk (talk to Bà Thu) | next (move the dialogue on)
+--           pickup (pick up Bin's camera) | talk (talk to Bà Thu) | next (move the dialogue on) |
+--           memento <id> | letter (take the letter) | hint | sen <on|off|now> | take | rescue | incense |
+--           write (press the dialogue's choice) | stay <hold|let> | mystery | ending (states)
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -35,6 +37,9 @@ local function run(caller: Player?, cmd: string, arg: any): any
 	local ClueService = require(script.Parent:WaitForChild("ClueService")) :: any
 	local Director = require(script.Parent:WaitForChild("NightOneDirector")) :: any
 	local DialogueService = require(script.Parent:WaitForChild("DialogueService")) :: any
+	local Mystery = require(script.Parent:WaitForChild("MysteryService")) :: any
+	local Sen = require(script.Parent:WaitForChild("SenService")) :: any
+	local Ending = require(script.Parent:WaitForChild("EndingService")) :: any
 	local player = caller or Players:GetPlayers()[1]
 	if cmd == "get" then
 		local batteries = {}
@@ -56,6 +61,51 @@ local function run(caller: Player?, cmd: string, arg: any): any
 		for _, p in Players:GetPlayers() do
 			DialogueService.Advance(p)
 		end
+	elseif cmd == "write" then
+		for _, p in Players:GetPlayers() do
+			DialogueService.Choose(p)
+		end
+	elseif cmd == "memento" then
+		assert(player, "no player")
+		Mystery.ViewMemento(player, arg)
+	elseif cmd == "letter" then
+		assert(player, "no player")
+		Mystery.TakeLetter(player)
+	elseif cmd == "hint" then
+		return Mystery.Hint("debug") or "none"
+	elseif cmd == "sen" then
+		if arg == "off" then
+			ReplicatedStorage:SetAttribute("SenOff", true)
+		elseif arg == "on" then
+			ReplicatedStorage:SetAttribute("SenOff", false)
+		else
+			assert(player, "no player")
+			task.spawn(Sen.Hunt, player)
+		end
+	elseif cmd == "keeprun" then
+		ReplicatedStorage:SetAttribute("DebugKeepRun", arg == "on")
+	elseif cmd == "take" then
+		assert(player, "no player")
+		Sen.Take(player)
+	elseif cmd == "rescue" then
+		local p = Sen.Rescue(nil)
+		return p and p.Name or "nobody"
+	elseif cmd == "incense" then
+		assert(player, "no player")
+		return Sen.UseIncense(player)
+	elseif cmd == "stay" then
+		for _, p in Players:GetPlayers() do
+			Ending.AnswerStay(p, arg == "hold")
+		end
+	elseif cmd == "mystery" then
+		local s = Mystery.State()
+		s.hunting = Sen.Hunting()
+		s.exposed = player and Sen.Exposed(player) or false
+		s.taken = player and player:GetAttribute("Taken") or false
+		s.incense = player and player:GetAttribute("Incense") or 0
+		return s
+	elseif cmd == "ending" then
+		return Ending.State()
 	elseif cmd == "phase" then
 		GameState.SetPhase(arg)
 	elseif cmd == "time" then

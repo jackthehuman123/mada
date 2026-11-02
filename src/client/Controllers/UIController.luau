@@ -51,8 +51,19 @@ UI.vfMode = nil :: TextLabel?
 UI.clipChooser = nil :: Frame?
 UI.vfStatic = nil :: Frame?
 UI.onDialogueClick = nil :: (() -> ())?
+UI.onDialogueChoice = nil :: (() -> ())?
+UI.onStay = nil :: ((boolean) -> ())?
+UI.onLightLantern = nil :: (() -> ())?
 
 local dialogueFrame: Frame
+local dialogueChoice: TextButton
+local stayPanel: Frame
+local stayTimer: TextLabel
+local takenPanel: Frame
+local takenButton: TextButton
+local screenStatic: Frame
+local memoryFrame: Frame
+local memoryText: TextLabel
 local dialogueSpeaker: TextLabel
 local dialogueText: TextLabel
 
@@ -99,10 +110,73 @@ function UI.Fade(seconds: number)
 	fadeFrame.Visible = false
 end
 
-function UI.ShowDialogue(speaker: string, text: string)
+function UI.ShowDialogue(speaker: string, text: string, choice: string?)
 	dialogueSpeaker.Text = speaker
 	dialogueText.Text = text
+	dialogueChoice.Text = choice or ""
+	dialogueChoice.Visible = choice ~= nil
 	dialogueFrame.Visible = true
+end
+
+-- the Stay ending: Sen reaching for your hand; hold on or let go (seconds left shown)
+function UI.ShowStay(open: boolean, seconds: number?)
+	stayPanel.Visible = open
+	if open and seconds then
+		local t0 = os.clock()
+		task.spawn(function()
+			while stayPanel.Visible do
+				stayTimer.Text = tostring(math.max(0, math.ceil(seconds - (os.clock() - t0))))
+				task.wait(0.2)
+			end
+		end)
+	end
+end
+
+-- a taken player's screen: the drowned festival, and the "Light a lantern" button (with its cooldown)
+function UI.SetTaken(on: boolean)
+	takenPanel.Visible = on
+end
+
+function UI.SetLanternCooldown(seconds: number)
+	takenButton.AutoButtonColor = seconds <= 0
+	takenButton.Text = if seconds > 0 then string.format("%s (%d)", Text.UI.lightLantern, math.ceil(seconds)) else Text.UI.lightLantern
+end
+
+-- full-screen static (the Im lặng ending)
+function UI.ScreenStatic(on: boolean)
+	screenStatic.Visible = on
+	if on then
+		for _, bar in screenStatic:GetChildren() do
+			if bar:IsA("Frame") then
+				local g = math.random(40, 200)
+				bar.BackgroundColor3 = rgb(g, g, g)
+			end
+		end
+	end
+end
+
+-- a memento's memory: black screen, lines of text one after another (yields)
+function UI.Memory(lines: { string }, perLine: number)
+	memoryFrame.BackgroundTransparency = 1
+	memoryFrame.Visible = true
+	memoryText.Text = ""
+	TweenService:Create(memoryFrame, TweenInfo.new(0.6), { BackgroundTransparency = 0 }):Play()
+	task.wait(0.7)
+	for _, line in lines do
+		memoryText.Text = line
+		memoryText.TextTransparency = 1
+		TweenService:Create(memoryText, TweenInfo.new(0.4), { TextTransparency = 0 }):Play()
+		task.wait(perLine)
+	end
+	memoryText.Text = ""
+	local back = TweenService:Create(memoryFrame, TweenInfo.new(0.6), { BackgroundTransparency = 1 })
+	back:Play()
+	back.Completed:Wait()
+	memoryFrame.Visible = false
+end
+
+function UI.MemoryShowing(): boolean
+	return memoryFrame.Visible
 end
 
 function UI.HideDialogue()
@@ -267,6 +341,62 @@ local function build()
 			UI.onDialogueClick()
 		end
 	end)
+	dialogueChoice = new("TextButton", { Name = "Choice", Size = UDim2.fromOffset(220, 40), Position = UDim2.new(1, -20, 1, -10), AnchorPoint = Vector2.new(1, 1),
+		BackgroundColor3 = rgb(200, 140, 70), TextColor3 = rgb(20, 16, 12), Font = Enum.Font.Merriweather, TextSize = 22, Text = "", Visible = false,
+		ZIndex = 9, Parent = dialogueFrame })
+	corner(dialogueChoice, 6)
+	dialogueChoice.Activated:Connect(function()
+		if UI.onDialogueChoice then
+			UI.onDialogueChoice()
+		end
+	end)
+
+	-- the Stay ending's choice
+	stayPanel = new("Frame", { Name = "Stay", Size = UDim2.fromOffset(460, 170), Position = UDim2.new(0.5, 0, 0.7, 0), AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundColor3 = rgb(10, 14, 18), BackgroundTransparency = 0.15, Visible = false, ZIndex = 12, Parent = gui })
+	corner(stayPanel, 8)
+	new("TextLabel", { Name = "Prompt", Size = UDim2.new(1, -30, 0, 50), Position = UDim2.fromOffset(15, 12), BackgroundTransparency = 1,
+		Text = Text.Messages.holdOrLet, TextColor3 = rgb(230, 222, 205), Font = Enum.Font.Garamond, TextSize = 26, TextWrapped = true, ZIndex = 13, Parent = stayPanel })
+	stayTimer = new("TextLabel", { Name = "Timer", Size = UDim2.fromOffset(40, 24), Position = UDim2.new(1, -12, 0, 8), AnchorPoint = Vector2.new(1, 0),
+		BackgroundTransparency = 1, Text = "", TextColor3 = rgb(150, 150, 150), Font = Enum.Font.Code, TextSize = 18, ZIndex = 13, Parent = stayPanel })
+	for i, choice in { { "Hold", Text.UI.holdOn, true }, { "Let", Text.UI.letGo, false } } do
+		local b = new("TextButton", { Name = choice[1] :: string, Size = UDim2.fromOffset(190, 50), Position = UDim2.new(i == 1 and 0.27 or 0.73, 0, 1, -24),
+			AnchorPoint = Vector2.new(0.5, 1), BackgroundColor3 = i == 1 and rgb(70, 90, 110) or rgb(110, 70, 60), TextColor3 = rgb(240, 235, 225),
+			Font = Enum.Font.Merriweather, TextSize = 22, Text = choice[2] :: string, ZIndex = 13, Parent = stayPanel })
+		corner(b, 6)
+		b.Activated:Connect(function()
+			stayPanel.Visible = false
+			if UI.onStay then
+				UI.onStay(choice[3] :: boolean)
+			end
+		end)
+	end
+
+	-- a taken player's button
+	takenPanel = new("Frame", { Name = "Taken", Size = UDim2.fromOffset(260, 60), Position = UDim2.new(0.5, 0, 1, -40), AnchorPoint = Vector2.new(0.5, 1),
+		BackgroundTransparency = 1, Visible = false, ZIndex = 6, Parent = gui })
+	takenButton = new("TextButton", { Name = "LightLantern", Size = UDim2.fromScale(1, 1), BackgroundColor3 = rgb(200, 120, 50), TextColor3 = rgb(25, 18, 10),
+		Font = Enum.Font.Merriweather, TextSize = 22, Text = Text.UI.lightLantern, ZIndex = 7, Parent = takenPanel })
+	corner(takenButton, 8)
+	takenButton.Activated:Connect(function()
+		if UI.onLightLantern then
+			UI.onLightLantern()
+		end
+	end)
+
+	-- full-screen static
+	screenStatic = new("Frame", { Name = "ScreenStatic", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = false, ZIndex = 15, Parent = gui })
+	for k = 0, 59 do
+		new("Frame", { Name = "Bar", Size = UDim2.new(1, 0, 1 / 60, 1), Position = UDim2.fromScale(0, k / 60), BorderSizePixel = 0,
+			BackgroundColor3 = rgb(128, 128, 128), ZIndex = 15, Parent = screenStatic })
+	end
+
+	-- a memento's memory
+	memoryFrame = new("Frame", { Name = "Memory", Size = UDim2.fromScale(1, 1), BackgroundColor3 = rgb(0, 0, 0), BackgroundTransparency = 1, Visible = false,
+		ZIndex = 16, Parent = gui })
+	memoryText = new("TextLabel", { Name = "Text", Size = UDim2.new(0.6, 0, 0.3, 0), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundTransparency = 1, Text = "", TextColor3 = rgb(225, 215, 195), Font = Enum.Font.Garamond, TextSize = 30, TextWrapped = true, ZIndex = 17,
+		Parent = memoryFrame })
 
 	-- the clue panel: a scrap of paper
 	cluePanel = new("Frame", { Name = "CluePanel", Size = UDim2.fromOffset(520, 340), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),

@@ -165,7 +165,13 @@ local function shrine(parent: Instance): Model
 	-- the altar stands on the lake side facing the lane; Bà Thu sits in front of it, facing visitors
 	local altar = P(m, { Name = "Altar", Size = Vector3.new(8, 3.5, 3), Position = c + Vector3.new(0, 2.75, -8), Color = rgb(120, 36, 30), Material = M.Wood })
 	tag(altar, Tags.ShrineAltar)
-	P(m, { Name = "Photos", Size = Vector3.new(6, 2, 0.3), Position = c + Vector3.new(0, 5.6, -9.2), Color = rgb(60, 52, 44) })
+	local photos = P(m, { Name = "Photos", Size = Vector3.new(6, 2, 0.3), Position = c + Vector3.new(0, 5.6, -9.2), Color = rgb(60, 52, 44) })
+	tag(photos, Tags.Clue, { ClueId = "shrine_photos" })
+	-- the tea she pours for visitors: the same cups as the dusty ones in Sen's house (§6)
+	for k = 0, 1 do
+		P(m, { Name = "Teacup", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.5, 0.6, 0.6), CFrame = CFrame.new(c + Vector3.new(-1.5 + k * 0.9, 1.45, 1.6))
+			* CFrame.Angles(0, 0, math.rad(90)), Color = rgb(200, 196, 180), Material = M.Marble, CanCollide = false })
+	end
 	-- the red paper (test clue for M2)
 	local paper = P(m, { Name = "RedPaper", Size = Vector3.new(2.2, 3, 0.15), Position = c + Vector3.new(5.6, 4.5, -9.3), Color = rgb(190, 30, 30), Material = M.Fabric })
 	tag(paper, Tags.Clue, { ClueId = "shrine_redpaper" })
@@ -275,6 +281,186 @@ local function lanternPaths(parent: Instance)
 	end
 end
 
+-- what each house holds (brief §6): clues (tag Clue, ClueId), the lost child's memento (tag Memento, MementoId),
+-- and in Sen's house the things that only mean something once you know the story. Positions are inside the house
+-- built by house(): floor top y = 1, the door on the lane side (z = 21), the altar against the back wall.
+local function item(parent: Instance, name: string, size: Vector3, pos: Vector3, color: Color3, props: { [string]: any }?): BasePart
+	local t: { [string]: any } = { Name = name, Size = size, Position = pos, Color = color, CanCollide = false }
+	for k, v in props or {} do
+		t[k] = v
+	end
+	return P(parent, t)
+end
+
+local function table_(parent: Instance, x: number): Vector3
+	-- a low table on the right as you come in; returns the middle of its top
+	item(parent, "Table", Vector3.new(5, 0.4, 3), Vector3.new(x + 6, 2.6, 31), rgb(110, 80, 52), { Material = M.Wood, CanCollide = true })
+	for _, s in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
+		item(parent, "Leg", Vector3.new(0.3, 1.6, 0.3), Vector3.new(x + 6 + s[1] * 2.2, 1.8, 31 + s[2] * 1.2), rgb(90, 64, 42), { Material = M.Wood })
+	end
+	return Vector3.new(x + 6, 2.8, 31)
+end
+
+local function stool(parent: Instance, x: number): Vector3
+	-- a stool on the left by the window: where the child's memento sits
+	item(parent, "Stool", Vector3.new(2, 1.4, 2), Vector3.new(x - 6, 1.7, 26), rgb(120, 88, 58), { Material = M.Wood, CanCollide = true })
+	return Vector3.new(x - 6, 2.4, 26)
+end
+
+local function memento(m: Model, id: string)
+	tag(m, Tags.Memento, { MementoId = id })
+end
+
+local function furnish(village: Instance)
+	local byLoc: { [string]: Instance } = {}
+	for _, h in village:GetChildren() do
+		local loc = h:GetAttribute("Location")
+		if loc then
+			byLoc[loc :: string] = h
+		end
+	end
+	local function x(loc: string): number
+		for _, h in HOUSES do
+			if h.loc == loc then
+				return h.x
+			end
+		end
+		error(loc)
+	end
+	local paper, ink = rgb(226, 214, 186), rgb(40, 40, 60)
+
+	-- the teacher's house (Minh): the unsent report, Minh's exercise book; the class photo is on the back wall
+	do
+		local h, hx = byLoc.TeacherHouse, x("TeacherHouse")
+		local top = table_(h, hx)
+		tag(item(h, "Report", Vector3.new(1.4, 0.06, 1.9), top + Vector3.new(-1.2, 0.03, 0), paper), Tags.Clue, { ClueId = "teacher_report" })
+		tag(item(h, "Notebook", Vector3.new(1.2, 0.18, 1.6), top + Vector3.new(1.2, 0.09, 0.1), rgb(50, 80, 130)), Tags.Clue, { ClueId = "minh_notebook" })
+		local s = stool(h, hx)
+		local m = model(h, "Memento_ReportCard")
+		item(m, "Card", Vector3.new(1.1, 0.06, 1.5), s + Vector3.new(0, 0.03, 0), paper)
+		item(m, "RedMark", Vector3.new(0.3, 0.07, 0.12), s + Vector3.new(0.2, 0.05, -0.2), rgb(200, 30, 30))
+		memento(m, "minh")
+	end
+	-- the puppet master's house (Hạnh): the diary; a broken water puppet
+	do
+		local h, hx = byLoc.PuppetHouse, x("PuppetHouse")
+		local top = table_(h, hx)
+		tag(item(h, "Diary", Vector3.new(1.3, 0.3, 1.8), top + Vector3.new(0, 0.15, 0), rgb(96, 60, 36)), Tags.Clue, { ClueId = "puppet_diary" })
+		local s = stool(h, hx)
+		local m = model(h, "Memento_Puppet")
+		item(m, "Body", Vector3.new(0.7, 1, 0.5), s + Vector3.new(0, 0.5, 0), rgb(200, 60, 40))
+		item(m, "Head", Vector3.new(0.6, 0.6, 0.6), s + Vector3.new(0, 1.3, 0), rgb(230, 200, 150), { Shape = Enum.PartType.Ball })
+		item(m, "BrokenArm", Vector3.new(0.2, 0.8, 0.2), s + Vector3.new(0.6, 0.12, 0.3), rgb(200, 60, 40), { CFrame = CFrame.new(s + Vector3.new(0.6, 0.12, 0.3)) * CFrame.Angles(0, 0, math.rad(90)) })
+		memento(m, "hanh")
+	end
+	-- the fish seller's house (Tí): the ledger with her notes; a clay whistle
+	do
+		local h, hx = byLoc.FishHouse, x("FishHouse")
+		local top = table_(h, hx)
+		tag(item(h, "Ledger", Vector3.new(1.6, 0.25, 2), top + Vector3.new(0, 0.13, 0), rgb(60, 90, 70)), Tags.Clue, { ClueId = "fish_notes" })
+		local s = stool(h, hx)
+		local m = model(h, "Memento_Whistle")
+		item(m, "Whistle", Vector3.new(0.5, 0.5, 0.5), s + Vector3.new(0, 0.25, 0), rgb(180, 100, 60), { Shape = Enum.PartType.Ball, Material = M.Slate })
+		memento(m, "ti")
+	end
+	-- the village head's house (Khoa): the minutes, the spoiled red paper; a festival drumstick
+	do
+		local h, hx = byLoc.HeadHouse, x("HeadHouse")
+		local top = table_(h, hx)
+		tag(item(h, "Minutes", Vector3.new(1.4, 0.2, 1.9), top + Vector3.new(-1.2, 0.1, 0), paper), Tags.Clue, { ClueId = "head_minutes" })
+		tag(item(h, "RedPaperDraft", Vector3.new(1.4, 0.05, 1.9), top + Vector3.new(1.2, 0.03, 0.2), rgb(180, 30, 30), { Material = M.Fabric }), Tags.Clue,
+			{ ClueId = "head_redpaper_draft" })
+		local s = stool(h, hx)
+		local m = model(h, "Memento_Drumstick")
+		item(m, "Stick", Vector3.new(1.6, 0.22, 0.22), s + Vector3.new(0, 0.12, 0), rgb(140, 96, 60), { Shape = Enum.PartType.Cylinder, Material = M.Wood })
+		memento(m, "khoa")
+	end
+	-- Sen's house: no marks on the doorframe; one bowl, freshly washed; the chair facing the door with the dusty
+	-- cups; the half-finished paper fish on the shelf. The letter is under the altar (tagged SenAltar in house())
+	do
+		local h, hx = byLoc.SenHouse, x("SenHouse")
+		tag(item(h, "Doorframe", Vector3.new(0.5, 8, 0.7), Vector3.new(hx + 3.2, 5, HOUSE_Z - 8.6), rgb(170, 140, 100), { Material = M.Wood }), Tags.Clue,
+			{ ClueId = "sen_doorframe" })
+		item(h, "LowTable", Vector3.new(3, 0.3, 2), Vector3.new(hx + 5, 1.8, 30), rgb(110, 80, 52), { Material = M.Wood, CanCollide = true })
+		tag(item(h, "Bowl", Vector3.new(0.4, 0.8, 0.8), Vector3.new(hx + 5, 2.15, 30), rgb(220, 220, 210), { Shape = Enum.PartType.Cylinder, Material = M.Marble,
+			CFrame = CFrame.new(hx + 5, 2.15, 30) * CFrame.Angles(0, 0, math.rad(90)) }), Tags.Clue, { ClueId = "sen_bowl" })
+		item(h, "Chopsticks", Vector3.new(0.08, 0.08, 1.2), Vector3.new(hx + 5.7, 2.0, 30), rgb(150, 110, 70))
+		local chair = model(h, "Chair")
+		item(chair, "Seat", Vector3.new(2.2, 0.3, 2.2), Vector3.new(hx - 5, 2.5, 34), rgb(96, 70, 46), { Material = M.Wood, CanCollide = true })
+		item(chair, "Back", Vector3.new(2.2, 2.6, 0.3), Vector3.new(hx - 5, 3.9, 35.1), rgb(96, 70, 46), { Material = M.Wood })
+		for k = 0, 1 do
+			item(chair, "DustyCup", Vector3.new(0.5, 0.6, 0.6), Vector3.new(hx - 2.8 + k * 0.8, 2.0, 34),
+				rgb(140, 138, 130), { Shape = Enum.PartType.Cylinder, Material = M.Marble, CFrame = CFrame.new(hx - 2.8 + k * 0.8, 2.0, 34) * CFrame.Angles(0, 0, math.rad(90)) })
+		end
+		item(chair, "Stand", Vector3.new(1.6, 0.9, 1.4), Vector3.new(hx - 2.4, 1.45, 34), rgb(90, 66, 44), { Material = M.Wood, CanCollide = true })
+		tag(chair, Tags.Clue, { ClueId = "sen_chair" })
+		item(h, "Shelf", Vector3.new(1, 0.3, 4), Vector3.new(hx - 10, 5, 27), rgb(110, 80, 52), { Material = M.Wood })
+		tag(item(h, "PaperFish", Vector3.new(0.6, 0.7, 1.4), Vector3.new(hx - 10, 5.5, 27), rgb(230, 150, 70), { Material = M.Fabric }), Tags.Clue,
+			{ ClueId = "sen_fishlantern" })
+	end
+end
+
+-- little sandals lined up on the carp steps, one pair for every lost child (§6)
+local function sandals(parent: Instance)
+	local m = model(parent, "Sandals")
+	for k = 0, 3 do
+		for s = 0, 1 do
+			P(m, { Name = "Sandal", Size = Vector3.new(0.45, 0.12, 0.9), Position = Vector3.new(347.2 + k * 1.9 + s * 0.55, 1.06, 9), Color = rgb(60, 110, 150),
+				CanCollide = false })
+		end
+	end
+	tag(m, Tags.Clue, { ClueId = "steps_sandals" })
+end
+
+-- set dressing from parts (brief §8 setting: banana trees, water jars, lotus): no collisions except the jars, nothing
+-- on a path. The real art pass (Creator Store models, M7) happens in the shared place: see docs/FACTORY.md.
+local function dressing(parent: Instance)
+	local m = model(parent, "Dressing")
+	local rng = Random.new(15)
+	local function banana(at: Vector3)
+		local h = rng:NextNumber(6, 9)
+		P(m, { Name = "BananaTrunk", Shape = Enum.PartType.Cylinder, Size = Vector3.new(h, 0.9, 0.9),
+			CFrame = CFrame.new(at + Vector3.new(0, h / 2, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(120, 110, 70), Material = M.Wood, CanCollide = false })
+		for k = 1, 6 do
+			local a = k / 6 * math.pi * 2 + rng:NextNumber(-0.3, 0.3)
+			P(m, { Name = "BananaLeaf", Size = Vector3.new(1.6, 0.12, 5.5), CFrame = CFrame.new(at + Vector3.new(0, h, 0)) * CFrame.Angles(0, a, 0)
+				* CFrame.new(0, 0.2, -2.4) * CFrame.Angles(math.rad(-25), 0, 0), Color = rgb(60, 110, 50), Material = M.Grass, CanCollide = false })
+		end
+	end
+	local function jar(at: Vector3)
+		P(m, { Name = "WaterJar", Shape = Enum.PartType.Cylinder, Size = Vector3.new(2.2, 2.4, 2.4),
+			CFrame = CFrame.new(at + Vector3.new(0, 1.1, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(110, 70, 50), Material = M.Slate })
+		P(m, { Name = "JarWater", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.1, 2, 2),
+			CFrame = CFrame.new(at + Vector3.new(0, 2.15, 0)) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(30, 45, 50), Material = M.Glass, CanCollide = false })
+	end
+	for _, hs in HOUSES do
+		jar(Vector3.new(hs.x - 9.5, 0, HOUSE_Z - 11.5))
+		banana(Vector3.new(hs.x + rng:NextNumber(-8, 8), 0, HOUSE_Z + rng:NextNumber(13, 20)))
+	end
+	for k = 1, 8 do -- along the lane's lake side, between the houses' yards and the shore
+		banana(Vector3.new(-280 + k * 70 + rng:NextNumber(-10, 10), 0, SHORE_Z + rng:NextNumber(10, 16)))
+	end
+	-- lotus pads and a few flowers in the shallows, away from the dock and the lantern paths' last stretch
+	for _ = 1, 70 do
+		local x, z = rng:NextNumber(-320, 320), rng:NextNumber(SHORE_Z - 34, SHORE_Z - 4)
+		local nearStop = false
+		for _, hs in HOUSES do
+			if hs.child and math.abs(x - hs.x) < 6 then
+				nearStop = true
+			end
+		end
+		if math.abs(x - DOCK_X) > 8 and not nearStop then
+			local d = rng:NextNumber(1.6, 3)
+			P(m, { Name = "LotusPad", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.1, d, d),
+				CFrame = CFrame.new(x, WATER_Y + 0.08, z) * CFrame.Angles(0, 0, math.rad(90)), Color = rgb(56, 96, 52), Material = M.Grass, CanCollide = false, CanQuery = false })
+			if rng:NextNumber() < 0.18 then
+				P(m, { Name = "Lotus", Shape = Enum.PartType.Ball, Size = Vector3.new(0.7, 0.6, 0.7), Position = Vector3.new(x, WATER_Y + 0.4, z),
+					Color = rgb(230, 150, 170), CanCollide = false, CanQuery = false })
+			end
+		end
+	end
+end
+
 local function farShore(parent: Instance)
 	-- visible, not reachable: the puppet stage on the water and the festival lights
 	local m = model(parent, "FarShore")
@@ -300,6 +486,13 @@ local function drownedFestival(parent: Instance)
 	for k = -2, 2 do
 		lantern(m, Vector3.new(k * 10, y + 7, -36))
 	end
+	-- a dim, cold light over the rows, as if from far above through the water
+	local glow = P(m, { Name = "WaterLight", Size = Vector3.new(1, 1, 1), Position = Vector3.new(0, y + 18, -16), Transparency = 1, CanCollide = false, CanQuery = false })
+	local l = Instance.new("PointLight")
+	l.Color = rgb(90, 140, 170)
+	l.Range = 40
+	l.Brightness = 1.2
+	l.Parent = glow
 	m.PrimaryPart = P(m, { Name = "Door", Size = Vector3.new(4, 1, 1), Position = Vector3.new(0, y + 1.5, 10), Transparency = 1, CanCollide = false, CanQuery = false })
 end
 
@@ -382,12 +575,15 @@ return function()
 	end
 	world.Parent = Workspace -- (the lantern paths read the LanternStops through CollectionService)
 	lanternPaths(world)
+	furnish(village)
 	shrine(world)
 	dock(world)
 	reeds(world, Vector3.new(-280, 0, SHORE_Z - 8), 26)
 	reeds(world, Vector3.new(60, 0, SHORE_Z - 6), 14)
 	causeway(world)
 	cove(world)
+	sandals(world)
+	dressing(world)
 	farShore(world)
 	drownedFestival(world)
 	edgesAndBounds(world)

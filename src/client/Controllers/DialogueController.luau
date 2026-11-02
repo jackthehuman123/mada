@@ -20,9 +20,12 @@ function DialogueController.Start()
 		end
 	end
 	UI.onDialogueClick = next
-	Remotes.event(Remotes.Names.DialogueShow).OnClientEvent:Connect(function(speaker: string, text: string)
+	UI.onDialogueChoice = function()
+		Remotes.event(Remotes.Names.DialogueChoice):FireServer()
+	end
+	Remotes.event(Remotes.Names.DialogueShow).OnClientEvent:Connect(function(speaker: string, text: string, _i: number, _n: number, choice: string?)
 		open = true
-		UI.ShowDialogue(speaker, text)
+		UI.ShowDialogue(speaker, text, choice)
 	end)
 	Remotes.event(Remotes.Names.DialogueEnd).OnClientEvent:Connect(function()
 		open = false

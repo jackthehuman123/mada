@@ -17,7 +17,7 @@ function PhaseController.Start()
 	Remotes.event(Remotes.Names.ShowTextCard).OnClientEvent:Connect(function(id: string)
 		local text = (Text.Cards :: any)[id]
 		if text then
-			UI.Card(text)
+			UI.Card(text, if string.sub(id, 1, 7) == "ending_" then 26 else nil) -- the teller's last card stays up
 		end
 	end)
 	Remotes.event(Remotes.Names.Message).OnClientEvent:Connect(function(text: string)

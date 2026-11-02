@@ -18,7 +18,7 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local Tags = require(Shared:WaitForChild("Tags"))
 local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 
-type Session = { id: string, audience: { Player }, advanced: boolean, stopped: boolean, lastAdvance: number }
+type Session = { id: string, audience: { Player }, advanced: boolean, stopped: boolean, lastAdvance: number, chose: boolean }
 
 local DialogueService = {}
 
@@ -47,7 +47,7 @@ function DialogueService.Play(id: string, audience: { Player }?): boolean
 	local conv = (Dialogue :: any)[id]
 	assert(conv, `unknown conversation {id}`)
 	local who = audience or Players:GetPlayers()
-	local s: Session = { id = id, audience = who, advanced = false, stopped = false, lastAdvance = 0 }
+	local s: Session = { id = id, audience = who, advanced = false, stopped = false, lastAdvance = 0, chose = false }
 	table.insert(sessions, s)
 	local show, done = Remotes.event(Remotes.Names.DialogueShow), Remotes.event(Remotes.Names.DialogueEnd)
 	for i, line in conv.lines do
@@ -55,15 +55,24 @@ function DialogueService.Play(id: string, audience: { Player }?): boolean
 			break
 		end
 		s.advanced = false
+		s.chose = false
 		print(`[Dialogue] {id} {i}/{#conv.lines} {line.speaker}`)
 		for _, p in who do
 			if p.Parent then
-				show:FireClient(p, speakerName(line.speaker), line.text, i, #conv.lines)
+				show:FireClient(p, speakerName(line.speaker), line.text, i, #conv.lines, line.choice)
 			end
 		end
 		local t0 = os.clock()
-		while not s.advanced and not s.stopped and os.clock() - t0 < Pace.seconds(Config.DialogueAutoSeconds) do
-			task.wait(0.1)
+		if line.choice then
+			-- a choice line waits for someone to press its button (no auto-advance)
+			while not s.chose and not s.stopped do
+				task.wait(0.1)
+			end
+			print(`[Dialogue] {id}: "{line.choice}"`)
+		else
+			while not s.advanced and not s.stopped and os.clock() - t0 < Pace.seconds(Config.DialogueAutoSeconds) do
+				task.wait(0.1)
+			end
 		end
 	end
 	for _, p in who do
@@ -84,6 +93,14 @@ function DialogueService.Advance(player: Player)
 	if s and os.clock() - s.lastAdvance >= Config.DialogueAdvanceCooldown then
 		s.lastAdvance = os.clock()
 		s.advanced = true
+	end
+end
+
+-- a player pressed the current line's choice button
+function DialogueService.Choose(player: Player)
+	local s = sessionOf(player)
+	if s then
+		s.chose = true
 	end
 end
 
@@ -117,6 +134,14 @@ function DialogueService.TalkToThu(player: Player)
 	if DialogueService.Busy(player) then
 		return
 	end
+	local Ending = require(script.Parent:WaitForChild("EndingService")) :: any
+	if Ending.CanGiveLetter(player) then
+		Ending.GiveLetter(player) -- §5.7: talking to her while holding the letter gives it to her
+		return
+	end
+	if Ending.LetterGiven() then
+		return
+	end
 	local order = (Dialogue :: any).RepeatOrder :: { string }
 	repeatCount += 1
 	DialogueService.Play(order[(repeatCount - 1) % #order + 1], { player })
@@ -139,7 +164,10 @@ local function setupThuPrompt(thu: Instance)
 	prompt.HoldDuration = 0
 	prompt.MaxActivationDistance = Config.TalkPromptDistance
 	prompt.RequiresLineOfSight = false
-	prompt.Enabled = ReplicatedStorage:GetAttribute("Phase") == "Open"
+	local function enabled(): boolean
+		return ReplicatedStorage:GetAttribute("Phase") == "Open" and ReplicatedStorage:GetAttribute("NameWritten") ~= true
+	end
+	prompt.Enabled = enabled()
 	prompt.Triggered:Connect(function(player: Player)
 		if ReplicatedStorage:GetAttribute("Phase") == "Open" then
 			DialogueService.TalkToThu(player)
@@ -147,7 +175,10 @@ local function setupThuPrompt(thu: Instance)
 	end)
 	prompt.Parent = part
 	ReplicatedStorage:GetAttributeChangedSignal("Phase"):Connect(function()
-		prompt.Enabled = ReplicatedStorage:GetAttribute("Phase") == "Open"
+		prompt.Enabled = enabled()
+	end)
+	ReplicatedStorage:GetAttributeChangedSignal("NameWritten"):Connect(function()
+		prompt.Enabled = enabled()
 	end)
 end
 
@@ -156,6 +187,9 @@ function DialogueService.Init()
 	Remotes.event(Remotes.Names.DialogueEnd)
 	Remotes.event(Remotes.Names.DialogueAdvance).OnServerEvent:Connect(function(player: Player)
 		DialogueService.Advance(player)
+	end)
+	Remotes.event(Remotes.Names.DialogueChoice).OnServerEvent:Connect(function(player: Player)
+		DialogueService.Choose(player)
 	end)
 	Players.PlayerRemoving:Connect(function(p)
 		for _, s in sessions do

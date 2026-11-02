@@ -41,3 +41,27 @@ Not found or wrong style → `generate_mesh` with a specific prompt, e.g. *"smal
 | Asset ID | Name in place | Source (Creator Store / generated / imported) | Creator | Used where | Sanitized? | Notes |
 | --- | --- | --- | --- | --- | --- | --- |
 | | | | | | | |
+
+## Audio used (M7, 2026-11-02)
+
+All from Roblox's licensed sound library on the Creator Store, published by **ProSoundEffects** for use in any
+experience. Chosen by name and checked to load in Studio; **not yet listened to**. Used through `src/shared/Content/Sounds.luau`.
+
+| Sound id in the game | Asset | Name on the Creator Store | Length |
+| --- | --- | --- | --- |
+| amb_night | 9112764546 | Crickets Night 1 (SFX) | 36.0 s, looped |
+| amb_water | 9116203162 | Lake Lap Water Movement 2 (SFX) | 45.7 s, looped |
+| amb_underwater | 9112889917 | Underwater Ambience 1 (SFX) | 59.4 s, looped |
+| child_crying_water | 9113996806 | Cries Whimpers 14 (SFX) | 3.6 s |
+| child_inside | 9113784466 | Child Giggle 1 (SFX) | 5.6 s |
+| lantern_on_water | 9119293555 | Small Splash Shallow Water Fountain Pool 1 (SFX) | 2.8 s |
+| carp_splash | 9119481268 | Splashes Small Wet Sloshes Drips 13 (SFX) | 0.9 s |
+| wet_footsteps | 9120589946 | Water Splash Wet Smacking Footsteps 1 (SFX) | 10.6 s (cut at 5 s) |
+| taken | 9126147241 | Underwater Movement Gurgly Mysterious Cu Boa (SFX) | 43.2 s (cut at 6 s) |
+| incense | 9120930385 | Wood Matches 4 (SFX) | 14.0 s (cut at 3 s) |
+| tape_static, festival_static | 9118027586 | Radio Static 9 (SFX) | 0.7 s, looped |
+| radio_off | 9117158538 | Old Radio Click On Off Tuning Buzz 1 (SFX) | 2.2 s |
+| memento_minh | 9117233304 | Paper Tear Tear Heavy Paper Bag Rustle 2 (SFX) | 3.0 s |
+| memento_hanh | 9120918417 | Wood Knock Knocking On Wooden Door Hits 3 (SFX) | 1.6 s |
+
+Still silent (no fitting licensed sound found): camera_beep, memento_ti (clay whistle), memento_khoa (drum), finale_home (music).

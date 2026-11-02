@@ -125,6 +125,17 @@ function BinService.Spawn(at: Vector3?)
 	print("[Bin] here")
 end
 
+-- dawn after the finale: Bin asleep on the bank, his camera in his arms (story.md §15)
+function BinService.SpawnAsleep(at: Vector3)
+	BinService.Remove()
+	local m = build(at)
+	bin = m
+	local root = m.PrimaryPart :: BasePart
+	root.Anchored = true
+	root.CFrame = CFrame.new(at + Vector3.new(0, 0.7, 0)) * CFrame.Angles(0, math.rad(70), math.rad(90))
+	print("[Bin] asleep on the bank")
+end
+
 function BinService.Remove()
 	job += 1
 	mode = "none"

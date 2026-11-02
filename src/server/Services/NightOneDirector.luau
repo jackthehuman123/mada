@@ -209,6 +209,14 @@ local function night(my: number)
 	GameState.SetPhase("Open")
 end
 
+-- dawn after the finale: the causeway is dry again
+function Director.Dry()
+	if flood then
+		flood:Destroy()
+		flood = nil
+	end
+end
+
 function Director.State(): { [string]: any }
 	return { beat = ReplicatedStorage:GetAttribute("Night1Beat"), bin = Bin.Exists(), binMode = Bin.Mode(),
 		flooded = flood ~= nil, camera = camera ~= nil, tapes = ReplicatedStorage:GetAttribute("BinTapes") == true,
