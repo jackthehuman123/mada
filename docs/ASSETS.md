@@ -64,4 +64,9 @@ experience. Chosen by name and checked to load in Studio; **not yet listened to*
 | memento_minh | 9117233304 | Paper Tear Tear Heavy Paper Bag Rustle 2 (SFX) | 3.0 s |
 | memento_hanh | 9120918417 | Wood Knock Knocking On Wooden Door Hits 3 (SFX) | 1.6 s |
 
-Still silent (no fitting licensed sound found): camera_beep, memento_ti (clay whistle), memento_khoa (drum), finale_home (music).
+| camera_beep | 9113936447 | Cordless Phone Sony Digital 900 3 (SFX) | 0.2 s |
+| memento_ti | 9120675895 | Whistle Calling 4 (SFX), played at 1.25x toward a clay whistle | 0.9 s |
+| memento_khoa | 9125514674 | Drum Tom Tom Single Hits Bent Drum Head (SFX) | 3.5 s |
+| finale_home | 130372750623176 | Hours Before Dawn Underscore Ambient + Melody (APMOfficial, Roblox's licensed music) | 153 s, stops on reset |
+
+Added 2026-11-03; all four checked to load, none listened to yet. No sound is left silent.

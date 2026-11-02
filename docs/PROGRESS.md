@@ -11,7 +11,7 @@ Updated by the agent at the end of every session. Newest session at the top of t
 - [x] **M4** Mystery content — all clues, mementos, letter, hints *(branch `full-game`)*
 - [x] **M5** Sen + taken / rescue + incense *(branch `full-game`)*
 - [x] **M6 ★** Endings + midnight — full run playable *(branch `full-game`)*
-- [~] **M7** Art + audio pass — audio done (licensed library), graybox dressed in code; the model art pass belongs in the shared place (world-builder), not done
+- [~] **M7** Art + audio pass — audio done (licensed library, no silent ids left, 2026-11-03), graybox dressed in code (houses with pitched roofs, porches, 2026-11-03); the model art pass belongs in the shared place (world-builder), not done
 - [~] **M8** Playtest build — analytics summary done; the Stay ending built, then cut by Catlyn (2026-11-02, `Config.StayEnding`); the Quiet Man (optional) left out until after the first playtest (Catlyn, 2026-11-02); publishing the private test place is a human step
 
 ## Current state
@@ -26,6 +26,16 @@ system, the camcorder and the boundaries work. Everything is built from git (see
 `python tools/factory/test.py` (9 test files, all passing). Next: a real playtest with 2–4 people, the art pass in the shared place.
 
 ## Session log
+
+### 2026-11-03 — verified Catlyn's 11-02 changes; last sounds; houses and finale readable (branch `complete-game`, off `full-game`; not merged)
+- Verified first, before any change: `python tools/factory/test.py` on `full-game` 6b9cfb7 → PASS 9/9, 0 console errors. That covers what was written on the loaner without Studio: Ở lại cut (midnight at the steps → Im lặng, the player is taken, no choice and no lantern button), Im lặng taking players one by one, Bin's Tape 2 (hand + under-water shots).
+- Done:
+  - **Sounds:** the last four silent ids now have Roblox-licensed sounds: `camera_beep`, `memento_ti` (clay whistle), `memento_khoa` (drum), `finale_home` (APM "Hours Before Dawn", 153 s). Finale music is a new `music` flag in `Content/Sounds`: `SoundController` stops it when the phase leaves Finale/Ending (a reset mid-finale no longer leaves music playing). Logged in `docs/ASSETS.md`. Not listened to yet.
+  - **Houses** (`Build.luau` `house()`, all 10): the roof was a V (both slabs sloped down to the middle, so it looked like it floated); now a pitched roof with gable ends and a ridge, plus a brick plinth, a porch with posts and a lean-to roof, window shutters, and limewash/tile colours that vary per house (Sen's stays grey). Dressing only: the window, door marker, altar, tags and lantern stops are unchanged.
+  - **Finale:** Sen and the children rising in Về nhà get a warm lantern rim (Highlight + a light in front), so they read as children and not dark blocks. Her face stays under her hair.
+- Verified by: `python tools/factory/test.py` → PASS 9/9, 0 console errors (report 20261103-021157; shots `06_night1-lit-windows`, `09_endings-finale-home`).
+- Not checked by a person yet: the four new sounds; the house look at real speed.
+- Next: the human playtest (2–4 players); Creator Store models for the art layer in the shared place, exported with `tools/art/export` (needs Lune trusted: `rokit trust lune-org/lune`).
 
 ### 2026-11-02 — M4–M8: the whole run (branch `full-game`, off `m3-night1`; not merged)
 - Done:

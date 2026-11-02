@@ -5,7 +5,7 @@
 -- caption whenever the sound plays (with or without an asset), for the sounds the story needs players to notice.
 -- Subtitles approved by Catlyn 2026-11-02. `loop` repeats it; `seconds` stops it after that long.
 
-export type Sound = { asset: string, volume: number?, subtitle: string?, draft: boolean?, loop: boolean?, seconds: number?, pitch: number? }
+export type Sound = { asset: string, volume: number?, subtitle: string?, draft: boolean?, loop: boolean?, seconds: number?, pitch: number?, music: boolean? }
 
 local function id(n: number): string
 	return "rbxassetid://" .. n
@@ -23,15 +23,15 @@ local Sounds: { [string]: Sound } = {
 	child_inside = { asset = id(9113784466), volume = 0.2 }, -- Child Giggle 1
 	-- §4 beat 3: a lantern set on the water
 	lantern_on_water = { asset = id(9119293555), volume = 0.35 }, -- Small Splash Shallow Water Fountain Pool 1
-	-- §4 beat 6: the camera's REC light, if nobody has found it for a while (no sound yet)
-	camera_beep = { asset = "", volume = 0.5, subtitle = "[a small red light blinking in the reeds by the shrine]", draft = false },
+	-- §4 beat 6: the camera's REC light, if nobody has found it for a while; a small digital beep (Cordless Phone Sony Digital 900 3)
+	camera_beep = { asset = id(9113936447), volume = 0.25, subtitle = "[a small red light blinking in the reeds by the shrine]", draft = false },
 	-- §5.3: the end of a tape
 	tape_static = { asset = id(9118027586), volume = 0.4, loop = true, seconds = 1.6 }, -- Radio Static 9
-	-- §5.1 mementos: a short sound with each memory (the whistle and the drum have no fitting sound yet)
+	-- §5.1 mementos: a short sound with each memory
 	memento_minh = { asset = id(9117233304), volume = 0.4 }, -- paper rustle
 	memento_hanh = { asset = id(9120918417), volume = 0.4 }, -- wood knock (the puppet)
-	memento_ti = { asset = "", volume = 0.4 },
-	memento_khoa = { asset = "", volume = 0.4 },
+	memento_ti = { asset = id(9120675895), volume = 0.35, pitch = 1.25 }, -- a short whistle call (Whistle Calling 4), pitched up toward a clay whistle
+	memento_khoa = { asset = id(9125514674), volume = 0.4 }, -- a hand drum (Drum Tom Tom Single Hits)
 	-- §6 carp steps / §5.5 step 2: carp splashing at the edge
 	carp_splash = { asset = id(9119481268), volume = 0.4 }, -- Splashes Small Wet Sloshes Drips 13
 	-- §5.5 step 3: wet footsteps behind the player
@@ -42,7 +42,7 @@ local Sounds: { [string]: Sound } = {
 	-- §7 endings
 	festival_static = { asset = id(9118027586), volume = 0.35, loop = true, seconds = 12, subtitle = "[static, and very faint, festival music]", draft = false },
 	radio_off = { asset = id(9117158538), volume = 0.5 }, -- Old Radio Click On Off Tuning Buzz 1
-	finale_home = { asset = "", volume = 0.5 }, -- music: for the sound-designer / Catlyn (no licensed piece chosen)
+	finale_home = { asset = id(130372750623176), volume = 0.45, music = true }, -- "Hours Before Dawn Underscore Ambient + Melody" (APM); stops on reset
 }
 
 return Sounds

@@ -316,6 +316,21 @@ local function home()
 		local x = (if i % 2 == 0 then 1 else -1) * (2.2 * math.ceil(i / 2))
 		Figures.Child(face * CFrame.new(x, -4 + c[2] * 0.25, 0), c[1], c[2], row)
 	end
+	-- lit by the gathered lanterns, so they read as children and not as dark shapes (her face stays under her hair)
+	local rim = Instance.new("Highlight")
+	rim.DepthMode = Enum.HighlightDepthMode.Occluded
+	rim.FillColor, rim.FillTransparency = rgb(255, 190, 130), 0.8
+	rim.OutlineColor, rim.OutlineTransparency = rgb(255, 215, 170), 0.35
+	rim.Parent = row
+	local lamp = Instance.new("Part")
+	lamp.Name = "Lamp"
+	lamp.Transparency, lamp.Anchored, lamp.CanCollide, lamp.CanQuery = 1, true, false, false
+	lamp.Size = Vector3.new(0.2, 0.2, 0.2)
+	lamp.CFrame = face * CFrame.new(0, -1, -7)
+	local warm = Instance.new("PointLight")
+	warm.Color, warm.Range, warm.Brightness = rgb(255, 180, 120), 14, 1.5
+	warm.Parent = lamp
+	lamp.Parent = row
 	riseAt(row, 0, 3.6, 4)
 	print("[Ending] Sen comes up, holding hands with Minh, Hạnh, Tí, Khoa and Bin")
 	pause(5)
