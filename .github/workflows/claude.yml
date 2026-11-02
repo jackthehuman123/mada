@@ -45,7 +45,7 @@ jobs:
       pull-requests: write
       issues: write
       id-token: write
-      actions: read
+      actions: write # the budget guard saves its weekly ledger in the Actions cache
     steps:
       - name: Check out the repo
         uses: actions/checkout@v4
@@ -75,8 +75,9 @@ jobs:
           branch_prefix: claude/
           # the model: repo variable CLAUDE_MODEL (Settings -> Secrets and variables -> Actions -> Variables), Opus 5.5 if unset
           claude_args: |
-            --max-turns 15
+            --max-turns 30
             --model ${{ vars.CLAUDE_MODEL || 'claude-opus-5-5' }}
+            --allowedTools "Bash(git fetch:*),Bash(git switch:*),Bash(git checkout:*),Bash(git log:*),Bash(git diff:*),Bash(git show:*),Bash(git status:*),Bash(git branch:*)"
             --disallowedTools WebFetch,WebSearch
             --append-system-prompt "You are running as the @claude bot on GitHub for the Làng Vọng repo. Follow CLAUDE.md, including its section 'Running as the GitHub bot'. Work on this repo only. Never merge, never push to main, never touch .github/workflows. There is no Roblox Studio here: you cannot run tools/factory/test.py, so say clearly that the tests still have to be run by a person."
 
