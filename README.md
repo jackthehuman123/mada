@@ -24,6 +24,8 @@ This repo holds the design and the prototype code. It's set up so a coding agent
 
 ## Getting started (builder)
 
+**Fastest:** clone `mada`, open Claude Code in the folder and type **`/setup`**. It checks the tools, switches to the newest build, checks the game runs, and offers the next task.
+
 1. Follow **`docs/SETUP.md`** once (Windows or macOS): install Git, Claude Code and Rokit; SSH key; clone `mada`; `rokit install`; `rojo plugin install`; open the shared place; enable Studio's MCP server and Quick-connect Claude Code.
 2. Each session:
    - Open the place in Roblox Studio.
