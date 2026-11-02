@@ -23,7 +23,7 @@ This repo holds the design and the prototype code. It's set up so a coding agent
 
 ## Getting started (builder)
 
-1. Follow `docs/MCP_SETUP.md` §1–4 once: install Studio, Git, Claude Code and Rokit; `rokit install`; `rojo plugin install`; create and publish the place; enable Studio's MCP server and Quick-connect Claude Code.
+1. Follow **`docs/SETUP.md`** once (Windows or macOS): install Git, Claude Code and Rokit; SSH key; clone `mada`; `rokit install`; `rojo plugin install`; open the shared place; enable Studio's MCP server and Quick-connect Claude Code.
 2. Each session:
    - Open the place in Roblox Studio.
    - `rojo serve` in this folder, then **Plugins → Rojo → Connect** in Studio.
