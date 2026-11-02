@@ -103,6 +103,26 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   verified uploads) and chosen by name/length; alternatives in `ASSETS.md`.
 - **Done when:** Catlyn has listened and approved or swapped each of the four (`Content/Sounds.luau` `music_*`).
 
+### I-14 · Village layout: houses round a natural lake, in the forest
+- **Needs:** no Studio to write `Build.luau`; Studio to look and tune.
+- **What Catlyn asked (2026-11-02):** the village in the forest, by big water, houses around the lake. "It doesn't
+  have to be circular, make it look like a typical lake in real life."
+- **Plan:** an irregular lake (inlets, a point for the shrine, reedy marsh on the causeway side) with the lane
+  following the shore about 3/4 of the way round, house order unchanged (shrine first … Sen's house last), Sen's
+  house on the far tip with the cove behind rocks; the festival ground and puppet stage on the open side, seen
+  across the water, the old path round to it flooded; bamboo forest and hills all round as the boundary (fog);
+  extra empty houses (the village emptied after the vote). Keep every tag, Location name and gameplay object; the
+  tests find them by tag.
+- **Done when:** walking shrine → Sen's house ≈ 75 s, every house sees the lake, the cove can't be seen from any other
+  house, `test.py` PASS, Catlyn approves screenshots.
+
+### I-15 · Lanterns: a real role in play
+- **Needs:** Catlyn's pick first (`docs/LANTERNS_PROPOSAL.md`); then code, no Studio to write.
+- **What Catlyn said:** the lanterns are only tradition; hinting at Sen's house "doesn't look very good in gameplay".
+- **Proposal:** one verb all night (fold, name, float): read the names (the clue), lure Sen with an unnamed one,
+  bring a taken friend home with their name, and the ending's name. Extras: hold one for light, ghost lantern on
+  camera, the lake as a clock.
+
 ### I-02 · Art pass: Creator Store models in the shared place
 - **Needs:** Studio (`world-builder` subagent).
 - **Where:** the shared place, `Workspace.World.<Area>`; `docs/ASSETS.md`; `tools/art/`.
