@@ -3,14 +3,19 @@
 How Làng Vọng gets 3D models it can't find in the Creator Store (I-10, I-11). The queue and log is
 `art/meshy/manifest.json`; the tools are in `tools/meshy/`. Asset rules in `docs/ASSETS.md` still apply.
 
-## Which source, in order
+## Which source, in order (reviewed 2026-11-02: Meshy's free plan is the weakest generator, so it comes last)
 
-| | Source | Cost | Use it for |
-| --- | --- | --- | --- |
-| 1 | Creator Store (`tools/art/scout.luau`, then `insert_asset`) | free | small generic props: jars, baskets, bamboo, rocks, reeds, nón lá |
-| 2 | Roblox `generate_mesh` (Studio MCP, Cube) | free, needs Studio | quick one-off props, tests of an idea |
-| 3 | **Meshy free plan** (this page) | 10 models a month | shapes that matter and get reused: roofs, walls, porch, shrine, lantern, altar; the two hero figures |
-| 4 | Meshy Pro ($20/month), a paid pack, or a modeller | money | if 3 isn't good enough (Catlyn's call) |
+| | Source | Cost | Textured? | Use it for |
+| --- | --- | --- | --- | --- |
+| 1 | **Hand-made CC BY models** on Sketchfab / Fab, by Vietnamese modellers (search: `api.sketchfab.com/v3/search?type=models&downloadable=true&q=...`) | free, credit the author | yes | anything specifically Vietnamese: altar, village gate, interiors. Few exist; check them first (shortlist in `ASSETS.md`) |
+| 2 | Creator Store (`tools/art/scout.luau`, then `insert_asset`) | free | yes | small generic props: jars, baskets, bamboo, rocks, reeds, nón lá |
+| 3 | **Roblox Cube** (`generate_mesh` in Studio MCP, or Assistant `/generate`) | free, no monthly cap we know of | yes | most generated props; no licence to track; made for Roblox's limits |
+| 4 | Hunyuan3D web (Tencent, about 20 a day free, unverified) | free | yes | hero shapes Cube can't do. Licence: not valid in the EU/UK/South Korea, label as AI-generated, a licence from Tencent past 1M monthly users. Catlyn decides |
+| 5 | Meshy free plan (this page) | 10 a month | **no** | plain shapes only (roof, walls, porch kit) when 3 and 4 fail |
+| 6 | Meshy Pro ($20/month, textures + API), a paid pack, or a modeller | money | yes | if none of the above is good enough (Catlyn's call) |
+
+Tripo's free plan is out: its models are licensed CC BY *non-commercial*. Everything below (the queue, the checker,
+the uploader) works the same for any source that gives a `.glb`.
 
 ## What the free plan gives (checked 2026-11-02)
 

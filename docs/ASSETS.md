@@ -57,6 +57,16 @@ shirts with loose pants, or upload our own clothing texture (a human step).
 Search words that worked better than "vietnamese house": `old lady`, `grandma npc`, `asian old woman`, `conical hat`,
 `fishing village`, `abandoned house`. For houses, plan on `generate_mesh` (I-10).
 
+### Sketchfab, hand-made, CC BY (scouted 2026-11-02; credit the author in the game's credits)
+
+| Sketchfab id | Name (author) | Faces | Verdict |
+| --- | --- | --- | --- |
+| 5d65b1d0919c4394808727f461773c11 | Vietnamese altar (ngdkh) | 1.9k | Good: red lacquer altar table with incense burner, and a wall altar. For the family altars and the shrine |
+| c09e0ae8ebd14eb09994ce4cd9607cac | Village Entrance Gate, cổng làng (phucn) | 126k | Authentic and textured; far too heavy, decimate it. The causeway end of the village |
+| 582936c8eac641a885343e91766e71b1 | Vietnamese House in 2000s, an interior (ngdkh) | 8.5k | Very good mood (TV, fan, vases, cabinet, patterned floor); a little late for the 1990s; take props for the house interiors |
+| 795a1b421eea496db98a7a2d6910ba8d | Vietnamese dragon sofa (ngdkh) | 2.9k | Look at it: the village head's house |
+| 7bbb52c44c13460eaa0892b44955c87f | Vietnamese house (nguyenhoanglam20100609) | 2.5k | No: a modern Hà Nội phone shop with signage |
+
 ### Music candidates (I-13, scouted 2026-11-02 with `scout.luau --audio`, none listened to)
 
 In use (`Content/Sounds.luau`): 140021816582186 menu, 9043359699 bed, 1836290021 tension, 70615932668908 chase.
