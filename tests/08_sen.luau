@@ -82,10 +82,18 @@ return "back: the lantern button is gone"
 --@ Server
 -- incense makes her withdraw
 local root = game.Players:GetPlayers()[1].Character.HumanoidRootPart
-root.CFrame = CFrame.new(-140, 3, -70)
-task.wait(0.2)
-dbg("sen", "now")
-task.wait(0.3)
+-- (on the dock, exposed, and Sen really after them before the incense: straight after the rescue the hunt once dropped
+-- at step 1, and the incense then had nobody to drive off)
+local hunted = false
+for _ = 1, 4 do
+	root.CFrame = CFrame.new(-140, 3, -70)
+	local t0 = os.clock()
+	while not dbg("mystery").exposed and os.clock() - t0 < 2 do task.wait(0.1) end
+	dbg("sen", "now")
+	task.wait(0.3)
+	if dbg("mystery").hunting then hunted = true break end
+end
+check(hunted, "Sen never went after a lone player on the dock")
 check(dbg("incense"), "incense could not be used")
 task.wait(0.6)
 local s = dbg("mystery")
@@ -112,9 +120,15 @@ return "incense: she withdraws (1 left); walking away from the water cancels her
 -- the second taking is for good, and with everyone taken the run goes to Im lặng
 dbg("keeprun", "off")
 local root = game.Players:GetPlayers()[1].Character.HumanoidRootPart
-root.CFrame = CFrame.new(-140, 3, -70)
-task.wait(0.2)
-dbg("sen", "now")
+-- (wait until the server sees them on the dock: the client owns its character and can report the old spot for a moment)
+for _ = 1, 4 do
+	root.CFrame = CFrame.new(-140, 3, -70)
+	local t0 = os.clock()
+	while not dbg("mystery").exposed and os.clock() - t0 < 2 do task.wait(0.1) end
+	dbg("sen", "now")
+	task.wait(0.3)
+	if dbg("mystery").hunting or dbg("mystery").taken then break end
+end
 local t0 = os.clock()
 while dbg("get").phase ~= "Ending" and os.clock() - t0 < 15 do task.wait(0.2) end -- (10 s flaked once on a busy PC)
 eq(dbg("get").phase, "Ending", "phase after everyone was taken")

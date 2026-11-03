@@ -54,6 +54,11 @@ eq(cam("state").clips, Config.CameraMaxClips, "clip cap")
 return "playback ended and restored the world; clips capped at " .. Config.CameraMaxClips
 --@ Server
 dbg("goto", "Dock")
+-- (until the server sees them there: the client owns its character, and for a moment it was still in the shrine,
+-- where the battery recharges)
+local t0 = os.clock()
+while dbg("inshrine") and os.clock() - t0 < 3 do task.wait(0.1) end
+check(not dbg("inshrine"), "still in the shrine after going to the dock")
 dbg("battery", 50)
 return "at the dock, battery 50"
 --@ Client
