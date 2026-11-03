@@ -19,6 +19,7 @@ local Tags = require(Shared:WaitForChild("Tags"))
 local Config = require(Shared:WaitForChild("Config"))
 local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 local Furniture = require(Shared:WaitForChild("Content"):WaitForChild("Furniture"))
+local Art = require(Shared:WaitForChild("Art"))
 local AssetService = game:GetService("AssetService")
 
 local SHORE_Z, LANE_Z, HOUSE_Z = -50, -20, 30
@@ -100,6 +101,28 @@ local function lantern(parent: Instance, pos: Vector3, lit: boolean?)
 		l.Brightness = 0.9
 		l.Parent = body
 	end
+	-- the Blender lantern (ribbed paper glowing softly, its frame and tassel) in place of the oval and caps
+	Art.place("Lantern", CFrame.new(pos) * CFrame.Angles(0, math.random() * math.pi * 2, 0), parent, 1, function(m)
+		body.Transparency = 1
+		for _, d in parent:GetChildren() do
+			if d.Name == "LanternCap" and d:IsA("BasePart") and (d.Position - pos).Magnitude < 1 then
+				d:Destroy()
+			end
+		end
+		local paper = m:FindFirstChild("Paper") :: BasePart?
+		if paper then
+			paper.Name = "LanternPaper"
+			if lit ~= false then
+				paper.Material, paper.Color, paper.Transparency = M.Neon, rgb(196, 104, 58), 0.4
+				paper:SetAttribute("LitColor", paper.Color)
+				paper:SetAttribute("LitMaterial", "Neon")
+			end
+		end
+		for _, d in m:GetChildren() do
+			d.Parent = parent
+		end
+		m:Destroy()
+	end)
 end
 
 -- the land, the lake, the cove and the marsh -------------------------------------------------------------------
@@ -264,6 +287,17 @@ local function shrine(parent: Instance): Model
 	-- the altar stands on the lake side facing the lane; Bà Thu sits in front of it, facing visitors
 	local altar = P(m, { Name = "Altar", Size = Vector3.new(8, 3.5, 3), Position = c + Vector3.new(0, 2.75, -8), Color = rgb(88, 30, 26), Material = M.Wood })
 	tag(altar, Tags.ShrineAltar)
+	-- the Blender shrine and altar (the graybox stays as the floor, the collisions and the altar's prompt)
+	Art.place("Shrine", CFrame.new(c), m, 1, function()
+		for _, d in m:GetChildren() do
+			if d:IsA("BasePart") and (d.Name == "Platform" or d.Name == "Post" or d.Name == "Roof") then
+				d.Transparency = 1
+			end
+		end
+	end)
+	Art.place("Altar", CFrame.new(c + Vector3.new(0, 1, -8)) * CFrame.Angles(0, math.pi, 0), m, 1, function()
+		altar.Transparency = 1
+	end)
 	local photos = P(m, { Name = "Photos", Size = Vector3.new(6, 2, 0.3), Position = c + Vector3.new(0, 5.6, -9.2), Color = rgb(60, 52, 44) })
 	tag(photos, Tags.Clue, { ClueId = "shrine_photos" })
 	-- the tea she pours for visitors: the same cups as the dusty ones in Sen's house (§6)
@@ -310,11 +344,32 @@ end
 
 local function reeds(parent: Instance, from: Vector3, n: number)
 	local rng = Random.new(math.floor(from.X * 7 + from.Z))
+	local made: { Instance } = {}
+	-- the Blender clumps replace the sticks once they're there
+	local clumps = {}
+	for _ = 1, math.max(2, math.floor(n / 4)) do
+		table.insert(clumps, { at = from + Vector3.new(rng:NextNumber(-13, 13), WATER_Y - 0.6, rng:NextNumber(-5, 5)), a = rng:NextNumber(0, math.pi * 2),
+			s = rng:NextNumber(0.85, 1.25) })
+	end
+	task.spawn(function()
+		if not Art.wait(60) then
+			return
+		end
+		for _, r in made do
+			r:Destroy()
+		end
+		for _, c in clumps do
+			local m = Art.clone("Reeds", CFrame.new(c.at) * CFrame.Angles(0, c.a, 0), c.s, parent)
+			if m then
+				m.Name = "Reed"
+			end
+		end
+	end)
 	for _ = 1, n do
 		local p = from + Vector3.new(rng:NextNumber(-14, 14), 0, rng:NextNumber(-6, 6))
 		local h = rng:NextNumber(3, 6)
-		P(parent, { Name = "Reed", Size = Vector3.new(0.25, h, 0.25), CFrame = CFrame.new(p + Vector3.new(0, WATER_Y + h / 2 - 0.5, 0))
-			* CFrame.Angles(rng:NextNumber(-0.15, 0.15), 0, rng:NextNumber(-0.15, 0.15)), Color = rgb(96, 120, 70), CanCollide = false })
+		table.insert(made, P(parent, { Name = "Reed", Size = Vector3.new(0.25, h, 0.25), CFrame = CFrame.new(p + Vector3.new(0, WATER_Y + h / 2 - 0.5, 0))
+			* CFrame.Angles(rng:NextNumber(-0.15, 0.15), 0, rng:NextNumber(-0.15, 0.15)), Color = rgb(96, 120, 70), CanCollide = false }))
 	end
 end
 
@@ -324,7 +379,11 @@ local function causeway(parent: Instance): BasePart
 	local n = 12
 	for k = 0, n - 1 do
 		local p = a:Lerp(b, (k + 0.5) / n)
-		P(m, { Name = "Causeway", Size = Vector3.new(8, 1.2, (b - a).Magnitude / n + 0.3), CFrame = CFrame.lookAt(p, p + (b - a)), Color = rgb(130, 110, 84), Material = M.Ground })
+		local seg = P(m, { Name = "Causeway", Size = Vector3.new(8, 1.2, (b - a).Magnitude / n + 0.3), CFrame = CFrame.lookAt(p, p + (b - a)), Color = rgb(130, 110, 84), Material = M.Ground })
+		Art.place("Causeway", seg.CFrame * CFrame.new(0, -0.6, 0), m, Vector3.new(1, 1, seg.Size.Z / 16), function(mm)
+			seg.Transparency = 1 -- (it stays as the floor you walk on)
+			mm.Name = "CausewayStones"
+		end)
 	end
 	m.PrimaryPart = P(m, { Name = "Door", Size = Vector3.new(4, 1, 1), Position = a + Vector3.new(-10, 0.4, 10), Transparency = 1, CanCollide = false, CanQuery = false })
 	-- players arrive at the village end of the causeway
@@ -557,6 +616,28 @@ local function dressing(parent: Instance)
 		jar(Vector3.new(hs.x - 9.5, 2, HOUSE_Z - 11.5)) -- under the porch roof, on the ground (y ~ 2)
 		banana(Vector3.new(hs.x + rng:NextNumber(-8, 8), 0, HOUSE_Z + rng:NextNumber(13, 20)))
 	end
+	-- the Blender props (in the background; each sits on whatever ground is under it)
+	local function ground(x: number, z: number): number
+		local hit = workspace:Raycast(Vector3.new(x, 40, z), Vector3.new(0, -80, 0))
+		return if hit then hit.Position.Y else 0
+	end
+	task.spawn(function()
+		if not Art.wait(60) then
+			return
+		end
+		Art.clone("Boat", CFrame.new(DOCK_X + 7, WATER_Y + 0.15, SHORE_Z - 14) * CFrame.Angles(0, 0.25, 0), 1, m)
+		for _, hs in HOUSES do
+			if hs.loc and hs.loc ~= "SenHouse" then
+				for _, sx in { -1, 1 } do
+					Art.clone("Fence", CFrame.new(hs.x + sx * 14, ground(hs.x + sx * 14, 6), 6) * CFrame.Angles(0, math.pi / 2, 0), 1, m)
+				end
+			end
+			if hs.loc == "FishHouse" or hs.loc == "HeadHouse" then
+				Art.clone("FishRack", CFrame.new(hs.x + 9, ground(hs.x + 9, 4), 4), 1, m)
+			end
+		end
+		Art.clone("Well", CFrame.new(-222, ground(-222, 4), 4), 1, m)
+	end)
 	for k = 1, 8 do -- along the lane's lake side, between the houses' yards and the shore
 		banana(Vector3.new(-280 + k * 70 + rng:NextNumber(-10, 10), 0, SHORE_Z + rng:NextNumber(10, 16)))
 	end
@@ -600,8 +681,16 @@ local function drownedFestival(parent: Instance)
 	for i, name in { "Minh", "Hạnh", "Tí", "Khoa", "Bin" } do
 		local s = model(m, "Silhouette_" .. name)
 		local p = Vector3.new(-16 + i * 6, y + 1, -12)
-		P(s, { Name = "Body", Size = Vector3.new(1.6, 3, 1), Position = p + Vector3.new(0, 1.5, 0), Color = rgb(10, 12, 16) })
-		P(s, { Name = "Head", Shape = Enum.PartType.Ball, Size = Vector3.new(1.2, 1.2, 1.2), Position = p + Vector3.new(0, 3.6, 0), Color = rgb(10, 12, 16) })
+		local body = P(s, { Name = "Body", Size = Vector3.new(1.6, 3, 1), Position = p + Vector3.new(0, 1.5, 0), Color = rgb(10, 12, 16) })
+		local head = P(s, { Name = "Head", Shape = Enum.PartType.Ball, Size = Vector3.new(1.2, 1.2, 1.2), Position = p + Vector3.new(0, 3.6, 0), Color = rgb(10, 12, 16) })
+		Art.place("Child", CFrame.new(p) * CFrame.Angles(0, math.pi, 0), s, 4.2 / 2.8, function(c)
+			body.Transparency, head.Transparency = 1, 1
+			for _, d in c:GetChildren() do
+				if d:IsA("BasePart") then
+					d.Color, d.Material = rgb(10, 12, 16), M.SmoothPlastic
+				end
+			end
+		end)
 	end
 	for k = -2, 2 do
 		lantern(m, Vector3.new(k * 10, y + 7, -36))

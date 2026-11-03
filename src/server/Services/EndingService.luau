@@ -176,7 +176,7 @@ local function lanternParts(): { BasePart }
 	local w = Workspace:FindFirstChild("World")
 	for _, d in (w and w:GetDescendants() or {}) do
 		if d:IsA("BasePart") and ((d.Material == Enum.Material.Neon and (d.Name == "LanternCore" or d.Name == "Glow" or d.Name == "HintLantern"))
-			or (d.Name == "PaperLantern" and d:GetAttribute("LitColor") ~= nil)) then
+			or d:GetAttribute("LitColor") ~= nil) then
 			table.insert(out, d)
 		end
 	end
@@ -523,7 +523,9 @@ function EndingService.Reset()
 		if lit then
 			local p = d :: BasePart
 			p.Color = lit
-			p.Material = if p.Name == "LanternCore" then Enum.Material.Neon else Enum.Material.SmoothPlastic
+			local mat = p:GetAttribute("LitMaterial")
+			p.Material = if typeof(mat) == "string" then (Enum.Material :: any)[mat]
+				elseif p.Name == "LanternCore" then Enum.Material.Neon else Enum.Material.SmoothPlastic
 			local l = p:FindFirstChildOfClass("PointLight")
 			if l then
 				l.Enabled = true

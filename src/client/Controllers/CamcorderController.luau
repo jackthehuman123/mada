@@ -328,6 +328,10 @@ local function playClip(clip: Clip)
 	cam.CameraType = Enum.CameraType.Scriptable
 	cam.FieldOfView = Config.CameraViewfinderFov
 	UI.viewfinder.Visible = true
+	local jbp = UI.Gui():FindFirstChild("JournalButton")
+	if jbp then
+		(jbp :: GuiObject).Visible = false -- (out of the tape's corner too)
+	end
 	setVisible(Tags.HiddenOnCamera, false) -- the camera never saw her
 	setVisible(Tags.CameraOnly, true)
 	hideSelf(true)
