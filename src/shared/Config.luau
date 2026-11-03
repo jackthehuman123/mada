@@ -16,6 +16,7 @@ local Config = {
 	SecondLanternDriftHour = 23,
 	FinaleFailsafeSeconds = 180, -- the finale scenes move on to Ending themselves; this only catches a stuck one
 	EndingResetSeconds = 30,
+	GoalCluesBeforeSenHouse = 4, -- the goal line points at Sen's house after this many clues
 
 	-- Dialogue (§4 beat 2, §5.4)
 	DialogueAutoSeconds = 14, -- a line moves on by itself if nobody clicks (nobody gets stuck on an AFK player)
@@ -23,8 +24,8 @@ local Config = {
 	TalkPromptDistance = 10,
 
 	-- Lanterns and hints (§5.4)
-	LanternDriftSeconds = 75, -- brief: 60-90 s from the shrine to a house
-	LanternStaggerSeconds = 4, -- Bà Thu sets them on the water one after another
+	LanternDriftSeconds = 40, -- (brief: 60-90 s; council 11-03 "dead time", owner's yes 11-04: 40)
+	LanternStaggerSeconds = 2, -- Bà Thu sets them on the water one after another
 	LanternFloatY = -0.4, -- the lake's surface is at y = -1
 
 	-- Bin (§4 beats 1, 4)
@@ -86,6 +87,15 @@ local Config = {
 	SenOffshore = 5, -- she waits this far out from the water's edge
 	SenReachDistance = 8, -- step 5 happens once she's this close to the edge by the player
 	SenArriveTimeout = 15, -- seconds the last warning waits for her to arrive
+	SenLandSpeed = 7, -- studs/s on land: slower than a walk (16), so you can get away (owner 2026-11-04)
+	SenLandReach = 34, -- she stays within this of the lake (a bit past WaterDangerRadius)
+	SenGrabReach = 5, -- studs: she has you
+	SoloWayBackHold = 4, -- alone: hold on the festival's lantern to follow it home
+	SoloWakeSpot = Vector3.new(-262, 3, -44), -- the shore east of the shrine, ~70 studs away
+	SoloWakeHuntDelay = 6,
+	LaneZ = -20,
+	LaneScareX = { 110, 170 }, -- the empty stretch of the lane, between the teller's house and Sen's
+	LaneScareSeconds = 6,
 	SenFootprints = 8, -- wet prints walking out of the water toward the player (camera only), steps 3-4
 	-- being taken lasts SenTakeSeconds in all (Catlyn: 3 s); the parts below add up to it, the rest is the cut to black
 	SenTakeSeconds = 3, -- then the drowned festival

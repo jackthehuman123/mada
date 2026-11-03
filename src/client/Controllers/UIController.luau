@@ -121,6 +121,12 @@ function UI.ShowDialogue(speaker: string, text: string, choice: string?)
 	dialogueText.Text = text
 	dialogueChoice.Text = choice or ""
 	dialogueChoice.Visible = choice ~= nil
+	if not dialogueFrame.Visible and UI.dialogueSkip then
+		UI.dialogueSkip.Text = Text.UI.skip -- a new conversation
+	end
+	if UI.dialogueSkip then
+		UI.dialogueSkip.Visible = choice == nil
+	end
 	dialogueFrame.Visible = true
 end
 
@@ -351,6 +357,19 @@ local function build()
 			UI.onDialogueClick()
 		end
 	end)
+	-- skip the whole conversation (release council 11-03 B6)
+	local skip = new("TextButton", { Name = "Skip", Size = UDim2.fromOffset(0, 30), AutomaticSize = Enum.AutomaticSize.X, Position = UDim2.new(1, -12, 0, 10),
+		AnchorPoint = Vector2.new(1, 0), BackgroundColor3 = rgb(40, 44, 52), BackgroundTransparency = 0.2, TextColor3 = rgb(210, 204, 190),
+		Font = Enum.Font.Garamond, TextSize = 18, Text = Text.UI.skip, ZIndex = 9, Parent = dialogueFrame })
+	corner(skip, 6)
+	new("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), Parent = skip })
+	skip.Activated:Connect(function()
+		skip.Text = Text.UI.skipWaiting
+		if UI.onDialogueSkip then
+			UI.onDialogueSkip()
+		end
+	end)
+	UI.dialogueSkip = skip
 	dialogueChoice = new("TextButton", { Name = "Choice", Size = UDim2.fromOffset(220, 40), Position = UDim2.new(1, -20, 1, -10), AnchorPoint = Vector2.new(1, 1),
 		BackgroundColor3 = rgb(200, 140, 70), TextColor3 = rgb(20, 16, 12), Font = Enum.Font.Merriweather, TextSize = 22, Text = "", Visible = false,
 		ZIndex = 9, Parent = dialogueFrame })

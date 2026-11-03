@@ -431,6 +431,25 @@ function MenuService.Kind(): ServerKind
 	return kind
 end
 
+-- after an ending on a team's own run server: everyone back to the menu (release council 11-03 B5). false = failed
+function MenuService.SendAllBack(): boolean
+	local players = Players:GetPlayers()
+	if kind ~= "Run" or #players == 0 then
+		return false
+	end
+	for _, p in players do
+		p:SetAttribute("InRun", false)
+	end
+	local ok, err = pcall(TeleportService.TeleportAsync, TeleportService, game.PlaceId, players)
+	if not ok then
+		warn(`[LangVong] sending the team back to the menu failed: {err}`)
+		for _, p in players do
+			p:SetAttribute("InRun", true)
+		end
+	end
+	return ok
+end
+
 -- Studio/debug: put a player straight into a solo run (the factory tests use this through DebugService "begin")
 function MenuService.BeginSolo(p: Player)
 	if p:GetAttribute("InRun") then

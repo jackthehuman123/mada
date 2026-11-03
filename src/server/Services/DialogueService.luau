@@ -18,7 +18,8 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local Tags = require(Shared:WaitForChild("Tags"))
 local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 
-type Session = { id: string, audience: { Player }, advanced: boolean, stopped: boolean, lastAdvance: number, chose: boolean }
+type Session = { id: string, audience: { Player }, advanced: boolean, stopped: boolean, lastAdvance: number, chose: boolean,
+	skips: { [Player]: boolean }, skipped: boolean }
 
 local DialogueService = {}
 
@@ -47,12 +48,16 @@ function DialogueService.Play(id: string, audience: { Player }?): boolean
 	local conv = (Dialogue :: any)[id]
 	assert(conv, `unknown conversation {id}`)
 	local who = audience or Players:GetPlayers()
-	local s: Session = { id = id, audience = who, advanced = false, stopped = false, lastAdvance = 0, chose = false }
+	local s: Session = { id = id, audience = who, advanced = false, stopped = false, lastAdvance = 0, chose = false, skips = {}, skipped = false }
 	table.insert(sessions, s)
 	local show, done = Remotes.event(Remotes.Names.DialogueShow), Remotes.event(Remotes.Names.DialogueEnd)
 	for i, line in conv.lines do
 		if s.stopped then
 			break
+		end
+		-- skipped: straight to the end, but a choice line is still asked (it decides something)
+		if s.skipped and not line.choice then
+			continue
 		end
 		s.advanced = false
 		s.chose = false
@@ -70,7 +75,7 @@ function DialogueService.Play(id: string, audience: { Player }?): boolean
 			end
 			print(`[Dialogue] {id}: "{line.choice}"`)
 		else
-			while not s.advanced and not s.stopped and os.clock() - t0 < Pace.seconds(Config.DialogueAutoSeconds) do
+			while not s.advanced and not s.stopped and not s.skipped and os.clock() - t0 < Pace.seconds(Config.DialogueAutoSeconds) do
 				task.wait(0.1)
 			end
 		end
@@ -94,6 +99,22 @@ function DialogueService.Advance(player: Player)
 		s.lastAdvance = os.clock()
 		s.advanced = true
 	end
+end
+
+-- a player wants to skip the rest (release council 11-03 B6): skipped once everyone still listening has asked
+function DialogueService.Skip(player: Player)
+	local s = sessionOf(player)
+	if not s or s.skipped then
+		return
+	end
+	s.skips[player] = true
+	for _, p in s.audience do
+		if p.Parent and not s.skips[p] then
+			return
+		end
+	end
+	s.skipped = true
+	print(`[Dialogue] {s.id} skipped`)
 end
 
 -- a player pressed the current line's choice button
@@ -190,6 +211,9 @@ function DialogueService.Init()
 	end)
 	Remotes.event(Remotes.Names.DialogueChoice).OnServerEvent:Connect(function(player: Player)
 		DialogueService.Choose(player)
+	end)
+	Remotes.event(Remotes.Names.DialogueSkip).OnServerEvent:Connect(function(player: Player)
+		DialogueService.Skip(player)
 	end)
 	Players.PlayerRemoving:Connect(function(p)
 		for _, s in sessions do

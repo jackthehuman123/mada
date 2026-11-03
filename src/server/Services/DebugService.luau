@@ -94,6 +94,11 @@ local function run(caller: Player?, cmd: string, arg: any): any
 	elseif cmd == "take" then
 		assert(player, "no player")
 		Sen.Take(player)
+	elseif cmd == "wayback" then -- alone: follow the festival lantern home
+		assert(player, "no player")
+		return Sen.FindWayBack(player)
+	elseif cmd == "goal" then
+		return ReplicatedStorage:GetAttribute("Goal")
 	elseif cmd == "rescue" then
 		local p = Sen.Rescue(nil)
 		return p and p.Name or "nobody"

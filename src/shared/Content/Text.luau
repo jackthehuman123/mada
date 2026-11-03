@@ -25,6 +25,47 @@ local Text = {
 		rescued = "Incense smoke, and the shrine's lanterns. You're back.", -- approved 2026-11-02
 		humming = "♪ hm, hm, %s, hm ♪", -- §5.5 step 4: a children's tune with the player's name in it. Approved 2026-11-02
 		holdOrLet = "Sen is reaching for your hand.", -- the Stay ending's choice (cut, unused)
+		takenSolo = "Nobody is coming for you. The lantern on the stage knows the way up.", -- DRAFT (alone, first taking)
+		wayBack = "Cold grass, and the wind. The shrine's lanterns are west of you. Run.", -- DRAFT (alone, back on the shore)
+	},
+	-- the goal line, top right (release council 11-03 B1). DRAFT: needs Catlyn's review (all of Goals)
+	Goals = {
+		arrival = "Walk with Bin to the shrine at the west end of the lane.",
+		listen = "Listen to Bà Thu.",
+		lanterns = "Watch where the lanterns go.",
+		binGone = "Where is Bin going?",
+		camera = "Something is beeping in the reeds by the shrine.",
+		search = "Find Bin. Search the houses the lanterns lit.",
+		senHouse = "Who was the girl on Bin's tape? Try the house at the end of the lane.",
+		letter = "Bring the letter to Bà Thu at the shrine.",
+		walkThu = "Bà Thu is walking to the stone steps. Keep her safe until midnight.",
+		midnight = "Stay with Bà Thu at the steps until midnight.",
+		finale = "",
+		takenTeam = "Taken. Light a lantern down here to show your friends the way; incense at the shrine brings you back.",
+		takenSolo = "Taken, and alone. Find the lantern on the stage and follow it home.",
+		takenFinal = "Taken for good. Watch over your friends.",
+		counts = "Clues %d/%d · Mementos %d/%d · Incense %d",
+	},
+	-- the rules, each taught once a run when it first matters (B2). DRAFT: needs Catlyn's review (all of Rules)
+	Rules = {
+		water = "Bà Thu's rule: she takes the ones who are alone by the water. Stay together, or stay away from the shore.",
+		incense = "You carry two sticks of incense (pick one from your hotbar and click): she backs off for a minute.",
+		warning = "A child crying out on the water means she has picked you. Get away from the shore, or get close to a friend.",
+		shrine = "The shrine is safe. She can't come here.",
+		rescue = "%s was taken. Light incense at the shrine altar to bring them back.",
+	},
+	-- after an ending (B5). DRAFT: needs Catlyn's review (all of Recap)
+	Recap = {
+		title = "The night in Làng Vọng",
+		clues = "Clues found: %d of %d",
+		mementos = "Mementos: %d of %d",
+		letter = "The letter reached Bà Thu's hands.",
+		noLetter = "The letter was never read.",
+		taken = "Taken: %s",
+		nobody = "Nobody was taken.",
+		minutes = "%d minutes in the village.",
+		backSoon = "Back to the menu in a moment.",
+		again = "The night starts again in a moment.",
 	},
 	UI = {
 		look = "Look",
@@ -48,6 +89,9 @@ local Text = {
 		letter = "The letter",
 		holdOn = "Hold on",
 		letGo = "Let go",
+		skip = "Skip", -- DRAFT
+		skipWaiting = "Skip (waiting for the others)", -- DRAFT
+		followLantern = "Follow the lantern home", -- DRAFT
 	},
 	Speakers = {
 		BaThu = "Bà Thu",
@@ -57,6 +101,7 @@ local Text = {
 		binCamera = "Bin's camera",
 		altar = "The family altar",
 		shrineAltar = "The shrine altar",
+		festivalLantern = "A lantern", -- DRAFT
 	},
 	Places = { -- journal group headings, by Location
 		Shrine = "The shrine",

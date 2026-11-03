@@ -25,6 +25,7 @@ local GameStateService = {}
 local phaseStart = os.clock()
 local resetHooks: { () -> () } = {}
 local phaseHooks: { (Phase) -> () } = {}
+local leaving = false -- the Ending phase is sending the team back to the menu
 
 local function setClock(hour: number)
 	ReplicatedStorage:SetAttribute("ClockHour", hour)
@@ -52,6 +53,7 @@ function GameStateService.SetClock(hour: number)
 end
 
 function GameStateService.SetPhase(phase: Phase)
+	leaving = false
 	ReplicatedStorage:SetAttribute("Phase", phase)
 	phaseStart = os.clock()
 	Analytics.track("phase_change", { phase = phase })
@@ -169,8 +171,19 @@ local function tick(dt: number)
 			GameStateService.SetPhase("Ending")
 		end
 	elseif phase == "Ending" then
-		if t >= Config.EndingResetSeconds then
-			GameStateService.Reset()
+		if t >= Config.EndingResetSeconds and not leaving then
+			-- a team's own server: back to the menu; Studio (and a failed trip): the night starts again
+			local Menu = require(script.Parent:WaitForChild("MenuService")) :: any
+			if Menu.Kind() == "Run" then
+				leaving = true
+				task.spawn(function()
+					if not Menu.SendAllBack() then
+						GameStateService.Reset()
+					end
+				end)
+			else
+				GameStateService.Reset()
+			end
 		end
 	end
 end

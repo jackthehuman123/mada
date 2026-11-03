@@ -17,6 +17,7 @@ Remotes.Names = {
 	DialogueShow = "DialogueShow", -- server -> client: (speaker, line, index, total)
 	DialogueEnd = "DialogueEnd", -- server -> client: the conversation is over
 	DialogueChoice = "DialogueChoice", -- client -> server: the player pressed the line's choice button
+	DialogueSkip = "DialogueSkip", -- client -> server: skip the rest of this conversation (everyone listening has to)
 	Memento = "Memento", -- server -> client: (mementoId) play that child's memory
 	LightLantern = "LightLantern", -- client -> server: a taken player lights a lantern on the surface
 	StayChoice = "StayChoice", -- server -> client: (open) / client -> server: (hold: boolean) the Stay ending

@@ -14,6 +14,13 @@
 -- warning waits until she's at the edge by them. Taken: everyone sees the body slide into the water there (a
 -- splash); the taken player sees the grab (her hair-hidden face, a sting), the pull, sinking under the lanterns,
 -- then wakes in the drowned festival. Her face is never shown; nothing violent, no struggle.
+-- On land (release council 11-03, owner's yes 11-04): from the footprints on she comes up out of the water at the edge
+-- by her target and walks after them, slowly (slower than a walk), dripping, for everyone to see; the grab comes when
+-- she reaches them. Getting away from the shore or to a friend still cancels her: she goes back under.
+-- Alone (a run with one player): the first taking has a way back, the lantern on the festival stage ("Follow the
+-- lantern home"): you wake on the shore near the shrine and have to get there before she comes. The second is for good.
+-- The lane (council 11-03 "dead time"): once a run, the first player to walk the empty stretch of the lane hears a child
+-- in the water there and sees her dart in close to the shore, then go.
 
 local CollectionService = game:GetService("CollectionService")
 local Players = game:GetService("Players")
@@ -70,6 +77,9 @@ local wanderAngle = 0
 local dartUntil, stillUntil = 0, 0
 local shape: Model? = nil
 local carp: { BasePart } = {}
+local walker: Model? = nil -- Sen on land (one at a time)
+local walkRun = 0
+local laneScared = false
 
 -- a point in the water just off the shore nearest this position
 local function waterPointBy(pos: Vector3): Vector3?
@@ -237,6 +247,127 @@ local function footprints(p: Player, seconds: number)
 	end)
 end
 
+-- Sen on land ---------------------------------------------------------------------------------------------------------
+local function shapeShown(on: boolean)
+	local m = shape
+	if not m then
+		return
+	end
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Transparency = if on then 0.4 else 1
+		elseif d:IsA("PointLight") then
+			d.Enabled = on
+		end
+	end
+end
+
+local function groundY(x: number, z: number, ignore: { Instance }): number
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Exclude
+	params.FilterDescendantsInstances = ignore
+	local hit = Workspace:Raycast(Vector3.new(x, 60, z), Vector3.new(0, -120, 0), params)
+	return if hit then math.max(hit.Position.Y, Config.WaterY) else Config.WaterY
+end
+
+local function endWalk()
+	walkRun += 1
+	local m = walker
+	walker = nil
+	if not m then
+		shapeShown(true)
+		return
+	end
+	-- she sinks back where she stands
+	task.spawn(function()
+		local from = m:GetPivot()
+		for k = 1, 20 do
+			if not m.Parent then
+				break
+			end
+			m:PivotTo(from - Vector3.new(0, k * 0.2, 0))
+			for _, d in m:GetDescendants() do
+				if d:IsA("BasePart") then
+					d.Transparency = math.min(1, d.Transparency + 0.04)
+				end
+			end
+			task.wait(0.05)
+		end
+		m:Destroy()
+		shapeShown(true)
+	end)
+end
+
+-- she comes up at the water's edge by them and walks after them (stays within reach of the lake)
+local function walkAfter(p: Player)
+	endWalk()
+	walkRun += 1
+	local my = walkRun
+	local r = rootOf(p)
+	local edge = r and nearestWater(r.Position)
+	if not (r and edge) then
+		return
+	end
+	shapeShown(false)
+	local pos = (edge :: Vector3) * flat
+	local ignore: { Instance } = {}
+	for _, o in Players:GetPlayers() do
+		if o.Character then
+			table.insert(ignore, o.Character)
+		end
+	end
+	local m = Figures.Sen(CFrame.new(pos + Vector3.new(0, groundY(pos.X, pos.Z, ignore) + 1.5, 0)), nil, 4)
+	m.Name = "SenOnLand"
+	for _, d in m:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Transparency = 0.15
+		end
+	end
+	local drip = Instance.new("PointLight")
+	drip.Color = rgb(150, 190, 205)
+	drip.Brightness, drip.Range, drip.Shadows = 0.7, 9, false
+	drip.Parent = m.PrimaryPart
+	m.Parent = Workspace:FindFirstChild("World") or Workspace
+	table.insert(ignore, m)
+	walker = m
+	Remotes.event(Remotes.Names.Sfx):FireAllClients("sen_splash", pos)
+	task.spawn(function()
+		local lastStep = 0
+		while walkRun == my and m.Parent do
+			local dt = task.wait(1 / 20)
+			local root = rootOf(p)
+			if not root then
+				break
+			end
+			local to = root.Position * flat - pos
+			local step = math.min(to.Magnitude, Config.SenLandSpeed * Pace.scale() * dt)
+			local ahead = pos + (if to.Magnitude > 0.1 then to.Unit else Vector3.zero) * step
+			local _, fromWater = nearestWater(ahead)
+			if fromWater <= Config.SenLandReach then -- she doesn't go far from the lake
+				pos = ahead
+			end
+			local y = groundY(pos.X, pos.Z, ignore) + 1.5
+			local at = Vector3.new(pos.X, y, pos.Z)
+			local look = Vector3.new(root.Position.X, y, root.Position.Z)
+			m:PivotTo(if (look - at).Magnitude > 0.1 then CFrame.lookAt(at, look) else CFrame.new(at))
+			if os.clock() - lastStep > Pace.seconds(1.4) then
+				lastStep = os.clock()
+				Remotes.event(Remotes.Names.Sfx):FireAllClients("wet_footsteps", at)
+			end
+		end
+	end)
+end
+
+local function walkerNear(p: Player): boolean
+	local r, m = rootOf(p), walker
+	return r ~= nil and m ~= nil and ((m:GetPivot().Position - r.Position) * flat).Magnitude <= Config.SenGrabReach
+end
+
+-- one player in the whole run (Studio tests too, unless DebugTeam pretends there are more)
+local function solo(): boolean
+	return #Players:GetPlayers() == 1 and ReplicatedStorage:GetAttribute("DebugTeam") ~= true
+end
+
 local function festivalSpot(): CFrame?
 	for _, m in CollectionService:GetTagged(Tags.Location) do
 		if m:GetAttribute("Location") == "DrownedFestival" then
@@ -257,6 +388,9 @@ local function checkAllTaken()
 		if not taken(o) then
 			return
 		end
+	end
+	if solo() and players[1]:GetAttribute("TakenFinal") ~= true then
+		return -- alone, the first time: the lantern on the festival stage leads home
 	end
 	if not (RunService:IsStudio() and ReplicatedStorage:GetAttribute("DebugKeepRun") == true) then
 		task.delay(Pace.seconds(Config.SenTakeSeconds) + 2, function() -- after the last one has gone under
@@ -286,6 +420,7 @@ function SenService.Take(p: Player, quiet: boolean?)
 	-- she has them by the leg: a beat (they look down at her hand), then pulled backward, falling forward, across the
 	-- ground to the water and under (everyone sees it); the player's own view is SenController's
 	r.Anchored = true
+	endWalk()
 	task.spawn(function()
 		Pace.wait(Config.SenGrabSeconds)
 		local edge = Vector3.new(water.X, Config.WaterY + 0.5, water.Z)
@@ -329,6 +464,13 @@ function SenService.Take(p: Player, quiet: boolean?)
 		Mystery.DropLetter(p, where)
 		if taken(p) then
 			Remotes.event(Remotes.Names.Message):FireClient(p, Text.Messages.taken)
+			if solo() and p:GetAttribute("TakenFinal") ~= true then
+				task.delay(4, function()
+					if taken(p) then
+						Remotes.event(Remotes.Names.Message):FireClient(p, Text.Messages.takenSolo)
+					end
+				end)
+			end
 		end
 	end)
 	checkAllTaken()
@@ -384,6 +526,7 @@ function SenService.Hunt(p: Player): boolean
 		if hunt == my then
 			hunting = nil
 			goal = nil -- she sinks back toward the middle
+			endWalk()
 		end
 	end
 	-- she follows them along the shore from the start
@@ -396,9 +539,10 @@ function SenService.Hunt(p: Player): boolean
 	end)
 	for step = 1, 5 do
 		if step == 5 then
-			-- the grab needs her at the edge by them
+			-- the grab needs her to reach them (on land), or at the edge by them (over the water)
 			local t0 = os.clock()
-			while still() and not arrived() and os.clock() - t0 < Pace.seconds(Config.SenArriveTimeout) do
+			while still() and not walkerNear(p) and not (walker == nil and arrived())
+				and os.clock() - t0 < Pace.seconds(Config.SenArriveTimeout) do
 				task.wait(0.1)
 			end
 		end
@@ -420,6 +564,7 @@ function SenService.Hunt(p: Player): boolean
 		elseif step == 3 then
 			footprints(p, Config.SenWarningStepSeconds * 2)
 			Remotes.event(Remotes.Names.Sfx):FireClient(p, "wet_footsteps", r.Position)
+			walkAfter(p) -- and she comes out of the water after them
 		elseif step == 4 then
 			Remotes.event(Remotes.Names.Message):FireClient(p, string.format(Text.Messages.humming, p.DisplayName))
 		else
@@ -481,6 +626,7 @@ function SenService.UseIncense(p: Player): boolean
 		hunt += 1 -- she withdraws
 		hunting = nil
 		goal = nil
+		endWalk()
 		print("[Sen] withdraws (incense)")
 	end
 	return true
@@ -509,6 +655,8 @@ end
 function SenService.Reset()
 	hunt += 1
 	hunting = nil
+	endWalk()
+	laneScared = false
 	table.clear(takenOrder)
 	nextHunt = 0
 	goal = nil
@@ -583,6 +731,88 @@ local function puppetShow()
 	end)
 end
 
+-- alone: the lantern on the festival stage leads home, once. You wake on the shore by the shrine; she'll come.
+function SenService.FindWayBack(p: Player): boolean
+	if not (taken(p) and solo() and p:GetAttribute("TakenFinal") ~= true) then
+		return false
+	end
+	local i = table.find(takenOrder, p)
+	if i then
+		table.remove(takenOrder, i)
+	end
+	p:SetAttribute("Taken", false)
+	p:SetAttribute("Rescues", ((p:GetAttribute("Rescues") :: number?) or 0) + 1)
+	Analytics.track("player_found_way_back", { player = p.Name })
+	print(`[Sen] {p.Name} followed the lantern home`)
+	Remotes.event(Remotes.Names.Fade):FireClient(p, 1.2)
+	task.delay(0.6, function()
+		local r = rootOf(p)
+		if r then
+			r.AssemblyLinearVelocity = Vector3.zero
+			r.CFrame = CFrame.new(Config.SoloWakeSpot)
+		end
+		Remotes.event(Remotes.Names.Message):FireClient(p, Text.Messages.wayBack)
+		nextHunt = os.clock() + Pace.seconds(Config.SoloWakeHuntDelay) -- she's not done with you
+	end)
+	return true
+end
+
+local function wayBackPrompt()
+	for _, m in CollectionService:GetTagged(Tags.Location) do
+		local stage = m:GetAttribute("Location") == "DrownedFestival" and m:FindFirstChild("Stage")
+		if stage and stage:IsA("BasePart") and not stage:FindFirstChild("WayBack") then
+			local prompt = Instance.new("ProximityPrompt")
+			prompt.Name = "WayBack"
+			prompt.ActionText = Text.UI.followLantern
+			prompt.ObjectText = Text.Objects.festivalLantern
+			prompt.HoldDuration = Config.SoloWayBackHold
+			prompt.MaxActivationDistance = 14
+			prompt.RequiresLineOfSight = false
+			prompt.Enabled = false
+			prompt.Triggered:Connect(function(player: Player)
+				SenService.FindWayBack(player)
+			end)
+			prompt.Parent = stage
+			task.spawn(function()
+				while prompt.Parent do
+					local p = Players:GetPlayers()[1]
+					prompt.Enabled = solo() and p ~= nil and taken(p) and p:GetAttribute("TakenFinal") ~= true
+					task.wait(0.5)
+				end
+			end)
+		end
+	end
+end
+
+-- the empty stretch of the lane, once a run: a child in the water there, and her, darting close to the shore
+local function laneScare()
+	if laneScared or GameState.GetPhase() ~= "Open" or hunting or ReplicatedStorage:GetAttribute("SenOff") == true then
+		return
+	end
+	for _, p in Players:GetPlayers() do
+		local r = rootOf(p)
+		if r and not taken(p) and r.Position.X >= Config.LaneScareX[1] and r.Position.X <= Config.LaneScareX[2]
+			and math.abs(r.Position.Z - Config.LaneZ) <= 25 then
+			laneScared = true
+			print(`[Sen] the lane ({p.Name})`)
+			Analytics.track("lane_scare", { player = p.Name })
+			local water = waterPointBy(r.Position)
+			if water then
+				Remotes.event(Remotes.Names.Sfx):FireAllClients("child_crying_water", water)
+				goal = water
+				dartUntil, stillUntil = os.clock() + Pace.seconds(3), 0
+				Mystery.SpawnCarp(Vector3.new(water.X, 0, water.Z), 6, 4, 12)
+				task.delay(Pace.seconds(Config.LaneScareSeconds), function()
+					if not hunting then
+						goal = nil
+					end
+				end)
+			end
+			return
+		end
+	end
+end
+
 function SenService.Init()
 	for _, name in { Remotes.Names.SenWarning, Remotes.Names.PlayerTaken, Remotes.Names.LightLantern } do
 		Remotes.event(name)
@@ -615,6 +845,7 @@ function SenService.Start()
 	Ending = require(script.Parent:WaitForChild("EndingService"))
 	GameState.OnReset(SenService.Reset)
 	rescuePrompt()
+	wayBackPrompt()
 	puppetShow()
 	shape = makeShape()
 	task.spawn(function()
@@ -629,6 +860,7 @@ function SenService.Start()
 	local rng = Random.new()
 	while true do
 		task.wait(0.5)
+		laneScare()
 		if GameState.GetPhase() ~= "Open" or ReplicatedStorage:GetAttribute("SenOff") == true then
 			nextHunt = os.clock() + Pace.seconds(rng:NextNumber(Config.SenTargetIntervalMin, Config.SenTargetIntervalMax))
 		elseif not hunting and os.clock() >= nextHunt then
