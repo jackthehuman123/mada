@@ -218,6 +218,20 @@ function UI.ShowClue(clueId: string)
 	clueTitle.Text = clue.title
 	clueBody.Text = clue.text
 	cluePanel.Visible = true
+	-- (it stayed open over a whole walk to the lake: it closes once you've walked off)
+	local lp = game:GetService("Players").LocalPlayer
+	local root = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
+	local from = root and root.Position
+	local shown = clueTitle.Text
+	task.spawn(function()
+		while cluePanel.Visible and clueTitle.Text == shown and from do
+			task.wait(0.5)
+			local r = lp.Character and lp.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
+			if not r or (r.Position - from).Magnitude > 14 then
+				cluePanel.Visible = false
+			end
+		end
+	end)
 end
 
 function UI.HideClue()

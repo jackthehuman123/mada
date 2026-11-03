@@ -391,8 +391,63 @@ def well(rng):
     return {"Stone": (stone, (122, 118, 108)), "Wood": (wood, (104, 80, 54)), "Rope": (rope, (176, 156, 112))}
 
 
+def ba_thu(rng):
+    """Bà Thu, the old woman who keeps the shrine: a little bent, áo bà ba, dark trousers, grey hair in a bun; feet at the
+    origin, about 4.7 tall."""
+    shirt, pants, skin, hair, eyes = bmesh.new(), bmesh.new(), bmesh.new(), bmesh.new(), bmesh.new()
+    lean = V((0, -0.18, 0))  # her back bends forward a little
+    for sx in (-1, 1):
+        tube(pants, [V((sx * 0.22, 0, 0.25)), V((sx * 0.22, 0, 1.2)), V((sx * 0.2, 0, 2.0))], [0.2, 0.22, 0.25], sides=8)
+        block(skin, V((sx * 0.22 - 0.1, -0.26, 0)), V((sx * 0.22 + 0.1, 0.1, 0.14)))
+    tube(shirt, [V((0, 0, 1.75)), V((0, -0.04, 2.3)), V((0, -0.1, 3.0)) + lean * 0.5, V((0, -0.14, 3.45)) + lean, V((0, -0.16, 3.58)) + lean],
+         [0.5, 0.46, 0.44, 0.38, 0.17], sides=10, squash=0.72)
+    for sx in (-1, 1):
+        tube(shirt, [V((sx * 0.42, -0.14, 3.4)) + lean, V((sx * 0.5, -0.24, 2.85)), V((sx * 0.34, -0.42, 2.45))], [0.15, 0.15, 0.14], sides=7)
+        ball(skin, V((sx * 0.26, -0.5, 2.38)), 0.1, (0.9, 0.8, 0.9), subdiv=1)  # hands folded in front
+    neck = V((0, -0.2, 3.62)) + lean
+    tube(skin, [neck, neck + V((0, -0.02, 0.18))], [0.1, 0.1], sides=6)
+    head = neck + V((0, -0.06, 0.48))
+    ball(skin, head, 0.32, (0.9, 0.95, 1.05))
+    ball(skin, head + V((0, -0.31, -0.02)), 0.06, (0.9, 0.9, 1.1), subdiv=1)  # nose
+    for sx in (-1, 1):
+        ball(eyes, head + V((sx * 0.12, -0.28, 0.06)), 0.035, (1.4, 0.6, 0.7), subdiv=1)
+    ball(hair, head + V((0, 0.04, 0.08)), 0.34, (1.0, 1.0, 0.92))  # grey hair, combed back
+    ball(hair, head + V((0, 0.3, 0.12)), 0.17, (1.0, 0.9, 1.0))  # the bun
+    return {"Shirt": (shirt, (70, 58, 54)), "Pants": (pants, (32, 32, 38)), "Skin": (skin, (196, 160, 132)), "Hair": (hair, (176, 174, 170)),
+            "Eyes": (eyes, (30, 24, 20))}
+
+
+def bin_(rng):
+    """Bin, the group's camera guy: orange jacket, jeans, a cap, a headlamp, the camcorder held up in his right hand;
+    feet at the origin, about 5 tall."""
+    jacket, jeans, skin, hair, cap, gear, lamp = (bmesh.new() for _ in range(7))
+    for sx in (-1, 1):
+        tube(jeans, [V((sx * 0.24, 0, 0.3)), V((sx * 0.24, 0, 1.3)), V((sx * 0.23, 0, 2.3))], [0.21, 0.22, 0.26], sides=8)
+        block(gear, V((sx * 0.24 - 0.13, -0.32, 0)), V((sx * 0.24 + 0.13, 0.14, 0.22)))  # shoes
+    tube(jacket, [V((0, 0, 2.15)), V((0, 0, 2.6)), V((0, 0, 3.4)), V((0, 0, 3.7)), V((0, 0, 3.82))], [0.52, 0.5, 0.5, 0.44, 0.2], sides=10, squash=0.68)
+    tube(jacket, [V((-0.48, 0, 3.6)), V((-0.6, 0, 3.0)), V((-0.62, -0.05, 2.45))], [0.17, 0.16, 0.15], sides=7)  # left arm down
+    ball(skin, V((-0.62, -0.06, 2.3)), 0.11, (0.9, 0.8, 1.0), subdiv=1)
+    tube(jacket, [V((0.48, 0, 3.6)), V((0.66, -0.3, 3.3)), V((0.6, -0.72, 3.45))], [0.17, 0.16, 0.15], sides=7)  # right arm up, filming
+    ball(skin, V((0.58, -0.86, 3.47)), 0.11, (0.9, 0.9, 0.9), subdiv=1)
+    block(gear, V((0.44, -1.25, 3.42)), V((0.72, -0.82, 3.72)))  # the camcorder
+    tube(gear, [V((0.58, -1.25, 3.57)), V((0.58, -1.38, 3.57))], [0.09, 0.1], sides=8)
+    tube(skin, [V((0, 0, 3.8)), V((0, 0, 3.98))], [0.11, 0.11], sides=6)
+    head = V((0, -0.02, 4.32))
+    ball(skin, head, 0.33, (0.92, 0.95, 1.05))
+    ball(skin, head + V((0, -0.32, -0.03)), 0.06, (0.9, 0.9, 1.1), subdiv=1)
+    for sx in (-1, 1):
+        ball(gear, head + V((sx * 0.12, -0.29, 0.06)), 0.035, (1.4, 0.6, 0.7), subdiv=1)
+    ball(hair, head + V((0, 0.05, 0.05)), 0.35, (1.0, 1.0, 0.85))
+    ball(cap, head + V((0, 0.02, 0.17)), 0.35, (1.0, 1.0, 0.55))
+    block(cap, head + V((-0.26, -0.62, 0.12)), head + V((0.26, -0.2, 0.17)))  # the peak
+    tube(lamp, [head + V((0, -0.36, 0.2)), head + V((0, -0.44, 0.2))], [0.08, 0.08], sides=8)
+    return {"Jacket": (jacket, (232, 128, 36)), "Jeans": (jeans, (48, 60, 86)), "Skin": (skin, (206, 168, 136)), "Hair": (hair, (20, 18, 18)),
+            "Cap": (cap, (180, 40, 40)), "Gear": (gear, (28, 28, 32)), "Lamp": (lamp, (255, 250, 220))}
+
+
 ITEMS = {"Sen": sen, "Child": child, "Face": face, "Hand": hand, "Shrine": shrine, "Altar": altar, "Lantern": lantern,
-         "Reeds": reeds, "Causeway": causeway, "FishRack": fish_rack, "Boat": boat, "Fence": fence, "Well": well}
+         "Reeds": reeds, "Causeway": causeway, "FishRack": fish_rack, "Boat": boat, "Fence": fence, "Well": well,
+         "BaThu": ba_thu, "Bin": bin_}
 
 
 # ---------------------------------------------------------------- export
@@ -404,7 +459,7 @@ def to_object(bm, name, rgb):
     bm.to_mesh(me)
     bm.free()
     for p in me.polygons:
-        p.use_smooth = name.split("_")[0] in ("Sen", "Child", "Face", "Hand") and not name.endswith("Hair")
+        p.use_smooth = name.split("_")[0] in ("Sen", "Child", "Face", "Hand", "BaThu", "Bin") and not name.endswith("Hair")
     ob = bpy.data.objects.new(name, me)
     bpy.context.scene.collection.objects.link(ob)
     m = bpy.data.materials.new(name + "Mat")

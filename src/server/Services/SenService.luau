@@ -294,7 +294,9 @@ local function endWalk()
 			task.wait(0.05)
 		end
 		m:Destroy()
-		shapeShown(true)
+		if walker == nil then -- (not while she's already walking after someone else: there were two of her)
+			shapeShown(true)
+		end
 	end)
 end
 

@@ -9,6 +9,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Art = require(Shared:WaitForChild("Art"))
 local Config = require(Shared:WaitForChild("Config"))
 local Pace = require(Shared:WaitForChild("Pace"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
@@ -63,6 +64,17 @@ local function newLantern(parent: Instance, house: string, pos: Vector3): BasePa
 	light.Parent = glow
 	base:SetAttribute("House", house)
 	base.Parent = parent
+	-- the Blender paper lantern on its little float (the red slab and the neon ball read as flat discs)
+	local mesh = Art.clone("Lantern", CFrame.new(pos + Vector3.new(0, 1.1, 0)), 0.9, base)
+	if mesh then
+		base.Transparency, glow.Transparency = 1, 1
+		local paper = mesh:FindFirstChild("Paper") :: BasePart?
+		if paper then
+			paper.Material, paper.Color, paper.Transparency = Enum.Material.Neon, rgb(196, 104, 58), 0.4
+			paper:SetAttribute("LitColor", paper.Color)
+			paper:SetAttribute("LitMaterial", "Neon")
+		end
+	end
 	return base
 end
 
@@ -126,6 +138,10 @@ local function float(lantern: BasePart, points: { Vector3 }, myDrift: number)
 		local bob = math.sin((os.clock() - t0) * 1.6) * 0.08
 		lantern.CFrame = CFrame.new(pos + Vector3.new(0, bob, 0))
 		glow.CFrame = CFrame.new(pos + Vector3.new(0, 0.8 + bob, 0))
+		local mesh = lantern:FindFirstChild("Lantern") :: Model?
+		if mesh then
+			mesh:PivotTo(CFrame.new(pos + Vector3.new(0, 1.1 + bob, 0)))
+		end
 	end
 end
 

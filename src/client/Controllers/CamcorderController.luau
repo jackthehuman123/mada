@@ -81,6 +81,9 @@ end
 
 local function setVisible(tagName: string, visible: boolean)
 	for _, p in partsOf(tagName) do
+		if p:GetAttribute("Hidden") then
+			continue -- (a graybox stand-in under a model: never shown again; Bà Thu's block came back after a tape)
+		end
 		if baseTransparency[p] == nil then
 			baseTransparency[p] = if p.Transparency >= 1 then 0 else p.Transparency
 		end
@@ -287,6 +290,12 @@ local function stopPlayback()
 	local cam = Workspace.CurrentCamera
 	cam.CameraType = Enum.CameraType.Custom
 	cam.FieldOfView = savedFov
+	local char = player.Character
+	local head = char and char:FindFirstChild("Head") :: BasePart?
+	local body = char and char:FindFirstChild("HumanoidRootPart") :: BasePart?
+	if head and body then -- straight ahead from your eyes, not the tape's last angle
+		cam.CFrame = CFrame.lookAt(head.Position, head.Position + body.CFrame.LookVector)
+	end
 	setVisible(Tags.HiddenOnCamera, true)
 	setVisible(Tags.CameraOnly, false)
 	hideSelf(false)

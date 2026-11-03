@@ -249,8 +249,8 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 	local lamp = P(m, { Name = "RoomLamp", Size = Vector3.new(0.6, 0.6, 0.6), Position = c + Vector3.new(0, H - 0.5, 2), Transparency = 1, CanCollide = false,
 		CanQuery = false, CastShadow = false })
 	local rl = Instance.new("PointLight")
-	rl.Color = if loc == "SenHouse" then rgb(150, 170, 190) else rgb(255, 190, 130)
-	rl.Range, rl.Brightness, rl.Shadows = 22, if loc == "SenHouse" then 0.35 else 0.75, true
+	rl.Color = if loc == "SenHouse" then rgb(150, 170, 190) else rgb(238, 220, 190)
+	rl.Range, rl.Brightness, rl.Shadows = 22, if loc == "SenHouse" then 0.35 else 0.5, true
 	rl.Parent = lamp
 	-- the rooms lived in (I-10: "barely any detail"): a platform bed, a cabinet, a mat by the door, a lantern stand, a
 	-- bonsai, along the walls clear of the altar, the clue table (right) and the memento stool (left). Sen's stays bare.
@@ -319,6 +319,19 @@ local function shrine(parent: Instance): Model
 	local body = P(thu, { Name = "Body", Size = Vector3.new(2.2, 2.4, 1.6), Position = c + Vector3.new(-4, 2.4, 0), Color = rgb(60, 70, 90), Material = M.Fabric })
 	P(thu, { Name = "Head", Shape = Enum.PartType.Ball, Size = Vector3.new(1.3, 1.3, 1.3), Position = c + Vector3.new(-4, 4.2, 0), Color = rgb(220, 196, 170) })
 	thu.PrimaryPart = body
+	-- her Blender model, standing on the mat facing the lane (the graybox stays as her prompt and the body that walks)
+	Art.place("BaThu", CFrame.new(c + Vector3.new(-4, 1.2, 0)) * CFrame.Angles(0, math.pi, 0), thu, 1, function(mm)
+		for _, d in thu:GetChildren() do
+			if d:IsA("BasePart") and (d.Name == "Body" or d.Name == "Head") then
+				d.Transparency = 1
+				d:SetAttribute("Hidden", true)
+			end
+		end
+		for _, d in mm:GetChildren() do
+			d.Parent = thu
+		end
+		mm:Destroy()
+	end)
 	tag(thu, Tags.NpcBaThu)
 	tag(thu, Tags.HiddenOnCamera)
 	-- safe zone + camcorder recharge
@@ -698,10 +711,15 @@ local function drownedFestival(parent: Instance)
 	-- a dim, cold light over the rows, as if from far above through the water
 	local glow = P(m, { Name = "WaterLight", Size = Vector3.new(1, 1, 1), Position = Vector3.new(0, y + 18, -16), Transparency = 1, CanCollide = false, CanQuery = false })
 	local l = Instance.new("PointLight")
-	l.Color = rgb(90, 140, 170)
-	l.Range = 40
-	l.Brightness = 1.2
+	l.Color = rgb(110, 160, 190)
+	l.Range = 60
+	l.Brightness = 2.4
 	l.Parent = glow
+	local stageLamp = P(m, { Name = "StageLight", Size = Vector3.new(1, 1, 1), Position = Vector3.new(0, y + 10, -24), Transparency = 1,
+		CanCollide = false, CanQuery = false })
+	local sl = Instance.new("SpotLight")
+	sl.Face, sl.Angle, sl.Range, sl.Brightness, sl.Color = Enum.NormalId.Bottom, 70, 26, 3, rgb(255, 200, 140)
+	sl.Parent = stageLamp
 	m.PrimaryPart = P(m, { Name = "Door", Size = Vector3.new(4, 1, 1), Position = Vector3.new(0, y + 1.5, 10), Transparency = 1, CanCollide = false, CanQuery = false })
 end
 
@@ -750,9 +768,12 @@ end
 local function lighting()
 	local L = game:GetService("Lighting")
 	-- (40/46/66 and 50/58/84 played pitch black on the dock: still night, but the shore, the paths and the water read)
-	L.Ambient = rgb(64, 72, 98)
-	L.OutdoorAmbient = rgb(86, 96, 128)
-	L.Brightness = 1
+	-- (round 2, 2026-11-04: still black frames outdoors on the causeway, the lane and the dock: more moonlight, a little
+	-- exposure; still night)
+	L.Ambient = rgb(74, 82, 108)
+	L.OutdoorAmbient = rgb(112, 124, 158)
+	L.Brightness = 1.6
+	L.ExposureCompensation = 0.25
 	L.EnvironmentDiffuseScale = 0.3
 	L.EnvironmentSpecularScale = 0.3
 	L.FogColor = rgb(26, 32, 46)

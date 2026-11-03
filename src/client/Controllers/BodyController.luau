@@ -126,7 +126,9 @@ local function ownBody(char: Model)
 	local cam = Workspace.CurrentCamera
 	local head = char:FindFirstChild("Head") :: BasePart?
 	local scripted = cam.CameraType == Enum.CameraType.Scriptable
-	local viewfinder = lp:GetAttribute("CameraUp") == true and not scripted
+	local hum = char:FindFirstChildOfClass("Humanoid")
+	local swimming = hum ~= nil and hum:GetState() == Enum.HumanoidStateType.Swimming -- (lying flat in the water, the body filled the view)
+	local viewfinder = (lp:GetAttribute("CameraUp") == true and not scripted) or swimming
 	for _, d in char:GetDescendants() do
 		if d:IsA("BasePart") or d:IsA("Decal") then
 			local hide = 0

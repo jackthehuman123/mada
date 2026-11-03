@@ -14,6 +14,7 @@ local Text = {
 	},
 	Messages = {
 		membersOnly = "Làng Vọng is in closed playtesting: only members of the dev group can join for now.", -- DRAFT (kick message, PlaytestGate)
+		membersCheckFailed = "Roblox couldn't check your group just now. Please rejoin in a moment.", -- DRAFT (PlaytestGate)
 		findBin = "Find Bin.", -- brief §4 beat 7
 		causewayFlooded = "The causeway is under water.", -- brief §4 beat 5
 		forestEdge = "Wandering in the forest won't save you.", -- trying to leave by land; Catlyn's line, 2026-11-02

@@ -12,6 +12,7 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
+local Art = require(Shared:WaitForChild("Art"))
 local Config = require(Shared:WaitForChild("Config"))
 local Pace = require(Shared:WaitForChild("Pace"))
 local Remotes = require(Shared:WaitForChild("Remotes"))
@@ -84,6 +85,24 @@ local function build(at: Vector3): Model
 	hum.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
 	hum.Parent = m
 	m.PrimaryPart = root
+	-- his Blender model welded on (the boxes stay, unseen: the headlamp's beam, the walking body)
+	local mesh = Art.clone("Bin", root.CFrame * CFrame.new(0, -3, 0), 1)
+	if mesh then
+		for _, d in m:GetChildren() do
+			if d:IsA("BasePart") and d ~= root then
+				d.Transparency = 1
+				d:SetAttribute("Hidden", true)
+			end
+		end
+		for _, p in mesh:GetChildren() do
+			if p:IsA("BasePart") then
+				p.Anchored, p.Massless, p.CanCollide = false, true, false
+				p.Parent = m
+				weld(root, p)
+			end
+		end
+		mesh:Destroy()
+	end
 	CollectionService:AddTag(m, Tags.NpcBin)
 	m.Parent = Workspace:FindFirstChild("World") or Workspace
 	root:SetNetworkOwner(nil)

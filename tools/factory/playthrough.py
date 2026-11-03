@@ -195,7 +195,7 @@ shot("recap")
 tick("recap lists the letter", gui.Recap.Text.Text:find("reached", 1, true), gui.Recap.Text.Text)
 """, 150),
     ("again", "After the recap the night starts again (Studio; a live run server sends the team to the menu)", None, """
-tick("back to the intro", waitFor(function() return phase() == "Intro" end, 60), phase())
+tick("the night starts again", waitFor(function() return phase() == "Intro" or phase() == "Arrival" end, 60), phase())
 shot("again")
 """, 90),
 ]

@@ -6,7 +6,7 @@ local RS = game:GetService("ReplicatedStorage")
 local t0 = os.clock()
 while not RS:FindFirstChild("ArtTemplates") and os.clock() - t0 < 60 do task.wait(0.5) end
 check(RS:FindFirstChild("ArtTemplates"), "the models never loaded")
-eq(#RS.ArtTemplates:GetChildren(), 13, "models")
+eq(#RS.ArtTemplates:GetChildren(), 15, "models")
 task.wait(2) -- (the world's dressing places them right after)
 local W = workspace.World
 local shrine = W:FindFirstChild("Shrine", true)
@@ -42,6 +42,7 @@ gui.Card.Visible = false
 return "card cleared"
 --@ Shot shrine-model -296,10,-30 -> -330,3,-62
 --@ Shot sen-child -301,4.5,-33 -> -310,2.5,-41
+--@ Shot ba-thu -334,5,-55 -> -334,3.4,-64
 --@ Shot causeway -300,9,26 -> -340,0,80
 --@ Shot props -150,9,-20 -> -140,1,8
 --@ Shot boat -128,6,-40 -> -133,-1,-64

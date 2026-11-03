@@ -495,6 +495,17 @@ function MenuService.Init()
 	TeleportService.TeleportInitFailed:Connect(function(p: Player, result: Enum.TeleportResult, err: string)
 		warn(`[LangVong] teleport failed for {p.Name}: {result.Name} {err}`)
 		-- the team was left "starting" with no way on: free it and tell them (they can press Begin again)
+		if kind == "Run" and p:GetAttribute("InRun") == false then
+			-- sent back to the menu after an ending and the trip failed: back in this server's night instead of a dead
+			-- Ending (the run starts again for whoever is still here)
+			p:SetAttribute("InRun", true)
+			notice(p, Text.Menu.teleportFailed)
+			local GameState = require(script.Parent:WaitForChild("GameStateService")) :: any
+			if GameState.GetPhase() == "Ending" then
+				GameState.Reset()
+			end
+			return
+		end
 		local team = teams[teamOf[p.UserId] or ""]
 		if team and team.starting and kind ~= "Run" then
 			team.starting = false

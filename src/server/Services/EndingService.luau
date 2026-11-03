@@ -16,6 +16,7 @@ local Workspace = game:GetService("Workspace")
 
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Analytics = require(Shared:WaitForChild("Analytics"))
+local Art = require(Shared:WaitForChild("Art"))
 local Config = require(Shared:WaitForChild("Config"))
 local Figures = require(Shared:WaitForChild("Figures"))
 local Pace = require(Shared:WaitForChild("Pace"))
@@ -296,15 +297,23 @@ local function home()
 	-- the lanterns gather; the water moves; Sen comes up holding hands with every child she took
 	for k = 1, 36 do
 		local a = k / 36 * math.pi * 2
-		local p = Instance.new("Part")
-		p.Name = "Glow"
-		p.Shape = Enum.PartType.Ball
-		p.Size = Vector3.new(1.3, 1.3, 1.3)
-		p.Color = rgb(255, 170, 90)
-		p.Material = Enum.Material.Neon
-		p.Anchored, p.CanCollide = true, false
-		p.Position = LAKE_CENTRE + Vector3.new(math.cos(a) * (18 + k % 3 * 6), 0.6, math.sin(a) * (14 + k % 4 * 5))
-		p.Parent = f
+		local at = LAKE_CENTRE + Vector3.new(math.cos(a) * (18 + k % 3 * 6), 0.6, math.sin(a) * (14 + k % 4 * 5))
+		local mesh = Art.clone("Lantern", CFrame.new(at + Vector3.new(0, 0.5, 0)) * CFrame.Angles(0, a, 0), 0.9, f)
+		local paper = mesh and mesh:FindFirstChild("Paper") :: BasePart?
+		if paper then -- (paper lanterns gathering: 36 neon balls read as flat yellow discs)
+			paper.Name = "Glow"
+			paper.Material, paper.Color, paper.Transparency = Enum.Material.Neon, rgb(196, 104, 58), 0.4
+		else
+			local p = Instance.new("Part")
+			p.Name = "Glow"
+			p.Shape = Enum.PartType.Ball
+			p.Size = Vector3.new(1.3, 1.3, 1.3)
+			p.Color = rgb(255, 170, 90)
+			p.Material = Enum.Material.Neon
+			p.Anchored, p.CanCollide = true, false
+			p.Position = at
+			p.Parent = f
+		end
 	end
 	pause(8)
 	local row = Instance.new("Model")

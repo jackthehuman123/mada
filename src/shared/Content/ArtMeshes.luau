@@ -8,6 +8,22 @@ return {
 		{ part = "Fruit", id = "rbxassetid://100050384536552", size = Vector3.new(0.684, 0.520, 0.691), at = Vector3.new(-1.321, 3.850, -0.600), color = Color3.fromRGB(230, 140, 50) },
 		{ part = "Wood", id = "rbxassetid://96056395017644", size = Vector3.new(8.200, 7.600, 3.412), at = Vector3.new(0.000, 3.800, -0.106), color = Color3.fromRGB(88, 30, 26) },
 	},
+	BaThu = {
+		{ part = "Eyes", id = "rbxassetid://134981621296060", size = Vector3.new(0.328, 0.049, 0.036), at = Vector3.new(-0.000, 4.160, -0.720), color = Color3.fromRGB(30, 24, 20) },
+		{ part = "Hair", id = "rbxassetid://104554114105403", size = Vector3.new(0.647, 0.626, 0.753), at = Vector3.new(-0.000, 4.180, -0.363), color = Color3.fromRGB(176, 174, 170) },
+		{ part = "Pants", id = "rbxassetid://111179530621017", size = Vector3.new(0.900, 1.756, 0.500), at = Vector3.new(0.000, 1.128, 0.000), color = Color3.fromRGB(32, 32, 38) },
+		{ part = "Shirt", id = "rbxassetid://77833947329025", size = Vector3.new(1.286, 1.889, 0.913), at = Vector3.new(-0.006, 2.660, -0.115), color = Color3.fromRGB(70, 58, 54) },
+		{ part = "Skin", id = "rbxassetid://109572533380132", size = Vector3.new(0.681, 4.436, 0.896), at = Vector3.new(-0.000, 2.218, -0.348), color = Color3.fromRGB(196, 160, 132) },
+	},
+	Bin = {
+		{ part = "Cap", id = "rbxassetid://101591421401530", size = Vector3.new(0.666, 0.385, 0.990), at = Vector3.new(0.000, 4.490, -0.145), color = Color3.fromRGB(180, 40, 40) },
+		{ part = "Gear", id = "rbxassetid://114673397707240", size = Vector3.new(1.090, 4.405, 1.520), at = Vector3.new(-0.175, 2.202, -0.620), color = Color3.fromRGB(28, 28, 32) },
+		{ part = "Hair", id = "rbxassetid://78808599204300", size = Vector3.new(0.666, 0.595, 0.700), at = Vector3.new(0.000, 4.370, 0.030), color = Color3.fromRGB(20, 18, 18) },
+		{ part = "Jacket", id = "rbxassetid://125388575158882", size = Vector3.new(1.570, 1.670, 1.108), at = Vector3.new(-0.029, 2.985, -0.218), color = Color3.fromRGB(232, 128, 36) },
+		{ part = "Jeans", id = "rbxassetid://98461409156371", size = Vector3.new(0.980, 2.003, 0.520), at = Vector3.new(0.000, 1.301, 0.000), color = Color3.fromRGB(48, 60, 86) },
+		{ part = "Lamp", id = "rbxassetid://100806272951894", size = Vector3.new(0.160, 0.160, 0.080), at = Vector3.new(-0.000, 4.520, -0.420), color = Color3.fromRGB(255, 250, 220) },
+		{ part = "Skin", id = "rbxassetid://104236225514504", size = Vector3.new(1.377, 2.477, 1.238), at = Vector3.new(0.020, 3.428, -0.325), color = Color3.fromRGB(206, 168, 136) },
+	},
 	Boat = {
 		{ part = "Canopy", id = "rbxassetid://118297727175434", size = Vector3.new(2.599, 1.558, 3.400), at = Vector3.new(0.000, 1.371, 0.000), color = Color3.fromRGB(146, 122, 78) },
 		{ part = "Hull", id = "rbxassetid://128167164665006", size = Vector3.new(2.900, 2.300, 10.000), at = Vector3.new(0.000, 0.650, 0.000), color = Color3.fromRGB(84, 62, 44) },
