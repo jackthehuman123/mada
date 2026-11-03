@@ -104,6 +104,8 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **Done when:** Catlyn has listened and approved or swapped each of the four (`Content/Sounds.luau` `music_*`).
 
 ### I-14 · Village layout: houses round a natural lake, in the forest
+- **The brief:** `docs/VILLAGE.md` (everything from the story and our talks: the shape, three lanes, the places in
+  order, the rules the layout keeps, the eight views to build for, light and sound).
 - **Needs:** no Studio to write `Build.luau`; Studio to look and tune.
 - **What Catlyn asked (2026-11-02):** the village in the forest, by big water, houses around the lake. "It doesn't
   have to be circular, make it look like a typical lake in real life."
