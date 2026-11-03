@@ -18,6 +18,8 @@ local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Tags = require(Shared:WaitForChild("Tags"))
 local Config = require(Shared:WaitForChild("Config"))
 local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
+local Furniture = require(Shared:WaitForChild("Content"):WaitForChild("Furniture"))
+local AssetService = game:GetService("AssetService")
 
 local SHORE_Z, LANE_Z, HOUSE_Z = -50, -20, 30
 local WATER_Y = -1 -- the lake's surface; the land is at y = 0
@@ -120,6 +122,38 @@ local function terrainPass()
 end
 
 -- one house on the lane: floor, walls with a door gap toward the lane, a tiled roof, a window ---------------------
+-- One piece of the Blender furniture (Content/Furniture) standing at cf (its foot, front toward -Z of cf), aged for the
+-- night: darker and greyer than in Lotus Valley. A mesh that won't load is left out (dressing, never gameplay).
+local meshCache: { [string]: MeshPart | false } = {}
+local function furniture(parent: Instance, id: string, cf: CFrame)
+	-- in the background: loading a mesh waits on Roblox, and the world must never wait on dressing (a test place that
+	-- couldn't fetch them stalled the whole build)
+	task.spawn(function()
+	for _, piece in Furniture[id] or {} do
+		local t = meshCache[piece.id]
+		if t == nil then
+			local ok, mp = pcall(function()
+				return AssetService:CreateMeshPartAsync(piece.id)
+			end)
+			t = if ok then mp else false
+			meshCache[piece.id] = t
+		end
+		if t then
+			local p = (t :: MeshPart):Clone()
+			p.Name = id .. piece.part
+			p.Anchored, p.CanCollide, p.CanQuery, p.CanTouch, p.CastShadow = true, piece.part == "Wood", false, false, true
+			p.Size = piece.size
+			p.CFrame = cf * CFrame.new(piece.at)
+			local h, s, v = piece.color:ToHSV()
+			p.Color = Color3.fromHSV(h, s * 0.6, v * 0.62)
+			p.Material = if piece.part == "Glass" then M.Glass elseif piece.part == "Wood" then M.Wood else M.SmoothPlastic
+			p.Transparency = if piece.part == "Glass" then 0.5 else 0
+			p.Parent = parent
+		end
+	end
+	end)
+end
+
 local function house(parent: Instance, x: number, loc: string?, child: string?): Model
 	local m = model(parent, loc or ("House_" .. tostring(x)), loc)
 	local c = Vector3.new(x, 0, HOUSE_Z)
@@ -174,6 +208,16 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 	local altar = P(m, { Name = "Altar", Size = Vector3.new(6, 3, 2.4), Position = c + Vector3.new(0, 2.5, D / 2 - 2), Color = rgb(110, 40, 32), Material = M.Wood })
 	if loc == "SenHouse" then
 		tag(altar, Tags.SenAltar)
+	end
+	-- the rooms lived in (I-10: "barely any detail"): a platform bed, a cabinet, a mat by the door, a lantern stand, a
+	-- bonsai, along the walls clear of the altar, the clue table (right) and the memento stool (left). Sen's stays bare.
+	if loc ~= "SenHouse" then
+		local f = CFrame.new(c.X, 1, 0)
+		furniture(m, "Bed", f * CFrame.new(-8.6, 0, 35) * CFrame.Angles(0, math.rad(-90), 0))
+		furniture(m, "Cabinet", f * CFrame.new(8.6, 0, 37.6))
+		furniture(m, "Rug", f * CFrame.new(0, 0, 25))
+		furniture(m, "Lantern", f * CFrame.new(9, 0, 23.2) * CFrame.Angles(0, math.rad(180), 0))
+		furniture(m, "Bonsai", f * CFrame.new(-9, 0, 22.8))
 	end
 	-- a lost child's house has a lantern stop on the shore below it (brief §5.4)
 	if child then
