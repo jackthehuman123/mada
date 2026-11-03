@@ -129,6 +129,10 @@ local function showRecap()
 		if ReplicatedStorage:GetAttribute("ServerKind") == "Run" then R.backSoon else R.again,
 	}
 	recapText.Text = table.concat(lines, "\n")
+	local card = UI.Gui():FindFirstChild("Card") -- (the ending's card is read by now: the recap takes its place, not over it)
+	if card then
+		(card :: GuiObject).Visible = false
+	end
 	recapPanel.Visible = true
 end
 

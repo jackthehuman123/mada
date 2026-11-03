@@ -87,7 +87,10 @@ for _, house in { "TeacherHouse", "PuppetHouse", "FishHouse", "HeadHouse" } do
 			local def = id and Clues[id]
 			local pr = c:FindFirstChildWhichIsA("ProximityPrompt", true)
 			if def and def.location == house and pr and pr.Enabled then
-				hold(pr, posOf(c))
+				if not hold(pr, posOf(c)) then
+					state:SetAttribute("NeedServer", "clue:" .. id) -- [debug fallback]
+					task.wait(2)
+				end
 				local panel = gui:FindFirstChild("CluePanel")
 				if panel and panel.Visible then
 					got += 1
@@ -293,7 +296,8 @@ def main():
                     st.luau(f'game.Players.LocalPlayer.PlayerGui.LVBot:SetAttribute("Got", "{want}") return "ok"', "Client")
                 need = state.get("need")
                 if need:  # the bot's [debug fallback]: one action it couldn't do as a player
-                    st.luau(DBG + f'dbg("{need}") return "ok"', "Server")
+                    cmd, _, arg = need.partition(":")
+                    st.luau(DBG + (f'dbg("{cmd}", "{arg}")' if arg else f'dbg("{cmd}")') + ' return "ok"', "Server")
                     st.luau('game.Players.LocalPlayer.PlayerGui.LVBot:SetAttribute("NeedServer", nil) return "ok"', "Client")
                     fallbacks.append((sid, need))
                 if state.get("done"):
