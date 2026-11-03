@@ -1,7 +1,7 @@
 --!strict
 -- Being taken, seen from your own eyes (docs/ISSUES.md I-16, Catlyn's storyboard 2026-11-02). The server
 -- (SenService.Take) holds the body and pulls it, feet first, into the water where everyone can see it; this plays what
--- you see, about 6.5 s:
+-- you see, in Config.SenTakeSeconds (3 s):
 --   1 the grab: something takes your leg. Your view turns round and down: a small wet hand holding your ankle
 --   2 the pull: she pulls harder; you fall and slide backward across the ground into the water, still looking at it
 --   3 under: murky, muffled, bubbles. Her face, for a moment, close: the wet hair drifts apart (a sting)
@@ -178,7 +178,7 @@ local function play(water: Vector3, quiet: boolean)
 		task.delay(Pace.seconds(0.1), function()
 			UI.ScreenStatic(false)
 		end)
-		ok = over(my, 0.9, function(a)
+		ok = over(my, Config.SenFaceSeconds, function(a)
 			-- the hair parts quickly, holds, then closes as she drifts back into the murk
 			local open = if a < 0.25 then a / 0.25 elseif a < 0.7 then 1 else 1 - (a - 0.7) / 0.3
 			left.CFrame = l0 * CFrame.new(-0.28 * open, 0, 0) * CFrame.Angles(0, 0, math.rad(8 * open))
@@ -195,7 +195,7 @@ local function play(water: Vector3, quiet: boolean)
 	-- 4 drowning: sinking, looking up at the lanterns as everything blurs and darkens
 	if ok then
 		local deep = sink - Vector3.new(0, 7, 0) + dir * 3
-		ok = over(my, 2.1, function(a)
+		ok = over(my, Config.SenDrownSeconds, function(a)
 			local e = ease(a)
 			local pos = sink:Lerp(deep, e)
 			cam.CFrame = CFrame.lookAt(pos, pos + dir * 3 + Vector3.new(0, 10, 0)) * CFrame.Angles(0, 0, math.rad(math.sin(a * 2.5) * 5))
@@ -208,7 +208,9 @@ local function play(water: Vector3, quiet: boolean)
 	if ok then
 		black.BackgroundTransparency = 1
 		black.Visible = true
-		over(my, 0.5, function(a)
+		local used = Config.SenGrabSeconds + Config.SenDragSeconds + Config.SenDrownSeconds
+			+ (if quiet or not Config.SenJumpscare then 0 else Config.SenFaceSeconds)
+		over(my, math.max(0.1, Config.SenTakeSeconds - used), function(a)
 			black.BackgroundTransparency = 1 - a
 		end)
 	end
@@ -221,7 +223,7 @@ local function play(water: Vector3, quiet: boolean)
 	bodyView(false)
 	player:SetAttribute("SenCinematic", false)
 	if black.Visible then
-		local t0, len = os.clock(), Pace.seconds(0.8)
+		local t0, len = os.clock(), Pace.seconds(0.4)
 		while os.clock() - t0 < len do
 			black.BackgroundTransparency = (os.clock() - t0) / len
 			RunService.RenderStepped:Wait()

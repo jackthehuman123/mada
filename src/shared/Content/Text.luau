@@ -15,6 +15,7 @@ local Text = {
 	Messages = {
 		findBin = "Find Bin.", -- brief §4 beat 7
 		causewayFlooded = "The causeway is under water.", -- brief §4 beat 5
+		forestEdge = "Wandering in the forest won't save you.", -- trying to leave by land; Catlyn's line, 2026-11-02
 		binCamera = "Bin's camera. Still recording.", -- story.md §13 "still recording". Approved by Catlyn 2026-11-02
 		binTapesHint = "Press T to watch Bin's tapes.",
 		letterFound = "A letter, folded very small, under the altar.", -- approved 2026-11-02

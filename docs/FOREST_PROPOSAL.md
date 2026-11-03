@@ -1,6 +1,7 @@
 # The forest, and the souls in it (proposal, 2026-11-02, for Catlyn)
 
-**Status:** proposal, nothing built. The forest's look and the loop go into the layout (I-14); the wandering souls are
+**Status:** proposal. Catlyn 2026-11-02: for now only the line "Wandering in the forest won't save you." when
+players try to leave by land (built); the souls (§2) are parked. The forest's look and the loop go into the layout (I-14); the wandering souls are
 a new threat (I-17) and need Catlyn's go: the brief lists *cô hồn* under non-goals.
 
 ## What Catlyn asked

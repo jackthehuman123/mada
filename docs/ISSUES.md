@@ -126,7 +126,7 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   the player sees, from their own view, being dragged into the water.
 - **Reworked to Catlyn's storyboard (2026-11-02):** the grab is her hand on your leg (you look down at it), the
   pull is backward into the water, under it a glimpse of her face as the wet hair parts (the sting), then the
-  drowning blur. Earlier version below.
+  drowning blur. Catlyn: the whole thing lasts 3 s (`Config.SenTakeSeconds`). Earlier version below.
 - **Built (branch `playtest-fixes`, not tested):** `SenService`: a pale shape under the surface with carp, visible to
   all, drifting round the middle; while hunting it follows the target along the shore (still 2.2 s, then a 40
   studs/s dart), rises nearer the surface; footprints walk out of the water toward the target (camera only); step 5
@@ -139,6 +139,8 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   the pull play from the player's eyes and look right (Catlyn approves); `test.py` PASS.
 
 ### I-17 · The wandering souls (cô hồn) in the forest
+- **Parked (Catlyn 2026-11-02):** for now, trying to leave by land just shows "Wandering in the forest won't save
+  you." (`Text.Messages.forestEdge`, on every land boundary; the lake one stays silent). Done 2026-11-02.
 - **Needs:** Catlyn's go (it lifts a brief non-goal); then code, no Studio to write.
 - **What Catlyn asked:** something in the forest that catches players who try to escape.
 - **Proposal (`docs/FOREST_PROPOSAL.md` §2):** pale faceless souls only in the forest, seen at the edge of vision,

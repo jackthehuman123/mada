@@ -87,9 +87,12 @@ local Config = {
 	SenReachDistance = 8, -- step 5 happens once she's this close to the edge by the player
 	SenArriveTimeout = 15, -- seconds the last warning waits for her to arrive
 	SenFootprints = 8, -- wet prints walking out of the water toward the player (camera only), steps 3-4
-	SenGrabSeconds = 1.0, -- her hand on your leg: you look down at it before the pull
-	SenDragSeconds = 2.0, -- pulled backward by the leg to the water and under (everyone sees it)
-	SenTakeSeconds = 6.5, -- the taken player's view: grab, pull, her face, drowning blur; then the drowned festival
+	-- being taken lasts SenTakeSeconds in all (Catlyn: 3 s); the parts below add up to it, the rest is the cut to black
+	SenTakeSeconds = 3, -- then the drowned festival
+	SenGrabSeconds = 0.5, -- her hand on your leg: you look down at it before the pull
+	SenDragSeconds = 1.0, -- pulled backward by the leg to the water and under (everyone sees it)
+	SenFaceSeconds = 0.6, -- under the water, the glimpse of her face
+	SenDrownSeconds = 0.6, -- sinking, the view blurs and darkens
 	SenJumpscare = true, -- the glimpse of her face under the water, with a sting (off: the pull and the blur only)
 
 	-- Taken / rescue (§5.6)
