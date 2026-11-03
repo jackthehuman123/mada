@@ -104,8 +104,11 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **Done when:** Catlyn has listened and approved or swapped each of the four (`Content/Sounds.luau` `music_*`).
 
 ### I-14 · Village layout: houses round a natural lake, in the forest
-- **The brief:** `docs/VILLAGE.md` (everything from the story and our talks: the shape, three lanes, the places in
-  order, the rules the layout keeps, the eight views to build for, light and sound).
+- **The brief:** `docs/VILLAGE.md`. **Catlyn's map (`docs/refs/v2/map.jpg`) is the layout** (2026-11-02): the village
+  a cluster on the east shore with two roads ending at Sen's two-storey house on the north-east headland, the shrine
+  alone on the west point, the dock and a plank bridge across the south bay, the causeway from the south-west marsh,
+  the puppet stage on stilts and the festival ground in the north, karst mountains all round. One reference image
+  per view in `docs/refs/v2/`.
 - **Needs:** no Studio to write `Build.luau`; Studio to look and tune.
 - **What Catlyn asked (2026-11-02):** the village in the forest, by big water, houses around the lake. "It doesn't
   have to be circular, make it look like a typical lake in real life."
