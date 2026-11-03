@@ -22,6 +22,7 @@ function CamcorderService.Reset()
 	for _, p in Players:GetPlayers() do
 		full(p)
 		raised[p] = nil
+		p:SetAttribute("CameraUp", false)
 	end
 end
 
@@ -38,6 +39,7 @@ function CamcorderService.Init()
 			up = false
 		end
 		raised[p] = up or nil
+		p:SetAttribute("CameraUp", up == true) -- everyone sees the arms come up (BodyController)
 	end)
 	Players.PlayerAdded:Connect(full)
 	Players.PlayerRemoving:Connect(function(p)
@@ -65,6 +67,7 @@ function CamcorderService.Start()
 				b = math.max(0, b - Config.CameraDrainPerSecond * dt)
 				if b <= 0 then
 					raised[p] = nil
+					p:SetAttribute("CameraUp", false)
 					Analytics.track("camera_battery_empty", { player = p.Name })
 				end
 			end

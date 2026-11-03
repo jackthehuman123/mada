@@ -111,6 +111,12 @@ function UI.Fade(seconds: number)
 end
 
 function UI.ShowDialogue(speaker: string, text: string, choice: string?)
+	-- a conversation has the screen: the clue paper and the journal close (the letter sat over "Write: Sen", the choice
+	-- dimmed behind it; Studio pass 2026-11-03)
+	cluePanel.Visible = false
+	if journal then
+		journal.Visible = false
+	end
 	dialogueSpeaker.Text = speaker
 	dialogueText.Text = text
 	dialogueChoice.Text = choice or ""

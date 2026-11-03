@@ -72,6 +72,28 @@ local Config = {
 	SenWarningStepSeconds = 5,
 	IncensePerPlayer = 2,
 	IncenseWithdrawSeconds = 60,
+	-- Sen in the water (I-16): a pale shape under the surface; drifts round the middle, follows a hunted player along
+	-- the shore (still, then suddenly closer), reaches from the edge
+	LakeMiddle = Vector3.new(0, -1, -265), -- where the lanterns gather (move with the I-14 layout)
+	WaterY = -1, -- the lake's surface
+	SenWanderRadius = 70,
+	SenSwimSpeed = 4, -- studs/s drifting
+	SenDartSpeed = 40, -- studs/s in a sudden move while hunting
+	SenDartSeconds = 1.1,
+	SenStillSeconds = 2.2, -- still between darts
+	SenIdleDepth = 7, -- studs under the surface (faint)
+	SenHuntDepth = 2.5, -- closer to the surface while hunting (clearer)
+	SenOffshore = 5, -- she waits this far out from the water's edge
+	SenReachDistance = 8, -- step 5 happens once she's this close to the edge by the player
+	SenArriveTimeout = 15, -- seconds the last warning waits for her to arrive
+	SenFootprints = 8, -- wet prints walking out of the water toward the player (camera only), steps 3-4
+	-- being taken lasts SenTakeSeconds in all (Catlyn: 3 s); the parts below add up to it, the rest is the cut to black
+	SenTakeSeconds = 3, -- then the drowned festival
+	SenGrabSeconds = 0.5, -- her hand on your leg: you look down at it before the pull
+	SenDragSeconds = 1.0, -- pulled backward by the leg to the water and under (everyone sees it)
+	SenFaceSeconds = 0.6, -- under the water, the glimpse of her face
+	SenDrownSeconds = 0.6, -- sinking, the view blurs and darkens
+	SenJumpscare = true, -- the glimpse of her face under the water, with a sting (off: the pull and the blur only)
 
 	-- Taken / rescue (§5.6)
 	RescuesPerPlayerPerNight = 1,
@@ -91,6 +113,34 @@ local Config = {
 	-- Closed playtest: only members of this Roblox group may join a live server (0 = anyone). Studio is never gated.
 	-- 5099606 = Raumania (owner Holding_accountx1; Noptable Founder, Catlyn Co-Founder)
 	PlaytestGroupId = 5099606,
+
+	-- Menu and teams (docs/ISSUES.md I-09): players join a menu server, form a team, and each team plays in its own
+	-- reserved server of this same place. The menu server's size is set on roblox.com (Places > Settings), not here.
+	TeamMax = 4, -- = MaxPlayers
+	RunWaitForTeamSeconds = 40, -- a run server starts once the whole team has arrived, or this long after the first
+	TeleportTries = 3,
+	InviteDataTries = 10, -- launch data from an invite can take a few seconds to appear (Roblox docs)
+	RespawnSeconds = 3, -- characters don't load by themselves (the menu decides who plays): respawn after a fall
+	MenuCameraFrom = Vector3.new(70, 16, -250), -- out on the lake at dusk, looking back at the village
+	MenuCameraTo = Vector3.new(-70, 6, 0),
+	MenuCameraDrift = 40, -- studs the camera slides west and back
+	MenuCameraDriftSeconds = 60,
+
+	-- First person and bodies (I-12): locked first person, your own arms and legs visible, poses everyone sees
+	FirstPersonCameraOffset = Vector3.new(0, 0, -1.1), -- forward of the head, so looking down shows the body, not its inside
+	LookPitchSendHz = 8, -- how often a client tells the server where it's looking (others' heads and arms follow)
+	LookPitchMax = 70, -- degrees up or down
+	BobAmount = 0.08, -- studs of head bob at walking speed
+	BobSpeed = 7, -- radians per second of head bob at walking speed
+	SwayRoll = 1.6, -- degrees the camera leans when strafing
+	BreathAmount = 0.025, -- studs of idle breathing
+	PoseLerp = 12, -- how fast heads and arms follow (per second)
+
+	-- Music (I-13): a quiet bed in the open village; tension from Sen's warning step 2, a chase from step 4
+	MusicFadeSeconds = 2.5,
+	MusicTensionStep = 2,
+	MusicChaseStep = 4,
+	MusicHoldSeconds = 9, -- after the last warning step, how long tension/chase music lasts before fading back
 }
 
 return Config

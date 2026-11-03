@@ -36,6 +36,55 @@ Rules for bringing assets in, a search list for the Creator Store, and a log of 
 
 Not found or wrong style → `generate_mesh` with a specific prompt, e.g. *"small handmade paper lantern folded in the shape of a carp, lumpy, faded red and white paper, a candle inside"*.
 
+## Shortlist (scouted 2026-11-02 with `tools/art/scout.luau`, nothing inserted yet)
+
+Free Creator Store models, judged from thumbnails only. Look again in Studio before using any of them.
+
+| Asset ID | Name | For | Verdict |
+| --- | --- | --- | --- |
+| 14769019514 | Oriental Bamboo Conical Hat (RZKU, 3.5k tris, 0 scripts) | nón lá on porches, Bà Thu's mat | Good |
+| 137203388093234 | grandma (Bank_Biker, 18.7k tris) | Bà Thu base | Realistic Asian grandmother; remove the bag (looks branded), recolour to a worn áo bà ba. Check rig and scale |
+| 124926625809038 | Fishing Village Kit / Stilt Houses, Pier & Boats | dock, boats | Toy-like and bright; props only, if at all |
+| 103169988462307 | Fishing Village & Dock Kit (180k tris) | boat, dock planks | Heavy; take single props |
+| 8518538975 | Vietnamese House (127k tris) | — | An overgrown shell, too heavy. No |
+| 5141896074, 13593241424, 4151631784 | Thai / Chinese / Japanese houses | — | Wrong country (rule 5). No |
+| 2100050345 | Ghost Girl | — | Reads as Sadako (The Ring) and is adult-sized. No |
+
+Avatar catalog items (usable on NPC rigs through a HumanoidDescription, no ownership needed): Nón Lá conical hat
+110467700930899, Headlamp 26733587 (Bin). Áo bà ba isn't in the catalog by that name; look for plain button
+shirts with loose pants, or upload our own clothing texture (a human step).
+
+Search words that worked better than "vietnamese house": `old lady`, `grandma npc`, `asian old woman`, `conical hat`,
+`fishing village`, `abandoned house`. For houses, plan on `generate_mesh` (I-10).
+
+### Sketchfab, hand-made, CC BY (scouted 2026-11-02; credit the author in the game's credits)
+
+| Sketchfab id | Name (author) | Faces | Verdict |
+| --- | --- | --- | --- |
+| 5d65b1d0919c4394808727f461773c11 | Vietnamese altar (ngdkh) | 1.9k | Good: red lacquer altar table with incense burner, and a wall altar. For the family altars and the shrine |
+| c09e0ae8ebd14eb09994ce4cd9607cac | Village Entrance Gate, cổng làng (phucn) | 126k | Authentic and textured; far too heavy, decimate it. The causeway end of the village |
+| 582936c8eac641a885343e91766e71b1 | Vietnamese House in 2000s, an interior (ngdkh) | 8.5k | Very good mood (TV, fan, vases, cabinet, patterned floor); a little late for the 1990s; take props for the house interiors |
+| 795a1b421eea496db98a7a2d6910ba8d | Vietnamese dragon sofa (ngdkh) | 2.9k | Look at it: the village head's house |
+| 7bbb52c44c13460eaa0892b44955c87f | Vietnamese house (nguyenhoanglam20100609) | 2.5k | No: a modern Hà Nội phone shop with signage |
+
+### Music candidates (I-13, scouted 2026-11-02 with `scout.luau --audio`, none listened to)
+
+In use (`Content/Sounds.luau`): 140021816582186 menu, 9043359699 bed, 1836290021 tension, 70615932668908 chase.
+Alternatives, if those sound wrong:
+
+| Use | Asset ID | Title (artist, uploader) | Seconds |
+| --- | --- | --- | --- |
+| menu | 133759804695426 | Creepy Music Box (Terra Fantasy, DistroKid) | 185 |
+| menu | 99895453377463 | Existential Dread, deep dark ambient drone (Horrarchive, DistroKid) | 238 |
+| bed | 1847595163 | Creepy B (Mac Prindy, APM "New Drones and Dark Moods") | 103 |
+| bed | 9112775175 | Eerie Ambience 1 (Pro Sound Effects) | 56 |
+| tension | 1836289781 | Unseen Danger (Steve Gray, APM Suspense/Tension) | 160 |
+| tension | 1843585137 | Unarmed (Barry Devorzon, APM Suspense/Tension/Action) | 72 |
+| chase | 84484303568744 | Don't Look Back (Horror Music Archives, DistroKid) | 95 |
+| chase | 71374905925238 | The Chase Protocol (Horror Music Archives, DistroKid) | 147 |
+| chase | 97460960711268 | Corrupted Lullaby (Horror Music Archives, DistroKid) | 155 |
+| sting | 9042971851 | An Ending, A Beginning Sting (APM "Dark Piano Builds") | 11 |
+
 ## Asset log
 
 | Asset ID | Name in place | Source (Creator Store / generated / imported) | Creator | Used where | Sanitized? | Notes |

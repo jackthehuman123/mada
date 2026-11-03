@@ -199,7 +199,9 @@ def main():
         print("Studio:", st.sid)
         st.call("start_stop_play", is_start=True)
         ready = wait_for(lambda: "ok" in st.luau(
-            "local p = game.Players:GetPlayers()[1] return game.ServerScriptService:FindFirstChild('Debug') and p and "
+            # the menu holds the player until a team begins: "begin" plays alone (tests/10_menu.luau checks the menu)
+            "local p = game.Players:GetPlayers()[1] local D = game.ServerScriptService:FindFirstChild('Debug') "
+            "if D and p and not p:GetAttribute('InRun') then D:Invoke('begin') end return D and p and "
             "p.Character and p.Character:FindFirstChild('HumanoidRootPart') and 'ok' or 'no'", "Server")[0], 90)
         time.sleep(3)
         if not ready:

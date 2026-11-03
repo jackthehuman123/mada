@@ -110,6 +110,13 @@ Active only in the `Open` phase. Never inside `ShrineZone`.
   5. **Taken** if they're still alone and near water.
 - **Counters:** get back within 25 studs of another player; step away from water; enter the shrine; or use **incense** (each player carries 2; using it makes Sen withdraw from that player for 60 s).
 - She is seen only as a reflection, a shape among the carp, or a lantern moving against the wind. In the prototype she never chases on land.
+- **Updated 2026-11-02 (Catlyn, I-16):** she is a pale small shape under the surface, carp around her, that everyone
+  can see. She drifts round the middle of the lake; when she hunts she follows her target along the shore underwater
+  (still, then suddenly closer, rising nearer the surface); her wet footprints walk out of the water toward them
+  (camera only); the last step waits until she's at the edge by them. Taken = pulled into the water where they stand:
+  everyone sees the body slide in (a splash); the taken player sees it from their own eyes: a jumpscare (her face
+  hidden by her wet hair, a sting), a small hand on theirs, the pull, sinking under the lanterns with her beside them,
+  black, the drowned festival. No struggle, nothing violent, her face never shown. Counters unchanged.
 
 ### 5.6 Taken and rescue
 

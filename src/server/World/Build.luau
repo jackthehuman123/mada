@@ -17,6 +17,7 @@ local Workspace = game:GetService("Workspace")
 local Shared = ReplicatedStorage:WaitForChild("Shared")
 local Tags = require(Shared:WaitForChild("Tags"))
 local Config = require(Shared:WaitForChild("Config"))
+local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 
 local SHORE_Z, LANE_Z, HOUSE_Z = -50, -20, 30
 local WATER_Y = -1 -- the lake's surface; the land is at y = 0
@@ -563,10 +564,15 @@ local function edgesAndBounds(parent: Instance)
 		tag(zone(m, "WaterEdge", CFrame.new(-320 - k * 40, 0, 70 + k * 40), Vector3.new(4, 4, 4)), Tags.WaterEdge)
 	end
 	-- boundaries: any way out of the village brings players back to the lake shore (§4 beat 5)
-	local function wall(cf: CFrame, size: Vector3)
-		tag(zone(m, "Boundary", cf, size), Tags.BoundaryTeleport)
+	-- the land ones say so: "Wandering in the forest won't save you." (Catlyn 2026-11-02; the forest itself is I-14)
+	local function wall(cf: CFrame, size: Vector3, land: boolean?)
+		local z = zone(m, "Boundary", cf, size)
+		tag(z, Tags.BoundaryTeleport)
+		if land ~= false then
+			z:SetAttribute("Message", Text.Messages.forestEdge)
+		end
 	end
-	wall(CFrame.new(0, 0, -140), Vector3.new(1400, 80, 4)) -- out in the lake
+	wall(CFrame.new(0, 0, -140), Vector3.new(1400, 80, 4), false) -- out in the lake
 	wall(CFrame.new(410, 0, -20), Vector3.new(4, 80, 260)) -- east, past the cove
 	wall(CFrame.new(70, 0, 115), Vector3.new(680, 80, 4)) -- south, behind the houses (x -270 .. 410)
 	wall(CFrame.new(-370, 0, -50), Vector3.new(4, 80, 170)) -- west, behind the shrine (z -135 .. 35)
@@ -590,8 +596,9 @@ end
 
 local function lighting()
 	local L = game:GetService("Lighting")
-	L.Ambient = rgb(40, 46, 66)
-	L.OutdoorAmbient = rgb(50, 58, 84)
+	-- (40/46/66 and 50/58/84 played pitch black on the dock: still night, but the shore, the paths and the water read)
+	L.Ambient = rgb(64, 72, 98)
+	L.OutdoorAmbient = rgb(86, 96, 128)
 	L.Brightness = 1
 	L.EnvironmentDiffuseScale = 0.3
 	L.EnvironmentSpecularScale = 0.3

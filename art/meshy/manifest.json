@@ -1,0 +1,194 @@
+{
+  "about": "Meshy asset queue and log (docs/MESHY.md). Free plan: 100 credits/month (resets the 1st, 00:00 UTC, no rollover), 10 downloads/month of untextured Meshy 6 Lite models, CC BY 4.0 (credit Meshy). A Lite preview costs 5 credits, so 20 previews buy 10 downloads: two tries per asset. status: queued -> generated -> checked (or 'too heavy') -> uploaded -> placed, or rejected.",
+  "assets": [
+    {
+      "area": "Village",
+      "color": "Build.luau tile colours (Sen's darker)",
+      "dresses": "each house's Roof/Gable/Ridge parts (Build.luau house())",
+      "material": "Slate or a terracotta MaterialVariant",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "roof_gable_tile",
+      "prompt": "Roof only of a 1990s rural north-central Vietnamese village house: low gabled roof covered in rows of curved clay tiles, plain ridge with slightly raised ends, gable ends open underneath, overhanging eaves on all sides, simple and worn, no walls, no chimney, single object, no ground, game asset",
+      "reuse": 10,
+      "status": "queued",
+      "studs": [
+        25,
+        7,
+        21
+      ],
+      "what": "the roof every lane house shares"
+    },
+    {
+      "area": "Village",
+      "color": "aged limewash yellow-ochre",
+      "dresses": "WallFront/WallSide/WallBack/Lintel/Shutter/Plinth; keep Door, Window, Altar, tags",
+      "material": "Plaster walls, Wood shutters (split in Studio if one colour looks flat)",
+      "mode": "image",
+      "month": "2026-11",
+      "name": "house_walls",
+      "prompt": "Walls only of a one-storey rural Vietnamese house, thick lime-plastered walls, a wide double plank wooden door in the middle, two wooden shutter windows, raised brick plinth, no roof, no people, single object, game asset",
+      "reference": "a photo of a rural central Vietnamese house front (find one CC-licensed on Wikimedia Commons; save under art/meshy/refs/)",
+      "reuse": 10,
+      "status": "queued",
+      "studs": [
+        22,
+        10,
+        18
+      ],
+      "what": "the body of a lane house: walls, door, shutters, plinth"
+    },
+    {
+      "area": "Village",
+      "color": "dark old wood",
+      "dresses": "Porch/PorchRoof/Post parts",
+      "material": "Wood",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "porch_posts",
+      "prompt": "Wooden veranda frame of an old Vietnamese village house: four round hardwood posts on stone bases, a carved beam across the top, a short lean-to tile roof, no walls, single object, no ground, game asset",
+      "reuse": 10,
+      "status": "queued",
+      "studs": [
+        24,
+        9,
+        6
+      ],
+      "what": "the veranda frame in front of every house"
+    },
+    {
+      "area": "Shrine",
+      "color": "faded red posts, dark grey-green roof",
+      "dresses": "the Shrine model's Roof/Post parts; keep the Platform, ShrineZone, altar and tags",
+      "material": "Wood posts, Slate roof",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "shrine_mieu",
+      "prompt": "Small open-sided Vietnamese village shrine by a lake: four red wooden pillars, a low curved tiled roof with gently upturned corners, a raised stone floor, a simple wooden altar table inside, old and weathered, respectful, no statues of real deities, no people, single object, game asset",
+      "reuse": 1,
+      "status": "queued",
+      "studs": [
+        24,
+        13,
+        20
+      ],
+      "what": "the small lakeside shrine where Bà Thu sits"
+    },
+    {
+      "area": "Shrine/Lake",
+      "color": "faded red and white paper",
+      "dresses": "the paper fish on Sen's shelf and the finale lantern",
+      "material": "Fabric or SmoothPlastic, slightly transparent, glow from the PointLight",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "carp_lantern",
+      "prompt": "Small handmade paper lantern folded in the shape of a carp fish, lumpy hand-folded paper, a small flat base so it floats, simple, low poly, single object, no ground, game asset",
+      "reuse": 2,
+      "status": "queued",
+      "studs": [
+        1.6,
+        1.2,
+        2.4
+      ],
+      "what": "Sen's paper carp lantern (§6): Thu's half-finished one on the shelf and the one written 'Sen' in the ending. Everyone else's lantern is a lotus (docs/VILLAGE.md §0)"
+    },
+    {
+      "area": "Shrine",
+      "color": "faded brown áo bà ba, gray hair",
+      "dresses": "the BaThu model at the shrine (Build.luau shrine(): keep its name, tags and prompt; she must still vanish on camera). Seated only: her finale walk needs a rig (I-11)",
+      "material": "colours from Studio's texture tools, or split parts",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "ba_thu_seated",
+      "prompt": "Small elderly Vietnamese woman sitting cross-legged on a woven straw mat, back bent, gray hair in a low bun, loose worn ao ba ba shirt and trousers, barefoot, both hands in her lap folding a small paper lantern, calm and still, realistic proportions, single object, game asset",
+      "reuse": 1,
+      "status": "queued",
+      "studs": [
+        3,
+        3.6,
+        3
+      ],
+      "what": "Bà Thu, seated on her mat folding a lantern (characters.md: small, bent, gray bun, worn áo bà ba)"
+    },
+    {
+      "area": "Tape 2, finale",
+      "color": "faded grey-blue clothes, black hair",
+      "dresses": "Figures.Sen (replace the blocks; keep Hair in front of the face)",
+      "material": "SmoothPlastic, wet look via Reflectance",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "sen_standing",
+      "prompt": "Thin eight-year-old girl standing still with arms at her sides, head slightly lowered, very long straight black hair hanging in front of her face so the face is completely hidden, plain loose ao ba ba shirt and trousers, one bare foot and one plastic sandal, quiet and sad, not scary, no blood, no wounds, single object, game asset",
+      "reuse": 1,
+      "status": "queued",
+      "studs": [
+        1.6,
+        3.8,
+        1.2
+      ],
+      "what": "Sen (characters.md: small, thin eight-year-old, faded soaked áo bà ba, long tangled hair hiding her face, one plastic sandal)"
+    },
+    {
+      "area": "Village houses",
+      "color": "dark red-brown",
+      "dresses": "each house's Altar part; keep tags and prompts",
+      "material": "Wood, dark red lacquer",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "family_altar",
+      "prompt": "Traditional Vietnamese family ancestor altar: a tall dark lacquered wooden cabinet table, on top a bronze incense bowl with sticks, two small candle holders, an empty photo frame and a plate of fruit, respectful, simple, single object, no ground, game asset",
+      "reuse": 10,
+      "status": "queued",
+      "studs": [
+        6,
+        5,
+        2.4
+      ],
+      "what": "the family altar inside each house (incense bowl, photo frame, fruit plate)"
+    },
+    {
+      "area": "Shrine/Lake",
+      "color": "pale pink-white petals, warm glow",
+      "dresses": "the PaperLantern ball (Build.luau lantern()); keep its light and tags",
+      "material": "SmoothPlastic or Fabric, slightly transparent; the light is the PointLight",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "lotus_lantern",
+      "prompt": "Small floating paper lotus lantern, layered pointed petals folded from paper, a short candle in the middle, flat base to float on water, simple handmade look, low poly, single object, no water, game asset",
+      "reuse": 60,
+      "status": "queued",
+      "studs": [
+        1.6,
+        1,
+        1.6
+      ],
+      "what": "the floating lotus lantern (hoa đăng): Bà Thu's lanterns, the lanterns gathered in the middle (Catlyn's references)"
+    },
+    {
+      "area": "Lake",
+      "color": "faded red wood, dark roof",
+      "dresses": "PuppetStage/StageRoof parts; keep positions and tags",
+      "material": "Wood, Slate roof",
+      "mode": "text",
+      "month": "2026-11",
+      "name": "puppet_pavilion",
+      "prompt": "Small traditional Vietnamese water puppet pavilion standing on posts in a lake, red wooden walls with a bamboo screen across the front opening, two-tier curved tile roof, old and faded, no puppets, no people, single object, no water, game asset",
+      "reuse": 1,
+      "status": "queued",
+      "studs": [
+        30,
+        13,
+        16
+      ],
+      "what": "the water puppet stage on the lake (drowned festival / Hạnh's lead)"
+    }
+  ],
+  "budget": {
+    "2026-11": {
+      "credits": 100,
+      "downloaded": 0,
+      "downloads": 10,
+      "spentCredits": 0
+    }
+  }
+}

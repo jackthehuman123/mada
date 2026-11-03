@@ -39,9 +39,20 @@ local Sounds: { [string]: Sound } = {
 	-- §5.6: being taken / incense
 	taken = { asset = id(9126147241), volume = 0.7, seconds = 6 }, -- Underwater Movement Gurgly Mysterious
 	incense = { asset = id(9120930385), volume = 0.4, seconds = 3 }, -- Wood Matches 4
+	-- I-16 the grab (chosen 2026-11-02 by name, not listened to): the sting, the pull into the water, under it
+	sen_sting = { asset = id(1845391028), volume = 0.9 }, -- "Shock Chord" (Sean Elder, APM): the glimpse of her face
+	sen_grab = { asset = id(9119481268), volume = 0.8, pitch = 0.8 }, -- a wet slap (Splashes Small Wet Sloshes Drips 13, lower): her hand on your leg
+	sen_splash = { asset = id(9120611825), volume = 0.7 }, -- Wave Impact 3 (Pro Sound Effects); everyone hears it where it happened
+	sen_bubbles = { asset = id(9120310416), volume = 0.6 }, -- Underwater Bubbles Deeper Med Short Bursts 6 (Pro Sound Effects)
 	-- §7 endings
 	festival_static = { asset = id(9118027586), volume = 0.35, loop = true, seconds = 12, subtitle = "[static, and very faint, festival music]", draft = false },
 	radio_off = { asset = id(9117158538), volume = 0.5 }, -- Old Radio Click On Off Tuning Buzz 1
+	-- music layer (I-13, chosen 2026-11-02 by name, length and licensed uploader; NOT listened to yet). SoundController
+	-- crossfades between them: the menu, a quiet bed in the open village, tension from Sen's 2nd warning, a chase from her 4th
+	music_menu = { asset = id(140021816582186), volume = 0.35, loop = true }, -- "Dark Lullaby, Creepy Cute Music Box" (Sonnie K, DistroKid, 85 s)
+	music_bed = { asset = id(9043359699), volume = 0.22, loop = true }, -- "DARK DRONE 12" (Epic Score, APM "Horror Tools", 340 s)
+	music_tension = { asset = id(1836290021), volume = 0.4, loop = true }, -- "Footsteps Of Horror" (William Farran, APM Suspense/Tension, 58 s)
+	music_chase = { asset = id(70615932668908), volume = 0.5, loop = true }, -- "Something Just Woke Up" (Horror Music Archives, DistroKid, 184 s)
 	finale_home = { asset = id(130372750623176), volume = 0.45, music = true }, -- "Hours Before Dawn Underscore Ambient + Melody" (APM); stops on reset
 }
 

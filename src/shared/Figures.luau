@@ -36,6 +36,26 @@ function Figures.Sen(cf: CFrame, parent: Instance?, lookUp: number?): Model
 	return m
 end
 
+-- Sen's face, under the water, for the glimpse when she takes someone (Catlyn 2026-11-02, I-16): a pale child's face
+-- between two curtains of wet hair that drift apart for a moment. Dark eyes, no mouth, nothing hurt or monstrous.
+-- cf: the face's centre, looking the way she looks. Returns the model and its two hair curtains (to drift them).
+function Figures.SenFace(cf: CFrame, parent: Instance?): (Model, BasePart, BasePart)
+	local m = Instance.new("Model")
+	m.Name = "SenFace"
+	local skin, hair, eye = rgb(196, 204, 202), rgb(10, 12, 14), rgb(8, 10, 12)
+	local head = piece(m, "Head", Vector3.new(1, 1.15, 1), cf, skin, true)
+	for sx = -1, 1, 2 do
+		piece(m, "Eye", Vector3.new(0.17, 0.09, 0.05), cf * CFrame.new(sx * 0.2, 0.08, -0.47), eye)
+	end
+	piece(m, "HairTop", Vector3.new(1.15, 0.5, 1.15), cf * CFrame.new(0, 0.42, 0.04), hair)
+	piece(m, "HairBack", Vector3.new(1.2, 2.4, 0.4), cf * CFrame.new(0, -0.5, 0.45), hair)
+	local left = piece(m, "HairLeft", Vector3.new(0.62, 2.2, 0.12), cf * CFrame.new(-0.3, -0.5, -0.55), hair)
+	local right = piece(m, "HairRight", Vector3.new(0.62, 2.2, 0.12), cf * CFrame.new(0.3, -0.5, -0.55), hair)
+	m.PrimaryPart = head
+	m.Parent = parent
+	return m, left, right
+end
+
 -- Sen's hand, small and wet, reaching up (Bin's tape); cf: the wrist, pointing the way it reaches
 function Figures.Hand(cf: CFrame, parent: Instance?): Model
 	local m = Instance.new("Model")

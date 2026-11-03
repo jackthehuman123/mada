@@ -24,12 +24,17 @@ Remotes.Names = {
 	Sfx = "Sfx", -- server -> clients: (soundId, position?) a sound from Content/Sounds (subtitled until it has an asset)
 	ShowTextCard = "ShowTextCard", -- server -> clients: (cardId) teller narration
 	SenWarning = "SenWarning", -- server -> target client: (step)
-	PlayerTaken = "PlayerTaken", -- server -> clients: (userId)
+	PlayerTaken = "PlayerTaken", -- server -> clients: (userId, waterPoint) someone was pulled in there
+	SenGrab = "SenGrab", -- server -> the taken player: (waterPoint, quiet) play the grab / drag / sinking view
 	InspectClue = "InspectClue", -- server -> client: (clueId) open the clue panel
 	JournalSync = "JournalSync", -- server -> clients: ({ clueId }) the group's found clues
 	CameraRaised = "CameraRaised", -- client -> server: (raised: boolean) the viewfinder is up (battery drain)
 	Message = "Message", -- server -> clients: (text) one line at the bottom of the screen
 	Fade = "Fade", -- server -> client: (seconds) fade to black and back (boundary return)
+	MenuAction = "MenuAction", -- client -> server: (action, arg) create/join/leave/setOpen/begin/solo/backToMenu
+	MenuState = "MenuState", -- server -> clients: ({ teams }) every team in this server; MenuNotice for one player
+	MenuNotice = "MenuNotice", -- server -> client: (text) why something didn't work
+	LookPitch = "LookPitch", -- client -> server: (degrees) where this player looks up/down; others' poses follow
 }
 
 local function getFolder(): Folder

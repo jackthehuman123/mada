@@ -56,6 +56,7 @@ local playGen = 0 -- bumped by each playback, so an older playback's cleanup can
 
 -- the player's own body: hidden while watching a tape (the camera that recorded it never filmed its holder)
 local function hideSelf(hidden: boolean)
+	player:SetAttribute("HideSelf", hidden) -- local only: BodyController leaves the body alone while this is set
 	for _, d in (player.Character and player.Character:GetDescendants() or {}) do
 		if d:IsA("BasePart") or d:IsA("Decal") then
 			(d :: any).LocalTransparencyModifier = hidden and 1 or 0

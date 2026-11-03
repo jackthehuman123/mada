@@ -2,13 +2,15 @@
 -- taken to the drowned festival (dropping the letter); a taken player can light a lantern; incense at the shrine brings
 -- them back; incense makes Sen withdraw; leaving the water cancels her; the shrine is safe; a second taking is for
 -- good, and when everyone is taken the run goes to Im lặng. 25 times faster; one test player, so "DebugKeepRun"
--- stops the first taking from ending the run.
+-- stops the first taking from ending the run. I-16: Sen is a shape in the water; the taking is a pull into it (the
+-- taken player's view plays at 25x too).
 --@ Server
 dbg("speed", 25)
 dbg("sen", "off")
 dbg("keeprun", "on")
 dbg("phase", "Open")
 dbg("goto", "Dock")
+check(workspace.World:FindFirstChild("SenInTheWater"), "Sen isn't in the water (I-16)")
 local root = game.Players:GetPlayers()[1].Character.HumanoidRootPart
 root.CFrame = CFrame.new(-140, 3, -70) -- out on the dock, alone, over the water
 task.wait(0.3)
@@ -30,6 +32,7 @@ for n = 1, 5 do
 	last = at
 end
 check(root.Position.Y < -300, "not in the drowned festival: " .. tostring(root.Position))
+check(not root.Anchored, "still held after the pull into the water")
 local s = dbg("mystery")
 check(s.letterFound and s.letterHolder == nil, "the letter did not drop when its holder was taken")
 check(workspace.World:FindFirstChild("Letter"), "the dropped letter isn't in the world")
