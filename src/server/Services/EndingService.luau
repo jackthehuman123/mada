@@ -175,7 +175,8 @@ local function lanternParts(): { BasePart }
 	local out = {}
 	local w = Workspace:FindFirstChild("World")
 	for _, d in (w and w:GetDescendants() or {}) do
-		if d:IsA("BasePart") and d.Material == Enum.Material.Neon and (d.Name == "PaperLantern" or d.Name == "Glow" or d.Name == "HintLantern") then
+		if d:IsA("BasePart") and ((d.Material == Enum.Material.Neon and (d.Name == "LanternCore" or d.Name == "Glow" or d.Name == "HintLantern"))
+			or (d.Name == "PaperLantern" and d:GetAttribute("LitColor") ~= nil)) then
 			table.insert(out, d)
 		end
 	end
@@ -518,10 +519,15 @@ function EndingService.Reset()
 	-- lanterns that went out in Im lặng come back (the world isn't rebuilt between runs)
 	local w = Workspace:FindFirstChild("World")
 	for _, d in (w and w:GetDescendants() or {}) do
-		if d:IsA("BasePart") and d.Name == "PaperLantern" and d:FindFirstChildOfClass("PointLight") then
-			d.Material = Enum.Material.Neon
-			d.Color = rgb(255, 170, 90)
-			d:FindFirstChildOfClass("PointLight").Enabled = true
+		local lit = d:IsA("BasePart") and d:GetAttribute("LitColor")
+		if lit then
+			local p = d :: BasePart
+			p.Color = lit
+			p.Material = if p.Name == "LanternCore" then Enum.Material.Neon else Enum.Material.SmoothPlastic
+			local l = p:FindFirstChildOfClass("PointLight")
+			if l then
+				l.Enabled = true
+			end
 		end
 	end
 	for _, p in Players:GetPlayers() do

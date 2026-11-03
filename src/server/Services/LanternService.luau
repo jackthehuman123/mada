@@ -49,16 +49,17 @@ local function newLantern(parent: Instance, house: string, pos: Vector3): BasePa
 	local glow = Instance.new("Part")
 	glow.Name = "Glow"
 	glow.Shape = Enum.PartType.Ball
-	glow.Size = Vector3.new(1.3, 1.3, 1.3)
-	glow.Color = rgb(255, 170, 90)
+	glow.Size = Vector3.new(1, 1.2, 1)
+	glow.Color = rgb(236, 150, 84)
 	glow.Material = Enum.Material.Neon
+	glow.Transparency = 0.25 -- (softer: full neon balls read as flat discs)
 	glow.Anchored, glow.CanCollide, glow.CanQuery = true, false, false
 	glow.CFrame = CFrame.new(pos + Vector3.new(0, 0.8, 0))
 	glow.Parent = base
 	local light = Instance.new("PointLight")
 	light.Color = rgb(255, 170, 100)
 	light.Range = 16
-	light.Brightness = 1.4
+	light.Brightness = 1.1
 	light.Parent = glow
 	base:SetAttribute("House", house)
 	base.Parent = parent

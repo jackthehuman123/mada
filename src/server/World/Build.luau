@@ -78,13 +78,26 @@ local function model(parent: Instance, name: string, loc: string?): Model
 end
 
 local function lantern(parent: Instance, pos: Vector3, lit: boolean?)
-	local body = P(parent, { Name = "PaperLantern", Shape = Enum.PartType.Ball, Size = Vector3.new(1.4, 1.4, 1.4), Position = pos,
-		Color = rgb(255, 170, 90), Material = lit == false and M.SmoothPlastic or M.Neon, CanCollide = false })
+	-- a paper lantern: an oval of lit paper with a small bright core (one big neon ball each read as a flat yellow disc
+	-- covering the screen; release council 11-03), dark caps top and bottom
+	local body = P(parent, { Name = "PaperLantern", Size = Vector3.new(1.1, 1.4, 1.1), Position = pos, Color = rgb(214, 120, 70),
+		Material = M.SmoothPlastic, CanCollide = false })
+	body:SetAttribute("LitColor", body.Color) -- (Im lặng puts it out; a reset lights it again from this)
+	local mesh = Instance.new("SpecialMesh")
+	mesh.MeshType = Enum.MeshType.Sphere
+	mesh.Parent = body
+	for _, dy in { 0.72, -0.72 } do
+		P(parent, { Name = "LanternCap", Shape = Enum.PartType.Cylinder, Size = Vector3.new(0.18, 0.55, 0.55), CFrame = CFrame.new(pos + Vector3.new(0, dy, 0))
+			* CFrame.Angles(0, 0, math.rad(90)), Color = rgb(40, 30, 24), Material = M.Wood, CanCollide = false })
+	end
 	if lit ~= false then
+		local core = P(parent, { Name = "LanternCore", Shape = Enum.PartType.Ball, Size = Vector3.new(0.5, 0.5, 0.5), Position = pos, Color = rgb(255, 190, 120),
+			Material = M.Neon, Transparency = 0.2, CanCollide = false, CastShadow = false })
+		core:SetAttribute("LitColor", core.Color)
 		local l = Instance.new("PointLight")
 		l.Color = rgb(255, 170, 100)
-		l.Range = 14
-		l.Brightness = 1.2
+		l.Range = 12
+		l.Brightness = 0.9
 		l.Parent = body
 	end
 end
@@ -209,6 +222,13 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 	if loc == "SenHouse" then
 		tag(altar, Tags.SenAltar)
 	end
+	-- a lamp burning low inside (interiors were black; release council 11-03); Sen's house is cold and dim
+	local lamp = P(m, { Name = "RoomLamp", Size = Vector3.new(0.6, 0.6, 0.6), Position = c + Vector3.new(0, H - 0.5, 2), Transparency = 1, CanCollide = false,
+		CanQuery = false, CastShadow = false })
+	local rl = Instance.new("PointLight")
+	rl.Color = if loc == "SenHouse" then rgb(150, 170, 190) else rgb(255, 190, 130)
+	rl.Range, rl.Brightness, rl.Shadows = 22, if loc == "SenHouse" then 0.35 else 0.75, true
+	rl.Parent = lamp
 	-- the rooms lived in (I-10: "barely any detail"): a platform bed, a cabinet, a mat by the door, a lantern stand, a
 	-- bonsai, along the walls clear of the altar, the clue table (right) and the memento stool (left). Sen's stays bare.
 	if loc ~= "SenHouse" then
@@ -238,11 +258,11 @@ local function shrine(parent: Instance): Model
 	local stone = rgb(150, 146, 136)
 	P(m, { Name = "Platform", Size = Vector3.new(34, 2, 26), Position = c + Vector3.new(0, 0, 0), Color = stone, Material = M.Slate })
 	for _, s in { { -1, -1 }, { 1, -1 }, { -1, 1 }, { 1, 1 } } do
-		P(m, { Name = "Post", Size = Vector3.new(1.2, 11, 1.2), Position = c + Vector3.new(s[1] * 9, 6.5, s[2] * 7), Color = rgb(150, 50, 40), Material = M.Wood })
+		P(m, { Name = "Post", Size = Vector3.new(1.2, 11, 1.2), Position = c + Vector3.new(s[1] * 9, 6.5, s[2] * 7), Color = rgb(104, 34, 28), Material = M.Wood }) -- (old lacquer, not orange plastic)
 	end
 	P(m, { Name = "Roof", Size = Vector3.new(24, 1, 20), Position = c + Vector3.new(0, 12.5, 0), Color = rgb(60, 70, 64), Material = M.Slate })
 	-- the altar stands on the lake side facing the lane; Bà Thu sits in front of it, facing visitors
-	local altar = P(m, { Name = "Altar", Size = Vector3.new(8, 3.5, 3), Position = c + Vector3.new(0, 2.75, -8), Color = rgb(120, 36, 30), Material = M.Wood })
+	local altar = P(m, { Name = "Altar", Size = Vector3.new(8, 3.5, 3), Position = c + Vector3.new(0, 2.75, -8), Color = rgb(88, 30, 26), Material = M.Wood })
 	tag(altar, Tags.ShrineAltar)
 	local photos = P(m, { Name = "Photos", Size = Vector3.new(6, 2, 0.3), Position = c + Vector3.new(0, 5.6, -9.2), Color = rgb(60, 52, 44) })
 	tag(photos, Tags.Clue, { ClueId = "shrine_photos" })

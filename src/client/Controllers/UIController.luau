@@ -319,14 +319,18 @@ local function build()
 
 	-- text cards (the teller's narration, the rumor video)
 	cardFrame = new("Frame", { Name = "Card", Size = UDim2.fromScale(1, 1), BackgroundColor3 = rgb(0, 0, 0), BackgroundTransparency = 0.15,
-		Visible = false, ZIndex = 8, Parent = gui })
+		Visible = false, ZIndex = 21, Parent = gui })
 	cardText = new("TextLabel", { Name = "Text", Size = UDim2.new(0.6, 0, 0.5, 0), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
 		BackgroundTransparency = 1, TextColor3 = rgb(230, 220, 200), Font = Enum.Font.Garamond, TextSize = 30, TextWrapped = true, Text = "",
-		ZIndex = 9, Parent = cardFrame })
+		ZIndex = 22, Parent = cardFrame }) -- (above the fade: the ending text was dark grey under a half-done fade)
 
-	messageLabel = new("TextLabel", { Name = "Message", Size = UDim2.new(0.6, 0, 0, 40), Position = UDim2.new(0.5, 0, 1, -110), AnchorPoint = Vector2.new(0.5, 1),
-		BackgroundTransparency = 1, TextColor3 = rgb(236, 228, 210), TextStrokeTransparency = 0.3, Font = Enum.Font.Garamond, TextSize = 28,
+	-- (on a dark backing, sized to the line: thin light text alone vanished on dark frames; release council 11-03)
+	messageLabel = new("TextLabel", { Name = "Message", Size = UDim2.new(0, 0, 0, 44), AutomaticSize = Enum.AutomaticSize.X,
+		Position = UDim2.new(0.5, 0, 1, -110), AnchorPoint = Vector2.new(0.5, 1), BackgroundColor3 = rgb(10, 12, 16), BackgroundTransparency = 0.35,
+		TextColor3 = rgb(248, 242, 228), TextStrokeTransparency = 0.5, Font = Enum.Font.Garamond, TextSize = 28,
 		Visible = false, ZIndex = 6, Parent = gui })
+	corner(messageLabel, 8)
+	new("UIPadding", { PaddingLeft = UDim.new(0, 18), PaddingRight = UDim.new(0, 18), Parent = messageLabel })
 
 	-- the dialogue box: who's speaking and their line; click it (or press Enter) to move on
 	dialogueFrame = new("TextButton", { Name = "Dialogue", Size = UDim2.new(0.62, 0, 0, 130), Position = UDim2.new(0.5, 0, 1, -170),

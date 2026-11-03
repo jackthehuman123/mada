@@ -147,6 +147,14 @@ function Camcorder.Lower()
 	savedMode = nil
 	if not playing then
 		UI.viewfinder.Visible = false
+	local look = Workspace.CurrentCamera:FindFirstChild("CamcorderLook")
+	if look then
+		look:Destroy()
+	end
+	local jb = UI.Gui():FindFirstChild("JournalButton")
+	if jb then
+		(jb :: GuiObject).Visible = true
+	end
 		setVisible(Tags.CameraOnly, false)
 	end
 	Remotes.event(Remotes.Names.CameraRaised):FireServer(false)
@@ -162,6 +170,16 @@ function Camcorder.Raise()
 	player.CameraMode = Enum.CameraMode.LockFirstPerson -- you look through the viewfinder, not over your shoulder
 	Workspace.CurrentCamera.FieldOfView = Config.CameraViewfinderFov
 	UI.viewfinder.Visible = true
+	-- the camcorder's own look: a cool, low-saturation night picture with a little lift (the live view was an orange wash
+	-- under the lanterns, and black in the dark); the Journal button steps out of the viewfinder's corner
+	local look = Workspace.CurrentCamera:FindFirstChild("CamcorderLook") or Instance.new("ColorCorrectionEffect")
+	look.Name = "CamcorderLook"
+	look.TintColor, look.Saturation, look.Contrast, look.Brightness = Color3.fromRGB(196, 226, 206), -0.55, 0.12, 0.08
+	look.Parent = Workspace.CurrentCamera
+	local jb = UI.Gui():FindFirstChild("JournalButton")
+	if jb then
+		(jb :: GuiObject).Visible = false
+	end
 	setVisible(Tags.CameraOnly, true)
 	Remotes.event(Remotes.Names.CameraRaised):FireServer(true)
 	updateHud()
@@ -273,6 +291,14 @@ local function stopPlayback()
 	setVisible(Tags.CameraOnly, false)
 	hideSelf(false)
 	UI.viewfinder.Visible = false
+	local look = Workspace.CurrentCamera:FindFirstChild("CamcorderLook")
+	if look then
+		look:Destroy()
+	end
+	local jb = UI.Gui():FindFirstChild("JournalButton")
+	if jb then
+		(jb :: GuiObject).Visible = true
+	end
 	local hum = player.Character and player.Character:FindFirstChildOfClass("Humanoid")
 	if hum and savedWalk then
 		hum.WalkSpeed = savedWalk

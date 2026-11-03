@@ -105,7 +105,7 @@ while dbg("get").phase ~= "Ending" and os.clock() - t0 < 8 do task.wait(0.1) end
 eq(dbg("ending").ending, "silence", "ending")
 local lit = 0
 for _, d in workspace.World:GetDescendants() do
-	if d:IsA("BasePart") and d.Name == "PaperLantern" and d.Material == Enum.Material.Neon then lit += 1 end
+	if d:IsA("BasePart") and d.Name == "PaperLantern" and d:FindFirstChildOfClass("PointLight") and d:FindFirstChildOfClass("PointLight").Enabled then lit += 1 end
 end
 eq(lit, 0, "lanterns still lit in Im lặng")
 return "Im lặng: every lantern went out"
@@ -122,7 +122,7 @@ dbg("reset")
 task.wait(1.5)
 local lit = 0
 for _, d in workspace.World:GetDescendants() do
-	if d:IsA("BasePart") and d.Name == "PaperLantern" and d.Material == Enum.Material.Neon then lit += 1 end
+	if d:IsA("BasePart") and d.Name == "PaperLantern" and d:FindFirstChildOfClass("PointLight") and d:FindFirstChildOfClass("PointLight").Enabled then lit += 1 end
 end
 check(lit >= 10, "the lanterns didn't come back after the reset (" .. lit .. ")")
 local thu = game:GetService("CollectionService"):GetTagged("NpcBaThu")[1]
