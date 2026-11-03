@@ -206,6 +206,17 @@ local function begin(team: Team)
 		options.ShouldReserveServer = true
 		options:SetTeleportData({ team = ids })
 		for try = 1, Config.TeleportTries do
+			-- (rebuilt every try: a member who left meanwhile made every retry fail)
+			players = {}
+			for _, id in team.members do
+				local m = Players:GetPlayerByUserId(id)
+				if m then
+					table.insert(players, m)
+				end
+			end
+			if #players == 0 then
+				break
+			end
 			local ok, err = pcall(TeleportService.TeleportAsync, TeleportService, game.PlaceId, players, options)
 			if ok then
 				return
@@ -221,7 +232,17 @@ local function begin(team: Team)
 	end)
 end
 
+local lastAction: { [Player]: number } = {}
 local function onAction(p: Player, action: any, arg: any)
+	-- a few clicks a second at most: every action re-sends the menu (and asks Roblox about friendships) to everyone
+	if os.clock() - (lastAction[p] or 0) < 0.25 then
+		return
+	end
+	lastAction[p] = os.clock()
+	if action == "sync" then -- a client that just connected (the PlayerAdded broadcast can come before it listens)
+		Remotes.event(Remotes.Names.MenuState):FireClient(p, stateFor(p, version))
+		return
+	end
 	if action == "backToMenu" then
 		if kind == "Run" then
 			p:SetAttribute("InRun", false)
@@ -318,6 +339,7 @@ local function handleInvite(p: Player)
 		local tok, err = pcall(TeleportService.TeleportAsync, TeleportService, game.PlaceId, { p }, options)
 		if not tok then
 			warn(`[LangVong] following the inviter failed: {err}`)
+			notice(p, Text.Menu.cantFollow) -- (their team is already in its own run: it can't be joined)
 		end
 	end
 end
@@ -344,6 +366,7 @@ end
 local expected: { number }? = nil
 local firstArrival: number? = nil
 
+local startedOnce = false
 local function runArrival(p: Player)
 	spawnIn(p)
 	if not expected then
@@ -355,6 +378,11 @@ local function runArrival(p: Player)
 		end
 	end
 	firstArrival = firstArrival or os.clock()
+	-- everyone before them left and the run went back to Lobby: it starts again for whoever is here now
+	local GameState = require(script.Parent:WaitForChild("GameStateService")) :: any
+	if startedOnce and GameState.GetPhase() == "Lobby" then
+		task.spawn(GameState.BeginRun)
+	end
 end
 
 local function runReady(): boolean
@@ -447,6 +475,18 @@ function MenuService.Init()
 	Remotes.event(Remotes.Names.MenuAction).OnServerEvent:Connect(onAction)
 	TeleportService.TeleportInitFailed:Connect(function(p: Player, result: Enum.TeleportResult, err: string)
 		warn(`[LangVong] teleport failed for {p.Name}: {result.Name} {err}`)
+		-- the team was left "starting" with no way on: free it and tell them (they can press Begin again)
+		local team = teams[teamOf[p.UserId] or ""]
+		if team and team.starting and kind ~= "Run" then
+			team.starting = false
+			for _, id in team.members do
+				local m = Players:GetPlayerByUserId(id)
+				if m then
+					notice(m, Text.Menu.teleportFailed)
+				end
+			end
+			broadcast()
+		end
 	end)
 end
 
@@ -456,6 +496,7 @@ function MenuService.Start()
 		task.spawn(onPlayerAdded, p)
 	end
 	Players.PlayerRemoving:Connect(function(p)
+		lastAction[p] = nil
 		leave(p)
 		for key in friendCache do
 			if key:sub(1, #tostring(p.UserId) + 1) == `{p.UserId}:` then
@@ -469,6 +510,7 @@ function MenuService.Start()
 		while not runReady() do
 			task.wait(0.5)
 		end
+		startedOnce = true
 		GameState.BeginRun()
 	end
 end

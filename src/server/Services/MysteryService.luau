@@ -340,8 +340,15 @@ function MysteryService.Hint(reason: string): string?
 	f:SetAttribute("Place", place)
 	task.spawn(function()
 		local t0 = os.clock()
-		local wasMat = window and window.Material
-		local wasColor = window and window.Color
+		-- the window's own look, kept on it until the last flicker ends (a second hint started mid-flicker used to take
+		-- the flicker as the original and leave the window stuck dark or glowing)
+		if window then
+			if (window:GetAttribute("HintFlickers") or 0) == 0 then
+				window:SetAttribute("HintMat", window.Material.Name)
+				window:SetAttribute("HintColor", window.Color)
+			end
+			window:SetAttribute("HintFlickers", (window:GetAttribute("HintFlickers") or 0) + 1)
+		end
 		while f.Parent and os.clock() - t0 < Pace.seconds(Config.HintFlickerSeconds) do
 			local on = math.random() < 0.5
 			if window then
@@ -352,8 +359,16 @@ function MysteryService.Hint(reason: string): string?
 			lantern.Size = Vector3.one * (if on then 1.8 else 1.2)
 			task.wait(0.12 + math.random() * 0.2)
 		end
-		if window and wasMat and wasColor then
-			window.Material, window.Color = wasMat, wasColor
+		if window then
+			local left = (window:GetAttribute("HintFlickers") or 1) - 1
+			window:SetAttribute("HintFlickers", left)
+			if left <= 0 then
+				local mat = window:GetAttribute("HintMat")
+				window.Material = if typeof(mat) == "string" then (Enum.Material :: any)[mat] else window.Material
+				window.Color = window:GetAttribute("HintColor") or window.Color
+				window:SetAttribute("HintMat", nil)
+				window:SetAttribute("HintColor", nil)
+			end
 		end
 		f:Destroy()
 	end)

@@ -451,6 +451,20 @@ end
 
 local function playFinale()
 	local kind = ReplicatedStorage:GetAttribute("Ending")
+	if kind == nil and not thuAtSteps and ReplicatedStorage:GetAttribute("NameWritten") == true then
+		-- the name was written but midnight came while she was still on her way: she is at the steps (Về nhà, not Im lặng)
+		local m = thu()
+		if m and m.PrimaryPart then
+			local lift = (m.PrimaryPart :: BasePart).Position.Y - 1
+			local pts = walkPath(m:GetPivot().Position - Vector3.new(0, lift, 0))
+			local last = pts[#pts]
+			if last then
+				m:PivotTo(CFrame.new(last + Vector3.new(0, lift, 0)))
+			end
+		end
+		ReplicatedStorage:SetAttribute("ThuWalking", false)
+		thuAtSteps = true
+	end
 	if kind == nil then
 		local there = atTheSteps()
 		kind = if thuAtSteps then "home" elseif Config.StayEnding and #there > 0 then "stay" else "silence"

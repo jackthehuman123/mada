@@ -94,6 +94,7 @@ local Text = {
 		backToMenu = "Back to menu",
 		cantJoin = "That team is full or private.",
 		teleportFailed = "Couldn't start the game. Try again.",
+		cantFollow = "Your friend's team has already started. Start your own, or wait for their next run.",
 		busyStudio = "A team is already playing in this Studio session.", -- Studio only
 	},
 }

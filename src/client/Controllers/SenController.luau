@@ -91,7 +91,8 @@ local function holdAnkle(hand: Model, foot: BasePart, water: Vector3)
 	hand:PivotTo(CFrame.fromMatrix(foot.Position - up * 0.25 + Vector3.new(0, 0.05, 0), right, up, back))
 end
 
-local function play(water: Vector3, quiet: boolean)
+local hidden: { ScreenGui } = {} -- the HUD the scene hid (given back even if the scene fails)
+local function playInner(water: Vector3, quiet: boolean)
 	running += 1
 	local my = running
 	local cam = Workspace.CurrentCamera
@@ -103,7 +104,7 @@ local function play(water: Vector3, quiet: boolean)
 	player:SetAttribute("SenCinematic", true)
 	bodyView(true)
 	-- nothing on screen but the scene: the HUD (journal button, objective) goes while it plays
-	local hidden = {}
+	hidden = {}
 	for _, g in player.PlayerGui:GetChildren() do
 		if g:IsA("ScreenGui") and g.Enabled and g.Name ~= "LangVongSen" then
 			g.Enabled = false
@@ -257,6 +258,38 @@ local function play(water: Vector3, quiet: boolean)
 		end
 		black.Visible = false
 	end
+end
+
+-- the scene, guarded: if anything in it throws, the camera, the body, the HUD and the screen come back (a throw left the
+-- player with a frozen camera and no HUD for the rest of the run)
+local function play(water: Vector3, quiet: boolean)
+	local ok, err = pcall(playInner, water, quiet)
+	if ok then
+		return
+	end
+	warn(`[LangVong] the taking scene failed: {err}`)
+	local cam = Workspace.CurrentCamera
+	cam.CameraType = Enum.CameraType.Custom
+	cam.FieldOfView = 70
+	for _, e in cam:GetChildren() do
+		if e:IsA("BlurEffect") or e:IsA("ColorCorrectionEffect") then
+			e:Destroy()
+		end
+	end
+	local folder = Workspace:FindFirstChild("SenCinematic")
+	if folder then
+		folder:Destroy()
+	end
+	SoundService.AmbientReverb = Enum.ReverbType.NoReverb
+	bodyView(false)
+	for _, g in hidden do
+		g.Enabled = true
+	end
+	hidden = {}
+	if black then
+		black.Visible = false
+	end
+	player:SetAttribute("SenCinematic", false)
 end
 
 function SenController.Init()

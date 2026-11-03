@@ -181,9 +181,30 @@ function GameStateService.Init()
 	end
 	-- analytics events that happen on a client (§10): only these names are accepted
 	local fromClient = { camera_record = true, camera_playback = true, bin_tape_played = true }
+	local lastTrack: { [Player]: number } = {}
+	Players.PlayerRemoving:Connect(function(p)
+		lastTrack[p] = nil
+	end)
 	Remotes.event(Remotes.Names.Track).OnServerEvent:Connect(function(p: Player, name: any, data: any)
+		-- at most one every half second, and only a few plain fields (a client could otherwise fill the server's memory)
+		if os.clock() - (lastTrack[p] or 0) < 0.5 then
+			return
+		end
+		lastTrack[p] = os.clock()
 		if typeof(name) == "string" and fromClient[name] then
-			local d = if typeof(data) == "table" then data else {}
+			local d = {}
+			if typeof(data) == "table" then
+				local n = 0
+				for k, v in data do
+					n += 1
+					if n > 6 then
+						break
+					end
+					if typeof(k) == "string" and (typeof(v) == "number" or typeof(v) == "boolean" or (typeof(v) == "string" and #v <= 60)) then
+						d[k] = v
+					end
+				end
+			end
 			d.player = p.Name
 			Analytics.track(name, d)
 		end

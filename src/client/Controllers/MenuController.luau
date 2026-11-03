@@ -347,6 +347,7 @@ function MenuController.Init()
 			end
 		end)
 	end)
+	send("sync") -- ask for the menu once we listen (the server's first broadcast can come before)
 end
 
 function MenuController.Start()

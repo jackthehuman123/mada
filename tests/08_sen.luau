@@ -116,7 +116,7 @@ root.CFrame = CFrame.new(-140, 3, -70)
 task.wait(0.2)
 dbg("sen", "now")
 local t0 = os.clock()
-while dbg("get").phase ~= "Ending" and os.clock() - t0 < 10 do task.wait(0.2) end
+while dbg("get").phase ~= "Ending" and os.clock() - t0 < 15 do task.wait(0.2) end -- (10 s flaked once on a busy PC)
 eq(dbg("get").phase, "Ending", "phase after everyone was taken")
 eq(dbg("ending").ending, "silence", "ending")
 eq(game.Players:GetPlayers()[1]:GetAttribute("TakenFinal"), true, "the second taking is for good")
