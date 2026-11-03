@@ -1,0 +1,23 @@
+# Round 1 - Player (13-17, Doors / Mimic / Apeirophobia fan)
+
+**Score: 3/10.** The story is good. As a game it isn't there yet. My friends and I would quit around minute 8-10 and not recommend it. Some frames are test-speed artifacts (noted below).
+
+1. **No objective after the intro (DESIGN).** After Bin's camera, the only line is "Find Bin." (Text.luau findBin, screenshot 07_mystery-sen-house, where it's still on screen while reading the letter). Bin is gone and can't be found, so the goal is a lie. Nobody tells me to find clues, light lanterns, or look for the girl. The brief says "nothing else tells players what to do" (§4 beat 7). In Doors the next door is always the goal. Fix: a soft, in-fiction goal after Bin vanishes ("Bin's camera has something on it... who is the girl on the steps?"). Have Tape 2 push you toward Sen's house.
+
+2. **Rules I would never discover (DESIGN/BUG).** Sen takes lone players near water, but nothing tells me. The shrine is safe, incense saves you, and the camera shows footprints, yet none of it is taught. My first death comes with no warning I understood. 02_world-lane is a long, empty shore walk with nothing in it. Fix: have Bà Thu or the first Sen warning on Night 1 teach "stay together, away from the water". Show an incense count on screen. Show a one-time "Press F: camcorder" hint.
+
+3. **Dead time (DESIGN).** The brief says Night 1 is 8-10 min scripted and the Open phase 35 min. Bà Thu's intro is 9 click-through lines, then four slow lanterns (60-90 s) where you do nothing, then a walk. The lane takes ~75 s end to end across grass (02_world-lane: big flat field, no props, no sounds visible). Nothing wanders, nothing tempts me to run. Fix: cut dialogue to the 4 key lines, or play it while walking. Add distant sounds and things on the lane.
+
+4. **Not scary until Sen takes you (DESIGN).** I can see the threat only as a "pale shape" in water. In 06_night1-flooded-causeway the lake is calm and empty. There's no chase, no hide, no danger on land (the brief even says "never chases on land"). Doors has Rush and Seek; Mimic has the Mimic running at you. Here the loop is "stay in groups, don't go near water", which solo players ignore. The "taken" result (08_sen-drowned-festival) is a pretty room where nothing happens, so being caught is a time-out, not a punishment. Fix: give Sen or another threat a visible, audible approach on land near water. Give the taken player something to do beyond one button.
+
+5. **Art makes the horror unconvincing (BUG/DESIGN).** The shrine (02_world-shrine) is a bright orange block frame with glowing balls, which reads like a toy, not a haunted place. The people are blocks (07 drowned festival: little bust silhouettes). In 06_night1-dialogue Bà Thu's frame is magenta walls with no face or hands, just a text box (could be a test artifact, but it's what a player sees). Houses are plain white boxes (02_world-lane). I would laugh, not scream.
+
+6. **Clue chain is slow and invisible (DESIGN).** The journal (03_clues-journal) lists "The red paper" and "A class photo" with no hint of where to go next. Brief §5.1 forbids progress counters. Players don't know there are 14 clues or that the letter is the key. The only nudge is a hint at 240 s of nothing new. If I walk into Sen's house first (it's at the end of the lane and unlocked), I find the letter with no setup, and the true ending is a sequence of text. Fix: let each clue name a person or place on its page; show a faint marker on the journal's next lead.
+
+7. **Reward and replay are thin (DESIGN).** Success = a text card (ending_home) and a reset. There's no score, achievement, collectible, or second route. Im lặng is a card too. No reason to play twice or tell friends. Fix: a reveal after the ending ("clues found 9 of 15", tape/memory unlocks), a different Sen order, or harder variants.
+
+8. **Controls undiscovered (BUG).** The viewfinder (F/R/T) is a core mechanic, but the UI has only a "Journal (J)" button. A new player won't find the camera or the footprints, so the key "you can see what eyes can't" idea never fires. binTapesHint ("Press T to watch Bin's tapes") exists but is the only hint. Fix: a persistent control bar and a forced first use at the shrine.
+
+9. **Intro card is a wall of black (BUG, minor).** 05_phases-intro-card: text on black with "Find Bin." barely visible behind it (mid-transition artifact probably). Fine as a mood, but two of the first seconds say nothing about what I'm doing.
+
+**Verdict:** a reviewer would say "nice story, nothing to do". I'd leave before the first Sen warning. Priorities: a clear goal, a visible threat, and a taught rule set. Then the art.
