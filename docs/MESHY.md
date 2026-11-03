@@ -75,5 +75,5 @@ laptop). The Roblox asset id is what the place uses.
 ## This month (2026-11)
 
 Ten queued in the manifest, in order: roof, walls, porch (the house kit for all 10 houses), shrine, carp lantern,
-Bà Thu seated, Sen standing, family altar, sampan, water puppet pavilion. Bà Thu's finale walk and Bin (who
+Bà Thu seated, Sen standing, family altar, lotus lantern (swapped in for the sampan after Catlyn's references), water puppet pavilion. Bà Thu's finale walk and Bin (who
 follows players) need animated rigs, so they stay on the HumanoidDescription plan in I-11.

@@ -61,7 +61,7 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   wooden posts, a brick yard) and the props around it; (2) use store models only for small props (water jars, nón lá,
   baskets, bamboo, dock); (3) if that's still not good enough, a paid pack or a commissioned modeller (Catlyn's call).
 - **Pipeline (2026-11-02):** `docs/MESHY.md`. Meshy's free plan makes the house kit (roof, walls, porch: separate
-  meshes so each takes its own Roblox material) plus the shrine, lantern, altar, boat and puppet pavilion; waiting on
+  meshes so each takes its own Roblox material) plus the shrine, the carp and lotus lanterns, the altar and the puppet pavilion; waiting on
   Catlyn to generate them (W-06).
 - **Done when:** every house reads as a Vietnamese village house up close (porch, roof tiles, shutters, yard
   clutter), Catlyn approves screenshots, names/tags/positions kept, `test.py --art` PASS, assets logged.

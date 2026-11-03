@@ -4,6 +4,47 @@ Everything we know or decided about the place, in one description: what to build
 for. **(story §n)** marks a fact from `docs/design/story.md`; everything else is a design choice (Catlyn's, or a
 proposal to check). The forest's look is in `docs/FOREST_PROPOSAL.md` and `docs/refs/forest_village_edge.png`.
 
+## 0. Catlyn's reference images (2026-11-02, `docs/refs/`)
+
+The visual target. Build each view to match its image; where an image and the story disagree, the story wins (open
+points at the end of this section).
+
+| Image | View / place | Take from it |
+| --- | --- | --- |
+| `layout_storyboard.png` | top-down map + views 1–8 | the overall shape (shrine west, dock south, Sen's cove north-east, puppet stage on the far shore north, causeway south-west), and one frame per view in §5 |
+| `forest_village_edge.png` | 6. the village edge | the forest band (see `FOREST_PROPOSAL.md`) |
+| `village_edge_fields.jpg` | 6. the village edge, from the fields | old stone graves in the tall grass, the bamboo hedge in front of the roofs, the lake and the far pavilion beyond |
+| `shrine_from_the_reeds.jpg` | 1./2. arrival toward the shrine | the shrine on a stone point with steps into the water; red-roofed houses with **brick yard walls** and red lanterns across an inlet; reeds and bamboo framing the path |
+| `shrine_steps.jpg` | 2. from the shrine | the landing steps into the water lined with **candles and incense**, smoke drifting; the lake as a long arm with the village on both banks and the puppet pavilion at the far end. Strong candidate for the **menu** shot |
+| `down_the_lane.jpg` | 3. down the lane | brick walls and tiled houses on one side, a **low brick wall along the water** on the other with fishing nets drying on poles, baskets, coiled rope, the dock and floating lanterns; a muddy lane with puddles catching the lantern light |
+| `last_lane.jpg` | 4. the last lane | empty houses with doors left open, a bundle and sandals on a step, one last lantern, grass growing up the path, and Sen's house closing the end |
+| `sen_house_from_the_dock.jpg` | 7. Sen's house across the water | **Sen's house on top of a rocky headland, the cove a dark sea cave beneath it**, one lit lantern drifting out of the cave mouth (the puppet master's lantern, §7); the village lights across the fog |
+| `bottom_step.jpg` | 5. the bottom step | **the cove as a grotto**: mossy rock framing, mossy stone steps with the **sandals lined up**, carp in the clear water, the lanterns gathered in the middle like a town of light, the far pavilion, village lights on the shore |
+| `far_shore_puppet_stage.jpg` | 8. the far shore | the **water puppet stage on stilts**, a red-roofed pavilion on the bank, **tattered festival banners** on bamboo poles, the old path running into the water (the flooded way round) |
+| `sen_house_interior.jpg` | Sen's house, inside | the old radio on a shelf, the oil lamp as the only warm light, the paper fish on its shelf, two teacups on a side table, a plain wooden chair, the back door open on the blue night |
+
+**What all of them share (the look):** a teal-blue night, everything cold and blue-green except **red lanterns, red tile
+roofs, brick, candles**; low mist on the water; **lotus-shaped floating lanterns** (hoa đăng) on the lake.
+
+**Decided from the images (proposal, Catlyn to confirm):**
+- **The lanterns on the lake are lotus lanterns** (hoa đăng), the floating kind people set out on Rằm. **Sen's is the
+  only fish** (§6): everyone else's soul gets a lotus, she made a carp. The Meshy queue swaps the sampan for a lotus
+  lantern (`art/meshy/manifest.json`).
+- **The cove is a grotto under the headland, with Sen's house on top.** From the village you see the dark mouth of the
+  cave; the steps inside it can't be seen from anywhere (§4).
+- Houses get **brick yard walls and gates** (north-central style) and the lane a **low brick wall on the water side**.
+
+**Where the images and the story differ:**
+- **Sen's family altar** (`sen_house_interior.jpg`) shows a Buddha/Quan Âm statue. The story needs **the ancestors'
+  photographs** there: the letter is hidden under them (§9, §14). Build it with the photos (a statue can stay beside
+  them if Catlyn wants).
+- **The bowl and chopsticks** sit on the altar in the image; the story puts them at **one place at the table**,
+  freshly washed (§14). Thu's **chair faces the door**, in the back room, with the dusty cups (§14).
+- **The sandals** (`bottom_step.jpg`): five pairs. The story says one pair per lost child (§14): four (Minh, Hạnh, Tí,
+  Khoa), or five if Bin's are there by the time the players come down. Catlyn's call.
+- **Sen's house** is a one-storey tiled house in `layout_storyboard.png` and `sen_house_from_the_dock.jpg`, but a
+  two-storey flaking plaster house in `last_lane.jpg`. Which one?
+
 ## 1. What the story fixes
 
 - A poor village **on a lake**, hard to reach: a **causeway over the marsh** that floods half the rainy season, or the
