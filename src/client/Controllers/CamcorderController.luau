@@ -510,7 +510,13 @@ end
 
 function Camcorder.State(): { [string]: any }
 	local foot = partsOf(Tags.CameraOnly)[1]
-	local thu = partsOf(Tags.HiddenOnCamera)[1]
+	local thu = nil -- (the first part of her that shows: not a Hidden stand-in under her model)
+	for _, p in partsOf(Tags.HiddenOnCamera) do
+		if not p:GetAttribute("Hidden") then
+			thu = p
+			break
+		end
+	end
 	return { raised = raised, recording = recording, playing = playing, clips = #clips,
 		cameraOnlyT = foot and foot.Transparency or -1, hiddenOnCameraT = thu and thu.Transparency or -1,
 		fov = Workspace.CurrentCamera.FieldOfView, battery = battery(),
@@ -527,8 +533,19 @@ end
 function Camcorder.Start()
 	-- eyes can't see CameraOnly things; hide them now and whenever one is added
 	setVisible(Tags.CameraOnly, false)
-	CollectionService:GetInstanceAddedSignal(Tags.CameraOnly):Connect(function()
+	CollectionService:GetInstanceAddedSignal(Tags.CameraOnly):Connect(function(inst)
 		setVisible(Tags.CameraOnly, raised or playing)
+		-- (a tagged model can arrive before its parts do: hide those too as they come in)
+		inst.DescendantAdded:Connect(function(d)
+			if d:IsA("BasePart") and not (raised or playing) then
+				d.Transparency = 1
+			end
+		end)
+	end)
+	task.delay(3, function() -- and once more after the world has settled
+		if not (raised or playing) then
+			setVisible(Tags.CameraOnly, false)
+		end
 	end)
 	UserInputService.InputBegan:Connect(function(input, processed)
 		if processed then

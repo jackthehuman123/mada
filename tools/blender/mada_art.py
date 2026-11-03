@@ -445,9 +445,147 @@ def bin_(rng):
             "Cap": (cap, (180, 40, 40)), "Gear": (gear, (28, 28, 32)), "Lamp": (lamp, (255, 250, 220))}
 
 
+
+# ---------------------------------------------------------------- the village houses
+# One shell for every house on the lane, matching the game's walls exactly (Build.luau house(): floor top at z 1, walls
+# 1..11, 22 wide on x, 18 deep on y, the front toward -y with a 6-stud door gap and the lantern window at Roblox x -6.5 =
+# Blender x +6.5). The graybox walls stay in the game as invisible collision; these are what you see.
+W2, D2, H = 11, 9, 11
+
+
+def _box6(bm, corners):
+    vs = [bm.verts.new(c) for c in corners]
+    for f in ((0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
+        bm.faces.new([vs[i] for i in f])
+
+
+def _walls(wall, brick):
+    block(wall, V((-W2, D2 - 1, 1)), V((W2, D2, H)))  # back
+    block(wall, V((-W2, -D2, 1)), V((-W2 + 1, D2, H)))  # sides
+    block(wall, V((W2 - 1, -D2, 1)), V((W2, D2, H)))
+    block(wall, V((-W2, -D2, 1)), V((-3, -D2 + 1, H)))  # front: the door's other side
+    block(wall, V((3, -D2, 1)), V((4.8, -D2 + 1, H)))  # the window side, round its hole (x 4.8..8.2, z 4.7..7.3)
+    block(wall, V((8.2, -D2, 1)), V((W2, -D2 + 1, H)))
+    block(wall, V((4.8, -D2, 1)), V((8.2, -D2 + 1, 4.7)))
+    block(wall, V((4.8, -D2, 7.3)), V((8.2, -D2 + 1, H)))
+    block(wall, V((-3, -D2, 9)), V((3, -D2 + 1, H)))  # lintel over the door
+    for x0, x1 in ((-W2, -W2 + 1), (W2 - 1, W2)):  # gables up to the ridge
+        vs = [wall.verts.new(V((x, y, z))) for x in (x0, x1) for (y, z) in ((-D2, H), (D2, H), (0, H + 5.6))]
+        wall.faces.new((vs[0], vs[1], vs[2]))
+        wall.faces.new((vs[5], vs[4], vs[3]))
+        for a, b in ((0, 1), (1, 2), (2, 0)):
+            wall.faces.new((vs[a], vs[b], vs[b + 3], vs[a + 3]))
+    block(brick, V((-W2 - 0.3, D2, 0)), V((W2 + 0.3, D2 + 0.3, 1.5)))  # a brick plinth round the outside
+    block(brick, V((-W2 - 0.3, -D2 - 0.3, 0)), V((-W2, D2 + 0.3, 1.5)))
+    block(brick, V((W2, -D2 - 0.3, 0)), V((W2 + 0.3, D2 + 0.3, 1.5)))
+    block(brick, V((-W2 - 0.3, -D2 - 0.3, 0)), V((-3, -D2, 1.5)))
+    block(brick, V((3, -D2 - 0.3, 0)), V((W2 + 0.3, -D2, 1.5)))
+
+
+def _roof(roof, rng, ridge_z=H + 5.8, eave=1.8, thick=0.4, rows=True, gaps=0.0):
+    """two slopes from the ridge to past the walls in overlapping tile rows; gaps = share of rows missing (Sen's)"""
+    for sy in (-1, 1):
+        y0, z0, y1, z1 = 0.0, ridge_z, sy * (D2 + eave), H - 0.6
+        n = 9 if rows else 1
+        for k in range(n):
+            if rows and gaps and rng.random() < gaps:
+                continue
+            t0, t1 = k / n, (k + 1) / n
+            ya, za = y0 + (y1 - y0) * t0, z0 + (z1 - z0) * t0
+            yb, zb = y0 + (y1 - y0) * t1, z0 + (z1 - z0) * t1
+            off = 0.12 if rows else 0.0
+            c = []
+            for x in (-W2 - 1.6, W2 + 1.6):
+                for (y, z) in ((ya, za + off), (yb, zb), (yb, zb - thick), (ya, za + off - thick)):
+                    c.append(V((x, y, z)))
+            _box6(roof, c)
+
+
+def _porch(wood, stone, roof):
+    block(stone, V((-W2 - 0.5, -D2 - 4.8, 0)), V((W2 + 0.5, -D2, 0.5)))  # the porch floor
+    for x in (-W2, -3.5, 3.5, W2):
+        block(stone, V((x - 0.55, -D2 - 4.15, 0.5)), V((x + 0.55, -D2 - 3.05, 1.0)))
+        tube(wood, [V((x, -D2 - 3.6, 1.0)), V((x, -D2 - 3.6, 8.9))], [0.36, 0.32], sides=8)
+    block(wood, V((-W2 - 0.4, -D2 - 3.95, 8.7)), V((W2 + 0.4, -D2 - 3.25, 9.4)))  # beam
+    c = []  # the porch roof, from the wall down over the beam
+    for x in (-W2 - 1.0, W2 + 1.0):
+        for (y, z) in ((-D2, H - 0.3), (-D2 - 5.6, 8.9), (-D2 - 5.6, 8.55), (-D2, H - 0.65)):
+            c.append(V((x, y, z)))
+    _box6(roof, c)
+    for sx in (-1, 1):  # the door frame
+        block(wood, V((sx * 3 - 0.2, -D2 - 0.15, 1)), V((sx * 3 + 0.2, -D2 + 0.15, 9.2)))
+    block(wood, V((-3.2, -D2 - 0.15, 8.9)), V((3.2, -D2 + 0.15, 9.4)))
+    for x in (8.8, 4.2):  # shutters beside the window (Roblox x -8.8, -4.2)
+        block(wood, V((x - 0.6, -D2 - 0.35, 4.6)), V((x + 0.6, -D2 - 0.15, 7.4)))
+
+
+def _ridge(trim, curl=0.9, z=H + 6.0):
+    tube(trim, [V((-W2 - 1.8, 0, z + curl)), V((-W2 - 1.2, 0, z + 0.15)), V((W2 + 1.2, 0, z + 0.15)), V((W2 + 1.8, 0, z + curl))],
+         [0.35, 0.42, 0.42, 0.35], sides=6)
+
+
+def house_tile(rng):
+    wall, brick, roof, wood, stone, trim = (bmesh.new() for _ in range(6))
+    _walls(wall, brick)
+    _roof(roof, rng)
+    _porch(wood, stone, roof)
+    _ridge(trim)
+    return {"Wall": (wall, (206, 178, 118)), "Brick": (brick, (118, 74, 58)), "Roof": (roof, (150, 70, 52)), "Wood": (wood, (92, 64, 44)),
+            "Stone": (stone, (128, 124, 114)), "Trim": (trim, (110, 52, 40))}
+
+
+def house_thatch(rng):
+    wall, brick, thatch, wood, stone = (bmesh.new() for _ in range(5))
+    _walls(wall, brick)
+    _roof(thatch, rng, ridge_z=H + 6.6, eave=2.4, thick=1.0, rows=False)
+    for sy in (-1, 1):  # a ragged fringe along the eaves
+        for k in range(30):
+            x = -W2 - 2 + k * (2 * W2 + 4) / 29
+            rot_block(thatch, V((x, sy * (D2 + 2.45), H - 0.95 - rng.uniform(0, 0.5))), V((0.9, 0.5, 0.8 + rng.uniform(0, 0.6))), rx=sy * 0.5)
+    tube(thatch, [V((-W2 - 1.8, 0, H + 6.7)), V((W2 + 1.8, 0, H + 6.7))], [0.7, 0.7], sides=6)  # the ridge bundle
+    _porch(wood, stone, thatch)
+    return {"Wall": (wall, (186, 162, 120)), "Brick": (brick, (110, 80, 62)), "Thatch": (thatch, (130, 108, 70)), "Wood": (wood, (88, 66, 46)),
+            "Stone": (stone, (124, 120, 110))}
+
+
+def house_dinh(rng):
+    """the communal house (dinh lang): heavier roof, red-lacquered columns, the ridge ends curling up like dragon tails"""
+    wall, brick, roof, wood, stone, trim = (bmesh.new() for _ in range(6))
+    _walls(wall, brick)
+    _roof(roof, rng, ridge_z=H + 6.2, eave=2.4, thick=0.55)
+    _porch(trim, stone, roof)
+    tube(trim, [V((-W2 - 2.4, 0, H + 8.6)), V((-W2 - 1.6, 0, H + 6.6)), V((W2 + 1.6, 0, H + 6.6)), V((W2 + 2.4, 0, H + 8.6))],
+         [0.3, 0.5, 0.5, 0.3], sides=6)
+    for sx in (-1, 1):
+        tube(trim, [V((sx * (W2 + 2.4), 0, H + 8.6)), V((sx * (W2 + 2.0), 0, H + 9.4)), V((sx * (W2 + 1.4), 0, H + 9.1))], [0.3, 0.2, 0.1], sides=6)
+    block(wood, V((-2.2, -D2 - 0.3, H - 0.1)), V((2.2, -D2 - 0.1, H + 1.4)))  # a name board over the door
+    return {"Wall": (wall, (214, 192, 140)), "Brick": (brick, (118, 74, 58)), "Roof": (roof, (120, 60, 46)), "Wood": (wood, (70, 46, 34)),
+            "Stone": (stone, (130, 126, 116)), "Trim": (trim, (140, 40, 32))}
+
+
+def house_sen(rng):
+    """the house at the end of the lane: like the others once, now neglected (tiles missing, moss, a shutter hanging)"""
+    wall, brick, roof, wood, stone, moss = (bmesh.new() for _ in range(6))
+    _walls(wall, brick)
+    _roof(roof, rng, gaps=0.18)
+    block(stone, V((-W2 - 0.5, -D2 - 4.8, 0)), V((W2 + 0.5, -D2, 0.5)))
+    for x in (-W2, 3.5, W2):  # one porch post gone
+        tube(wood, [V((x, -D2 - 3.6, 0.5)), V((x + 0.15, -D2 - 3.6, 8.9))], [0.34, 0.3], sides=7)
+    rot_block(wood, V((0, -D2 - 3.6, 8.6)), V((2 * W2 + 0.8, 0.6, 0.6)), rz=0.03)
+    for sx in (-1, 1):
+        block(wood, V((sx * 3 - 0.2, -D2 - 0.15, 1)), V((sx * 3 + 0.2, -D2 + 0.15, 9.2)))
+    rot_block(wood, V((8.6, -D2 - 0.5, 5.4)), V((1.2, 0.2, 2.8)), rx=0.25, rz=0.5)  # the hanging shutter
+    for _ in range(9):
+        ball(moss, V((rng.uniform(-W2, W2), rng.choice((-1, 1)) * rng.uniform(2, D2), H + rng.uniform(1, 4))), rng.uniform(0.8, 1.6),
+             (1.4, 1.0, 0.15), subdiv=1)
+    return {"Wall": (wall, (150, 140, 120)), "Brick": (brick, (96, 70, 58)), "Roof": (roof, (96, 62, 52)), "Wood": (wood, (70, 56, 44)),
+            "Stone": (stone, (110, 108, 100)), "Moss": (moss, (62, 80, 50))}
+
+
 ITEMS = {"Sen": sen, "Child": child, "Face": face, "Hand": hand, "Shrine": shrine, "Altar": altar, "Lantern": lantern,
          "Reeds": reeds, "Causeway": causeway, "FishRack": fish_rack, "Boat": boat, "Fence": fence, "Well": well,
-         "BaThu": ba_thu, "Bin": bin_}
+         "BaThu": ba_thu, "Bin": bin_, "HouseTile": house_tile, "HouseThatch": house_thatch, "HouseDinh": house_dinh,
+         "HouseSen": house_sen}
 
 
 # ---------------------------------------------------------------- export
@@ -525,7 +663,7 @@ def main():
             spots[item] = V(((i % 5) * 7.0, -(i // 5) * 8.0, 0))
         for ob in objs:
             item = ob.name.split("_")[0]
-            k = 0.18 if item == "Shrine" else (0.4 if item in ("Causeway", "Boat") else 1.0)
+            k = 0.18 if item == "Shrine" else (0.4 if item in ("Causeway", "Boat") else (0.25 if item.startswith("House") else 1.0))
             ob.data.transform(Matrix.Translation(spots[item]) @ Matrix.Scale(k, 4))
         render(out / "preview.png", objs)
     print(json.dumps(per_item))

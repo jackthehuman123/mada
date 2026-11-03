@@ -6,7 +6,7 @@ local RS = game:GetService("ReplicatedStorage")
 local t0 = os.clock()
 while not RS:FindFirstChild("ArtTemplates") and os.clock() - t0 < 60 do task.wait(0.5) end
 check(RS:FindFirstChild("ArtTemplates"), "the models never loaded")
-eq(#RS.ArtTemplates:GetChildren(), 15, "models")
+eq(#RS.ArtTemplates:GetChildren(), 19, "models")
 task.wait(2) -- (the world's dressing places them right after)
 local W = workspace.World
 local shrine = W:FindFirstChild("Shrine", true)

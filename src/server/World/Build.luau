@@ -19,6 +19,7 @@ local Tags = require(Shared:WaitForChild("Tags"))
 local Config = require(Shared:WaitForChild("Config"))
 local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 local Furniture = require(Shared:WaitForChild("Content"):WaitForChild("Furniture"))
+local Land = require(Shared:WaitForChild("Content"):WaitForChild("Land"))
 local Art = require(Shared:WaitForChild("Art"))
 local AssetService = game:GetService("AssetService")
 
@@ -129,21 +130,81 @@ end
 local function terrainPass()
 	local t = Workspace.Terrain
 	t:Clear()
-	t:FillBlock(CFrame.new(0, -10, -100), Vector3.new(1600, 20, 1400), M.Grass) -- land, top at y = 0
-	-- the lake (600 x 430), then the far shore beyond it
-	t:FillBlock(CFrame.new(0, -9, -265), Vector3.new(680, 22, 430), M.Air)
-	t:FillBlock(CFrame.new(0, -17, -265), Vector3.new(680, 6, 430), M.Mud)
-	t:FillBlock(CFrame.new(0, -7.5, -265), Vector3.new(680, 13, 430), M.Water)
-	-- the cove east of the village (the carp steps go down into it); it opens onto the lake
-	t:FillBlock(CFrame.new(350, -9, -45), Vector3.new(70, 22, 70), M.Air)
-	t:FillBlock(CFrame.new(350, -17, -45), Vector3.new(70, 6, 70), M.Mud)
-	t:FillBlock(CFrame.new(350, -7.5, -45), Vector3.new(70, 13, 70), M.Water)
-	-- the marsh under the causeway (shallow)
-	t:FillBlock(CFrame.new(-410, -3, 150), Vector3.new(220, 6, 220), M.Air)
-	t:FillBlock(CFrame.new(-410, -5, 150), Vector3.new(220, 2, 220), M.Mud)
-	t:FillBlock(CFrame.new(-410, -2.5, 150), Vector3.new(220, 3, 220), M.Water)
-	-- the dirt lane along the shore
-	t:FillBlock(CFrame.new(-17, -1, LANE_Z), Vector3.new(600, 2, 10), M.Ground)
+	-- the land: a basin designed in tools/blender/mada_land.py (owner 2026-11-04: "revamp the entire map ... look like a
+	-- basin ... build a map in blender then port them in"), written from its height + material grid as smooth voxels
+	local H = {}
+	for k, row in Land.heights do
+		local r = {}
+		for v in string.gmatch(row, "-?%d+") do
+			r[#r + 1] = tonumber(v) / 4
+		end
+		H[k] = r
+	end
+	local STEP, X0, Z0, NX, NZ, WATER = Land.STEP, Land.X0, Land.Z0, Land.NX, Land.NZ, Land.WATER
+	local MAT = { G = M.Grass, L = M.LeafyGrass, D = M.Ground, M = M.Mud, R = M.Rock, S = M.Limestone, W = M.Sand }
+	local function hAt(x: number, z: number): number
+		local fx, fz = (x - X0) / STEP, (z - Z0) / STEP
+		local i0, k0 = math.clamp(math.floor(fx), 0, NX - 2), math.clamp(math.floor(fz), 0, NZ - 2)
+		local tx, tz = math.clamp(fx - i0, 0, 1), math.clamp(fz - k0, 0, 1)
+		local r0, r1 = H[k0 + 1], H[k0 + 2]
+		local a = r0[i0 + 1] + (r0[i0 + 2] - r0[i0 + 1]) * tx
+		local b = r1[i0 + 1] + (r1[i0 + 2] - r1[i0 + 1]) * tx
+		return a + (b - a) * tz
+	end
+	local function matAt(x: number, z: number): Enum.Material
+		local i0 = math.clamp(math.floor((x - X0) / STEP + 0.5), 0, NX - 1)
+		local k0 = math.clamp(math.floor((z - Z0) / STEP + 0.5), 0, NZ - 1)
+		return MAT[string.sub(Land.mats[k0 + 1], i0 + 1, i0 + 1)] or M.Grass
+	end
+	local CH, YLO = 128, -24 -- chunk side (studs), the lowest voxel (under the lake's bed)
+	local x1, z1 = X0 + (NX - 1) * STEP, Z0 + (NZ - 1) * STEP
+	for cx = X0, x1 - 1, CH do
+		for cz = Z0, z1 - 1, CH do
+			local nx, nz = math.min(CH, x1 - cx) // 4, math.min(CH, z1 - cz) // 4
+			local hs, top = {}, WATER
+			for ix = 1, nx do
+				hs[ix] = {}
+				for iz = 1, nz do
+					local h = hAt(cx + ix * 4 - 2, cz + iz * 4 - 2)
+					hs[ix][iz] = h
+					top = math.max(top, h)
+				end
+			end
+			local ny = math.ceil((top + 4 - YLO) / 4)
+			local mats, occ = {}, {}
+			for ix = 1, nx do
+				mats[ix], occ[ix] = {}, {}
+				for iy = 1, ny do
+					mats[ix][iy], occ[ix][iy] = {}, {}
+				end
+				for iz = 1, nz do
+					local h = hs[ix][iz]
+					local surf = matAt(cx + ix * 4 - 2, cz + iz * 4 - 2)
+					for iy = 1, ny do
+						local lo = YLO + (iy - 1) * 4
+						local fill = math.clamp((h - lo) / 4, 0, 1)
+						if fill > 0 then
+							mats[ix][iy][iz], occ[ix][iy][iz] = (if h < WATER then M.Mud else surf), fill
+						elseif lo < WATER then
+							mats[ix][iy][iz], occ[ix][iy][iz] = M.Water, math.clamp((WATER - lo) / 4, 0, 1)
+						else
+							mats[ix][iy][iz], occ[ix][iy][iz] = M.Air, 0
+						end
+					end
+				end
+			end
+			t:WriteVoxels(Region3.new(Vector3.new(cx, YLO, cz), Vector3.new(cx + nx * 4, YLO + ny * 4, cz + nz * 4)), 4, mats, occ)
+		end
+		task.wait()
+	end
+	-- the night's colours for the terrain materials (dark, damp, a little blue)
+	t:SetMaterialColor(M.Grass, rgb(58, 82, 48))
+	t:SetMaterialColor(M.LeafyGrass, rgb(44, 70, 40))
+	t:SetMaterialColor(M.Ground, rgb(92, 74, 56))
+	t:SetMaterialColor(M.Mud, rgb(62, 54, 44))
+	t:SetMaterialColor(M.Sand, rgb(104, 94, 76))
+	t:SetMaterialColor(M.Limestone, rgb(150, 150, 142))
+	t:SetMaterialColor(M.Rock, rgb(92, 90, 86))
 	-- the rock ridge that hides the cove from the lane and the shore (only the back yard leads round it)
 	for z = -70, 40, 10 do
 		t:FillBall(Vector3.new(298 + (z % 20) * 0.2, 2, z), 11, M.Rock)
@@ -235,6 +296,29 @@ local function house(parent: Instance, x: number, loc: string?, child: string?):
 			* CFrame.Angles(sx * math.rad(28), 0, 0), Color = tile, Material = M.Slate })
 	end
 	P(m, { Name = "Lintel", Size = Vector3.new(6, 2, 1), Position = c + Vector3.new(0, H, -D / 2 + 0.5), Color = wall, Material = M.Plaster })
+	-- the Blender house over the graybox (owner 2026-11-04: "the map building are horrendous"): the graybox walls stay as
+	-- invisible collision, the window keeps its lantern light
+	local variant = if loc == "SenHouse" then "HouseSen" elseif loc == "CommunalHouse" then "HouseDinh"
+		elseif loc == "FishHouse" or x == 25 or x == 190 then "HouseThatch" else "HouseTile"
+	Art.place(variant, CFrame.new(c), m, 1, function(mm)
+		local hide = { Gable = true, Ridge = true, PorchRoof = true, Post = true, Shutter = true, Plinth = true, WallBack = true,
+			WallSide = true, WallFront = true, Roof = true, Lintel = true }
+		for _, d in m:GetChildren() do
+			if d:IsA("BasePart") and hide[d.Name] then
+				d.Transparency = 1
+				d:SetAttribute("Hidden", true)
+			end
+		end
+		for _, d in mm:GetChildren() do
+			if d:IsA("BasePart") then
+				if d.Name == "Wall" then
+					d.Color = wall
+				elseif d.Name == "Roof" then
+					d.Color = tile
+				end
+			end
+		end
+	end)
 	-- the window beside the door: dark until a lantern reaches this house (M3); Sen's never lights
 	local win = P(m, { Name = "Window", Size = Vector3.new(3.4, 2.6, 0.4), Position = c + Vector3.new(-6.5, 6, -D / 2 - 0.1), Color = rgb(30, 34, 40), Material = M.Glass })
 	if loc then

@@ -17,7 +17,7 @@ local M = Enum.Material
 local MATERIAL: { [string]: Enum.Material } = {
 	Shirt = M.Fabric, Pants = M.Fabric, Body = M.Fabric, Sleeve = M.Fabric, Head = M.Fabric, Rope = M.Fabric, Canopy = M.Fabric,
 	Tassel = M.Fabric, Wood = M.Wood, Pole = M.Wood, Hull = M.Wood, Bamboo = M.Wood, Trim = M.Wood, Frame = M.Wood, Stone = M.Slate,
-	Tile = M.Slate, Brass = M.Metal, Earth = M.Ground, Moss = M.Grass, Stem = M.Grass,
+	Tile = M.Slate, Roof = M.Slate, Wall = M.Plaster, Brick = M.Brick, Thatch = M.Fabric, Brass = M.Metal, Earth = M.Ground, Moss = M.Grass, Stem = M.Grass,
 }
 
 function Art.build()
