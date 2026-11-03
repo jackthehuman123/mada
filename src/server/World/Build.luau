@@ -570,8 +570,9 @@ end
 
 local function lighting()
 	local L = game:GetService("Lighting")
-	L.Ambient = rgb(40, 46, 66)
-	L.OutdoorAmbient = rgb(50, 58, 84)
+	-- (40/46/66 and 50/58/84 played pitch black on the dock: still night, but the shore, the paths and the water read)
+	L.Ambient = rgb(64, 72, 98)
+	L.OutdoorAmbient = rgb(86, 96, 128)
 	L.Brightness = 1
 	L.EnvironmentDiffuseScale = 0.3
 	L.EnvironmentSpecularScale = 0.3

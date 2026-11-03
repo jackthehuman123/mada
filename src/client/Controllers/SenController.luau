@@ -68,11 +68,14 @@ end
 local function bodyView(on: boolean)
 	player:SetAttribute("HideSelf", on)
 	local char = player.Character
-	local head = char and char:FindFirstChild("Head")
 	for _, d in (char and char:GetDescendants() or {}) do
 		if d:IsA("BasePart") or d:IsA("Decal") then
-			local onHead = d == head or d.Parent == head or (d.Parent and d.Parent:IsA("Accessory"))
-			;(d :: any).LocalTransparencyModifier = if on and onHead then 1 else 0
+			-- only your legs stay: looking down at her hand, your own torso and arms filled the whole view (Studio pass,
+			-- 2026-11-03: the grab showed nothing but the shirt)
+			local part = if d:IsA("Decal") then d.Parent else d
+			local name = part and part.Name or ""
+			local leg = (name:find("Leg") or name:find("Foot")) and not (part and part.Parent and part.Parent:IsA("Accessory"))
+			;(d :: any).LocalTransparencyModifier = if on and not leg then 1 else 0
 		end
 	end
 end
@@ -99,6 +102,14 @@ local function play(water: Vector3, quiet: boolean)
 	local foot = part(char, { "RightFoot", "RightLowerLeg", "Right Leg", "HumanoidRootPart" })
 	player:SetAttribute("SenCinematic", true)
 	bodyView(true)
+	-- nothing on screen but the scene: the HUD (journal button, objective) goes while it plays
+	local hidden = {}
+	for _, g in player.PlayerGui:GetChildren() do
+		if g:IsA("ScreenGui") and g.Enabled and g.Name ~= "LangVongSen" then
+			g.Enabled = false
+			table.insert(hidden, g)
+		end
+	end
 	cam.CameraType = Enum.CameraType.Scriptable
 	local folder = Instance.new("Folder")
 	folder.Name = "SenCinematic"
@@ -117,6 +128,10 @@ local function play(water: Vector3, quiet: boolean)
 			d.Reflectance = 0.15 -- wet
 		end
 	end
+	-- a cold glint on her hand: at night the grab was too dark to see
+	local handLight = Instance.new("PointLight")
+	handLight.Color, handLight.Brightness, handLight.Range, handLight.Shadows = rgb(170, 210, 220), 2.2, 7, false
+	handLight.Parent = hand.PrimaryPart
 	local function eye(): Vector3
 		return if head then head.Position + Vector3.new(0, 0.3, 0) else start.Position
 	end
@@ -172,6 +187,15 @@ local function play(water: Vector3, quiet: boolean)
 	if ok and not quiet and Config.SenJumpscare then
 		local facePos = sink + dir * 1.7
 		local face, left, right = Figures.SenFace(CFrame.lookAt(facePos, sink), folder)
+		-- lit from your side, pale and cold (underwater at night the face was a black frame: the scare was sound only)
+		local lamp = Instance.new("Part")
+		lamp.Anchored, lamp.CanCollide, lamp.CanQuery, lamp.CanTouch, lamp.Transparency = true, false, false, false, 1
+		lamp.Size = Vector3.new(0.2, 0.2, 0.2)
+		lamp.CFrame = CFrame.new(facePos - dir * 1.1 + Vector3.new(0, 0.3, 0))
+		lamp.Parent = face
+		local faceLight = Instance.new("PointLight")
+		faceLight.Color, faceLight.Brightness, faceLight.Range, faceLight.Shadows = rgb(200, 232, 236), 5, 6, false
+		faceLight.Parent = lamp
 		local l0, r0 = left.CFrame, right.CFrame
 		Sound.Play("sen_sting", nil)
 		UI.ScreenStatic(true)
@@ -221,6 +245,9 @@ local function play(water: Vector3, quiet: boolean)
 	cam.FieldOfView = fov
 	cam.CameraType = Enum.CameraType.Custom
 	bodyView(false)
+	for _, g in hidden do
+		g.Enabled = true
+	end
 	player:SetAttribute("SenCinematic", false)
 	if black.Visible then
 		local t0, len = os.clock(), Pace.seconds(0.4)
