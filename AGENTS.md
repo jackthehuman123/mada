@@ -91,7 +91,7 @@ Studio's built-in MCP server gives you these tools (names as Roblox documents th
 - Horror through dread, sound and absence. **No gore, no blood, no bodies, no death animations.** Players are "taken", not killed.
 - What happened inside Sen's house is **implied only** (radios turned up, silence, hiding places). Never show, animate or describe violence against Sen or Thu.
 - Sen's father is **never seen face to face**: a shape with its back turned, a hand on a radio, footsteps, static.
-- Sen is a lonely eight-year-old, not a monster. Never show her being hurt. In the prototype her face stays hidden by hair.
+- Sen is a lonely eight-year-old, not a monster. Never show her being hurt. In the prototype her face stays hidden by hair, except one glimpse under the water when she takes a player (Catlyn, 2026-11-02): pale, dark eyes, no wounds, never monstrous (`Figures.SenFace`).
 - **Don't add story facts.** If a clue or line needs words the docs don't contain, write a draft, mark it `-- DRAFT: needs Catlyn review`, and log it in `DECISIONS.md`.
 - Treat the altar, incense, ancestor photos and the shrine with respect.
 

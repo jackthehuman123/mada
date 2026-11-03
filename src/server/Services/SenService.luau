@@ -252,16 +252,19 @@ function SenService.Take(p: Player, quiet: boolean?)
 	local water = waterPointBy(where) or where
 	Analytics.track("player_taken", { player = p.Name, final = final })
 	print(`[Sen] {p.Name} was taken{final and " (for good)" or ""}`)
-	Remotes.event(Remotes.Names.SenGrab):FireClient(p, water, quiet == true or not Config.SenJumpscare)
+	Remotes.event(Remotes.Names.SenGrab):FireClient(p, water, quiet == true)
 	Remotes.event(Remotes.Names.PlayerTaken):FireAllClients(p.UserId, water)
 	Remotes.event(Remotes.Names.Sfx):FireClient(p, "taken", nil)
-	-- the body slides to the water and under (everyone sees it); the player's own view is SenController's
+	-- she has them by the leg: a beat (they look down at her hand), then pulled backward, falling forward, across the
+	-- ground to the water and under (everyone sees it); the player's own view is SenController's
 	r.Anchored = true
 	task.spawn(function()
+		Pace.wait(Config.SenGrabSeconds)
 		local edge = Vector3.new(water.X, Config.WaterY + 0.5, water.Z)
 		local under = Vector3.new(water.X, Config.WaterY - 6, water.Z)
-		local from = r.CFrame
-		local face = CFrame.lookAt(where, Vector3.new(water.X, where.Y, water.Z))
+		local from = r.Position
+		local away = (where - water) * flat
+		local face = CFrame.lookAt(where, where + (if away.Magnitude > 0.1 then away.Unit else Vector3.new(0, 0, 1)))
 		local t0 = os.clock()
 		local drag = Pace.seconds(Config.SenDragSeconds)
 		local splashed = false
@@ -270,12 +273,13 @@ function SenService.Take(p: Player, quiet: boolean?)
 			if a >= 1 then
 				break
 			end
-			local pos = if a < 0.6 then from.Position:Lerp(edge, a / 0.6) else edge:Lerp(under, (a - 0.6) / 0.4)
-			if a >= 0.6 and not splashed then
+			local pos = if a < 0.7 then from:Lerp(edge, (a / 0.7) ^ 1.6) else edge:Lerp(under, (a - 0.7) / 0.3)
+			if a >= 0.7 and not splashed then
 				splashed = true
 				Remotes.event(Remotes.Names.Sfx):FireAllClients("sen_splash", edge)
 			end
-			r.CFrame = face.Rotation + pos
+			local fall = math.rad(-75) * math.min(1, a / 0.25) -- face down, dragged feet first
+			r.CFrame = face.Rotation * CFrame.Angles(fall, 0, 0) + pos
 			task.wait()
 		end
 	end)

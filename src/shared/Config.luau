@@ -87,9 +87,10 @@ local Config = {
 	SenReachDistance = 8, -- step 5 happens once she's this close to the edge by the player
 	SenArriveTimeout = 15, -- seconds the last warning waits for her to arrive
 	SenFootprints = 8, -- wet prints walking out of the water toward the player (camera only), steps 3-4
-	SenDragSeconds = 1.8, -- the body slides into the water (everyone sees it)
-	SenTakeSeconds = 6.5, -- the taken player's view: grab, drag, sinking; then the drowned festival
-	SenJumpscare = true, -- the face-in-hair sting at the grab (off: the drag only)
+	SenGrabSeconds = 1.0, -- her hand on your leg: you look down at it before the pull
+	SenDragSeconds = 2.0, -- pulled backward by the leg to the water and under (everyone sees it)
+	SenTakeSeconds = 6.5, -- the taken player's view: grab, pull, her face, drowning blur; then the drowned festival
+	SenJumpscare = true, -- the glimpse of her face under the water, with a sting (off: the pull and the blur only)
 
 	-- Taken / rescue (§5.6)
 	RescuesPerPlayerPerNight = 1,

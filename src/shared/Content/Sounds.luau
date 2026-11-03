@@ -40,7 +40,8 @@ local Sounds: { [string]: Sound } = {
 	taken = { asset = id(9126147241), volume = 0.7, seconds = 6 }, -- Underwater Movement Gurgly Mysterious
 	incense = { asset = id(9120930385), volume = 0.4, seconds = 3 }, -- Wood Matches 4
 	-- I-16 the grab (chosen 2026-11-02 by name, not listened to): the sting, the pull into the water, under it
-	sen_sting = { asset = id(1845391028), volume = 0.9 }, -- "Shock Chord" (Sean Elder, APM)
+	sen_sting = { asset = id(1845391028), volume = 0.9 }, -- "Shock Chord" (Sean Elder, APM): the glimpse of her face
+	sen_grab = { asset = id(9119481268), volume = 0.8, pitch = 0.8 }, -- a wet slap (Splashes Small Wet Sloshes Drips 13, lower): her hand on your leg
 	sen_splash = { asset = id(9120611825), volume = 0.7 }, -- Wave Impact 3 (Pro Sound Effects); everyone hears it where it happened
 	sen_bubbles = { asset = id(9120310416), volume = 0.6 }, -- Underwater Bubbles Deeper Med Short Bursts 6 (Pro Sound Effects)
 	-- §7 endings

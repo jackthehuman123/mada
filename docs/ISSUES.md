@@ -113,6 +113,10 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   across the water, the old path round to it flooded; bamboo forest and hills all round as the boundary (fog);
   extra empty houses (the village emptied after the vote). Keep every tag, Location name and gameplay object; the
   tests find them by tag.
+- **The forest, exaggerated (Catlyn 2026-11-02):** players must feel isolated and unable to find the way they came:
+  dense dark forest, fog, no lights; the causeway runs out into marsh fog; paths branch and lead nowhere; going deep
+  loops you back to the village from the other side without a fade; a roadside altar for wandering souls repeats.
+  See `docs/FOREST_PROPOSAL.md` §1.
 - **Done when:** walking shrine → Sen's house ≈ 75 s, every house sees the lake, the cove can't be seen from any other
   house, `test.py` PASS, Catlyn approves screenshots.
 
@@ -120,6 +124,9 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **Needs:** Studio to see and tune it (shape visibility in the water, timings, the jumpscare's framing).
 - **What Catlyn asked (2026-11-02):** Sen as a threat that moves underwater but can reach the player; a jumpscare;
   the player sees, from their own view, being dragged into the water.
+- **Reworked to Catlyn's storyboard (2026-11-02):** the grab is her hand on your leg (you look down at it), the
+  pull is backward into the water, under it a glimpse of her face as the wet hair parts (the sting), then the
+  drowning blur. Earlier version below.
 - **Built (branch `playtest-fixes`, not tested):** `SenService`: a pale shape under the surface with carp, visible to
   all, drifting round the middle; while hunting it follows the target along the shore (still 2.2 s, then a 40
   studs/s dart), rises nearer the surface; footprints walk out of the water toward the target (camera only); step 5
@@ -130,6 +137,13 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **Ties to I-15:** if lanterns lure her, the lure moves her `goal` to the floating lantern.
 - **Done when:** in Studio the shape reads in the dark water and follows a lone player along the shore; the grab and
   the pull play from the player's eyes and look right (Catlyn approves); `test.py` PASS.
+
+### I-17 · The wandering souls (cô hồn) in the forest
+- **Needs:** Catlyn's go (it lifts a brief non-goal); then code, no Studio to write.
+- **What Catlyn asked:** something in the forest that catches players who try to escape.
+- **Proposal (`docs/FOREST_PROPOSAL.md` §2):** pale faceless souls only in the forest, seen at the edge of vision,
+  more on camera; they follow you deeper; if they reach you they lead you astray (back to the forest's edge, an item
+  gone, never the letter); rice and salt scattered on the path stops them.
 
 ### I-15 · Lanterns: a real role in play
 - **Needs:** Catlyn's pick first (`docs/LANTERNS_PROPOSAL.md`); then code, no Studio to write.

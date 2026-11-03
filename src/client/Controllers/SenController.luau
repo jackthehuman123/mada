@@ -1,15 +1,14 @@
 --!strict
--- Being taken, seen from your own eyes (docs/ISSUES.md I-16). The server (SenService.Take) slides your body into the
--- water where everyone can see it; this plays what you see, about 6.5 s:
---   1 the grab: she's suddenly right in front of you, small, her face hidden by her wet hair; a sting, a flicker
---     (skipped when quiet: the Im lặng ending, where all sound dies)
---   2 a small cold hand closes on yours and the view lurches down to the water's edge
---   3 under: murky green, blurred, muffled, bubbles
---   4 sinking slowly, looking up at the lanterns on the surface; a small dark shape beside you, her back turned,
---     holding your hand
---   5 black; you wake in the drowned festival
--- Nothing violent, no struggle, her face never shown. Rescued during it: it stops at once.
--- Timings go through Pace, so the factory tests (25x) see it finish in a fraction of a second.
+-- Being taken, seen from your own eyes (docs/ISSUES.md I-16, Catlyn's storyboard 2026-11-02). The server
+-- (SenService.Take) holds the body and pulls it, feet first, into the water where everyone can see it; this plays what
+-- you see, about 6.5 s:
+--   1 the grab: something takes your leg. Your view turns round and down: a small wet hand holding your ankle
+--   2 the pull: she pulls harder; you fall and slide backward across the ground into the water, still looking at it
+--   3 under: murky, muffled, bubbles. Her face, for a moment, close: the wet hair drifts apart (a sting)
+--   4 drowning: the lanterns above blur and darken as you sink
+--   5 black; you wake in the drowned festival (you're taken, not dead)
+-- Quiet (the Im lặng ending, where all sound dies): no sting and no face. Rescued mid-way: it stops at once.
+-- Nothing violent, no struggle, nothing hurt. Timings go through Pace (the factory tests run it at 25x).
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
@@ -55,13 +54,38 @@ local function ease(a: number): number
 	return a * a * (3 - 2 * a)
 end
 
-local function hideBody(hidden: boolean)
-	player:SetAttribute("HideSelf", hidden) -- BodyController leaves the body alone
-	for _, d in (player.Character and player.Character:GetDescendants() or {}) do
-		if d:IsA("BasePart") or d:IsA("Decal") then
-			(d :: any).LocalTransparencyModifier = if hidden then 1 else 0
+local function part(char: Model?, names: { string }): BasePart?
+	for _, n in names do
+		local p = char and char:FindFirstChild(n)
+		if p and p:IsA("BasePart") then
+			return p
 		end
 	end
+	return nil
+end
+
+-- your body stays visible (you see your own leg), only the head hidden; BodyController leaves it alone meanwhile
+local function bodyView(on: boolean)
+	player:SetAttribute("HideSelf", on)
+	local char = player.Character
+	local head = char and char:FindFirstChild("Head")
+	for _, d in (char and char:GetDescendants() or {}) do
+		if d:IsA("BasePart") or d:IsA("Decal") then
+			local onHead = d == head or d.Parent == head or (d.Parent and d.Parent:IsA("Accessory"))
+			;(d :: any).LocalTransparencyModifier = if on and onHead then 1 else 0
+		end
+	end
+end
+
+-- her hand around the ankle, reaching from the water side
+local function holdAnkle(hand: Model, foot: BasePart, water: Vector3)
+	local from = (foot.Position - Vector3.new(water.X, foot.Position.Y, water.Z))
+	local up = if from.Magnitude > 0.1 then from.Unit else Vector3.new(0, 0, 1)
+	up = (up + Vector3.new(0, 0.35, 0)).Unit
+	local right = up:Cross(Vector3.yAxis)
+	right = if right.Magnitude > 0.1 then right.Unit else Vector3.xAxis
+	local back = right:Cross(up)
+	hand:PivotTo(CFrame.fromMatrix(foot.Position - up * 0.25 + Vector3.new(0, 0.05, 0), right, up, back))
 end
 
 local function play(water: Vector3, quiet: boolean)
@@ -70,8 +94,11 @@ local function play(water: Vector3, quiet: boolean)
 	local cam = Workspace.CurrentCamera
 	local fov, reverb = cam.FieldOfView, SoundService.AmbientReverb
 	local start = cam.CFrame
+	local char = player.Character
+	local head = part(char, { "Head" })
+	local foot = part(char, { "RightFoot", "RightLowerLeg", "Right Leg", "HumanoidRootPart" })
 	player:SetAttribute("SenCinematic", true)
-	hideBody(true)
+	bodyView(true)
 	cam.CameraType = Enum.CameraType.Scriptable
 	local folder = Instance.new("Folder")
 	folder.Name = "SenCinematic"
@@ -82,87 +109,106 @@ local function play(water: Vector3, quiet: boolean)
 	cc.Parent = cam
 	local blur = Instance.new("BlurEffect")
 	blur.Enabled = false
-	blur.Size = 10
+	blur.Size = 4
 	blur.Parent = cam
-
-	local eye = start.Position
-	local flatDir = (water - eye) * Vector3.new(1, 0, 1)
-	local dir = if flatDir.Magnitude > 0.1 then flatDir.Unit else start.LookVector
-	local ok = true
-
-	-- 1 the grab
-	if not quiet then
-		local at = eye + dir * 1.9 - Vector3.new(0, 1.6, 0)
-		local her = Figures.Sen(CFrame.lookAt(at, Vector3.new(eye.X, at.Y, eye.Z)), folder, 12)
-		for _, d in her:GetDescendants() do
-			if d:IsA("BasePart") then
-				d.Reflectance = 0.15 -- wet
-			end
+	local hand = Figures.Hand(CFrame.new(), folder)
+	for _, d in hand:GetDescendants() do
+		if d:IsA("BasePart") then
+			d.Reflectance = 0.15 -- wet
 		end
+	end
+	local function eye(): Vector3
+		return if head then head.Position + Vector3.new(0, 0.3, 0) else start.Position
+	end
+	local function ankle(): Vector3
+		return if foot then foot.Position else eye() - Vector3.new(0, 4, 0)
+	end
+	local under = false
+	local function checkUnder(pos: Vector3)
+		if not under and pos.Y < Config.WaterY then
+			under = true
+			cc.Enabled, blur.Enabled = true, true
+			SoundService.AmbientReverb = Enum.ReverbType.UnderWater
+			Sound.Play("sen_bubbles", nil)
+		end
+	end
+
+	-- 1 the grab: something takes your leg; you turn and look down at it
+	if not quiet then
+		Sound.Play("sen_grab", ankle())
+	end
+	local startLook = start.Position + start.LookVector * 10
+	local ok = over(my, Config.SenGrabSeconds, function(a)
+		if foot then
+			holdAnkle(hand, foot, water)
+		end
+		local e = ease(math.min(1, a * 1.4))
+		local jolt = if a < 0.15 then (0.15 - a) * 0.6 else 0
+		local look = startLook:Lerp(ankle(), e)
+		cam.CFrame = CFrame.lookAt(eye(), look) * CFrame.new((math.random() - 0.5) * jolt, (math.random() - 0.5) * jolt, 0)
+	end)
+
+	-- 2 the pull: backward across the ground and into the water, still looking at her hand
+	if ok then
+		ok = over(my, Config.SenDragSeconds, function(a)
+			if foot then
+				holdAnkle(hand, foot, water)
+			end
+			local shake = 0.08 + a * 0.1
+			local pos = eye()
+			checkUnder(pos)
+			cam.CFrame = CFrame.lookAt(pos, ankle())
+				* CFrame.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0)
+				* CFrame.Angles(0, 0, math.rad(math.sin(a * 9) * 6))
+		end)
+	end
+	hand:Destroy()
+
+	-- 3 under: her face, for a moment, close; the wet hair drifts apart
+	local sink = if under then eye() else Vector3.new(water.X, Config.WaterY - 3, water.Z)
+	checkUnder(sink - Vector3.new(0, 10, 0))
+	local dir = (Vector3.new(water.X, 0, water.Z) - Vector3.new(start.Position.X, 0, start.Position.Z))
+	dir = if dir.Magnitude > 0.1 then dir.Unit else Vector3.new(0, 0, -1)
+	if ok and not quiet and Config.SenJumpscare then
+		local facePos = sink + dir * 1.7
+		local face, left, right = Figures.SenFace(CFrame.lookAt(facePos, sink), folder)
+		local l0, r0 = left.CFrame, right.CFrame
 		Sound.Play("sen_sting", nil)
 		UI.ScreenStatic(true)
-		task.delay(Pace.seconds(0.12), function()
+		task.delay(Pace.seconds(0.1), function()
 			UI.ScreenStatic(false)
 		end)
-		local face = at + Vector3.new(0, 1.3, 0)
-		ok = over(my, 0.7, function(a)
-			local shake = (1 - a) * 0.12
-			cam.FieldOfView = fov - 18 * math.min(1, a * 4)
-			cam.CFrame = CFrame.lookAt(eye, face) * CFrame.new((math.random() - 0.5) * shake, (math.random() - 0.5) * shake, 0)
+		ok = over(my, 0.9, function(a)
+			-- the hair parts quickly, holds, then closes as she drifts back into the murk
+			local open = if a < 0.25 then a / 0.25 elseif a < 0.7 then 1 else 1 - (a - 0.7) / 0.3
+			left.CFrame = l0 * CFrame.new(-0.28 * open, 0, 0) * CFrame.Angles(0, 0, math.rad(8 * open))
+			right.CFrame = r0 * CFrame.new(0.28 * open, 0, 0) * CFrame.Angles(0, 0, math.rad(-8 * open))
+			local back = math.max(0, a - 0.6) * 4
+			face:PivotTo(CFrame.lookAt(facePos + dir * back, sink))
+			cam.FieldOfView = fov - 14 * math.min(1, a * 3)
+			cam.CFrame = CFrame.lookAt(sink, facePos)
 		end)
-		her:Destroy()
+		face:Destroy()
 		cam.FieldOfView = fov
 	end
 
-	-- 2 the hand, and the pull to the water's edge
-	local edge = Vector3.new(water.X, Config.WaterY + 0.6, water.Z)
-	local hand = Figures.Hand(CFrame.new(eye), folder)
+	-- 4 drowning: sinking, looking up at the lanterns as everything blurs and darkens
 	if ok then
-		ok = over(my, 1.4, function(a)
+		local deep = sink - Vector3.new(0, 7, 0) + dir * 3
+		ok = over(my, 2.1, function(a)
 			local e = ease(a)
-			local pos = eye:Lerp(edge, e)
-			local lookAt = pos + dir * 3 - Vector3.new(0, 2 + e * 2, 0)
-			cam.CFrame = CFrame.lookAt(pos, lookAt) * CFrame.Angles(0, 0, math.rad(8 * e))
-			-- her hand at the bottom of the view, holding on, reaching back toward the water
-			hand:PivotTo(cam.CFrame * CFrame.new(0.35, -0.9, -1.4) * CFrame.Angles(math.rad(-70), 0, 0))
+			local pos = sink:Lerp(deep, e)
+			cam.CFrame = CFrame.lookAt(pos, pos + dir * 3 + Vector3.new(0, 10, 0)) * CFrame.Angles(0, 0, math.rad(math.sin(a * 2.5) * 5))
+			blur.Size = 6 + e * 22
+			cc.Brightness = -0.15 - e * 0.5
 		end)
 	end
 
-	-- 3 under
-	local under = Vector3.new(water.X, Config.WaterY - 1.5, water.Z)
-	local deep = Vector3.new(water.X, Config.WaterY - 11, water.Z) + dir * 6 -- the lake bed is at about -14
-	local beside: Model? = nil
-	if ok then
-		cc.Enabled, blur.Enabled = true, true
-		SoundService.AmbientReverb = Enum.ReverbType.UnderWater
-		Sound.Play("sen_bubbles", nil)
-		-- 4 sinking under the lanterns, a small dark shape beside you holding your hand
-		local b = Figures.Sen(CFrame.new(under), folder, -10)
-		for _, d in b:GetDescendants() do
-			if d:IsA("BasePart") then
-				d.Color = rgb(18, 24, 28)
-				d.Transparency = 0.25
-			end
-		end
-		beside = b
-		ok = over(my, 3.8, function(a)
-			local e = ease(a)
-			local pos = under:Lerp(deep, e)
-			local up = pos + dir * 4 + Vector3.new(0, 10, 0)
-			cam.CFrame = CFrame.lookAt(pos, up) * CFrame.Angles(0, 0, math.rad(math.sin(a * 3) * 4))
-			local side = cam.CFrame.RightVector * 2.2 - Vector3.new(0, 0.8, 0)
-			-- her back to you, a little ahead: facing away from the camera
-			b:PivotTo(CFrame.lookAt(pos + side, pos + side + cam.CFrame.LookVector * Vector3.new(1, 0, 1) + Vector3.new(0, 0.01, 0)))
-			hand:PivotTo(cam.CFrame * CFrame.new(0.9, -1.0, -1.6) * CFrame.Angles(0, 0, math.rad(-80)))
-			blur.Size = 10 + e * 8
-		end)
-	end
-
-	-- 5 black, then the festival (the server moves you there)
+	-- 5 black, then the drowned festival (the server moves you there)
 	if ok then
 		black.BackgroundTransparency = 1
 		black.Visible = true
-		over(my, 0.6, function(a)
+		over(my, 0.5, function(a)
 			black.BackgroundTransparency = 1 - a
 		end)
 	end
@@ -172,7 +218,7 @@ local function play(water: Vector3, quiet: boolean)
 	SoundService.AmbientReverb = reverb
 	cam.FieldOfView = fov
 	cam.CameraType = Enum.CameraType.Custom
-	hideBody(false)
+	bodyView(false)
 	player:SetAttribute("SenCinematic", false)
 	if black.Visible then
 		local t0, len = os.clock(), Pace.seconds(0.8)
@@ -181,9 +227,6 @@ local function play(water: Vector3, quiet: boolean)
 			RunService.RenderStepped:Wait()
 		end
 		black.Visible = false
-	end
-	if beside then
-		beside:Destroy()
 	end
 end
 
