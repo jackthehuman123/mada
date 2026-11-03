@@ -117,6 +117,9 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   dense dark forest, fog, no lights; the causeway runs out into marsh fog; paths branch and lead nowhere; going deep
   loops you back to the village from the other side without a fade; a roadside altar for wandering souls repeats.
   See `docs/FOREST_PROPOSAL.md` §1.
+- **The look:** Catlyn's reference `docs/refs/forest_village_edge.png`, broken down into parts, light and colour in
+  `docs/FOREST_PROPOSAL.md` ("The look"): bamboo hedge, flooded paddies with graves, banyan with a red cloth, a bare
+  silk-cotton tree, the roadside shrine, dead trunks in the marsh, full moon, low fog, cold light, red lanterns.
 - **Done when:** walking shrine → Sen's house ≈ 75 s, every house sees the lake, the cove can't be seen from any other
   house, `test.py` PASS, Catlyn approves screenshots.
 

@@ -4,6 +4,37 @@
 players try to leave by land (built); the souls (§2) are parked. The forest's look and the loop go into the layout (I-14); the wandering souls are
 a new threat (I-17) and need Catlyn's go: the brief lists *cô hồn* under non-goals.
 
+## The look (Catlyn's reference, 2026-11-02): `docs/refs/forest_village_edge.png`
+
+![The village edge at night](refs/forest_village_edge.png)
+
+One shot of the village's edge looking out: what to build at each gap in the bamboo hedge, and the mood for the
+whole forest ring. What's in it, left to right, and how to make it in Roblox:
+
+| In the picture | Build it as |
+| --- | --- |
+| The bamboo hedge, tall, arching over the path | dense bamboo clumps (one model, reused), 25–35 studs high, leaning in |
+| A lattice bamboo fence along the path, a big glazed water jar, a banana plant | parts (fence), store jar (`ASSETS.md`), the banana trees `Build.luau` already has |
+| A village house with red lanterns, warm light spilling onto the path | the lane houses; a PointLight per lantern; the only warm light in the frame |
+| A muddy wet path with puddles reflecting the light, leaf litter, ferns | Terrain Mud with small water puddles; reflective puddles via Terrain water patches |
+| Flooded rice paddies split by earth dikes, reeds | Terrain water in low squares, Ground/Grass dikes on top, reed clumps |
+| Grave mounds with small whitewashed headstones, incense at one | parts: an earth mound + a white slab; incense sticks in a bowl (respectful, no names or dates) |
+| An overturned ox cart | store model or parts |
+| A tall silk-cotton tree (cây gạo), spiky trunk | one hero tree, a landmark seen from the paddies |
+| A huge banyan (cây đa), curtains of hanging roots, a red cloth tied round it | the hero tree of the forest edge; roots as thin dark hanging parts or a model |
+| A brick roadside shrine (miếu) with a curved tiled roof, incense | the repeating shrine (§1): one model |
+| Dead trunks standing in the marsh water on the right | grey cylinders in the marsh by the causeway |
+| Full moon behind clouds, low fog lying on the water | the night sky (I-06); Atmosphere + low fog |
+
+**Light and colour:** cold, desaturated blue-grey-green everywhere; the only warm colours are the village's red
+lanterns and a few red accents (the banyan's cloth, incense tips). Fog lies low on the water and thickens with
+distance. A big full moon: right for the story too, since Rằm (the 15th of the lunar month) is always a full moon.
+Starting values to tune in Studio: Atmosphere Density 0.4, Haze 2.5, Color ≈ (120,135,145), Decay ≈ (60,70,75);
+ColorCorrection Saturation −0.25 with a cold tint; Bloom on for the lanterns; Sky MoonAngularSize ≈ 15.
+
+**One catch:** the silk-cotton tree's red flowers bloom in spring, not in the seventh lunar month; in game, make it
+bare (or almost), which is spookier anyway.
+
 ## What Catlyn asked
 
 Exaggerate the forest. Players should feel isolated: they can't escape, they can't find the way they came. Maybe lost
