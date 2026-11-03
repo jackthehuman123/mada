@@ -51,7 +51,13 @@ system, the camcorder and the boundaries work. Everything is built from git (see
   `tools/meshy/check.luau` (reads a .glb: triangles, size, textures vs Roblox limits; tested on Khronos Box/Duck
   samples: 12 and 4,212 triangles, correct), `tools/meshy/upload.luau` (Open Cloud upload; not run, needs Catlyn's key).
   Free plan checked on meshy.ai: 100 credits, 10 downloads of untextured Meshy 6 Lite a month, CC BY 4.0, no API.
-- Next: on a computer with Studio, `test.py` (11 tests), then 2 clients for I-09 and I-12; listen to I-13; then I-11, I-10.
+- **I-14/I-15:** layout decided (natural lake ring in the forest, not built); lantern proposal in
+  `docs/LANTERNS_PROPOSAL.md`, waiting on Catlyn's pick.
+- **I-16 built:** Sen as a visible shape in the water that stalks along the shore; footprints walk out of the water;
+  the taking is a pull into the water everyone sees, and from the player's eyes a jumpscare + drag + sinking
+  (`SenController`). `tests/08_sen.luau` extended. Static checks only (no new analyzer errors: 32 before, 32 after).
+- Next: on a computer with Studio, `test.py` (11 tests), then 2 clients for I-09, I-12 and I-16; listen to I-13 and
+  the I-16 sounds; then I-14 (layout), I-11, I-10.
 
 ### 2026-11-03 — verified Catlyn's 11-02 changes; last sounds; houses and finale readable (branch `complete-game`, off `full-game`; not merged)
 - Verified first, before any change: `python tools/factory/test.py` on `full-game` 6b9cfb7 → PASS 9/9, 0 console errors. That covers what was written on the loaner without Studio: Ở lại cut (midnight at the steps → Im lặng, the player is taken, no choice and no lantern button), Im lặng taking players one by one, Bin's Tape 2 (hand + under-water shots).

@@ -72,6 +72,24 @@ local Config = {
 	SenWarningStepSeconds = 5,
 	IncensePerPlayer = 2,
 	IncenseWithdrawSeconds = 60,
+	-- Sen in the water (I-16): a pale shape under the surface; drifts round the middle, follows a hunted player along
+	-- the shore (still, then suddenly closer), reaches from the edge
+	LakeMiddle = Vector3.new(0, -1, -265), -- where the lanterns gather (move with the I-14 layout)
+	WaterY = -1, -- the lake's surface
+	SenWanderRadius = 70,
+	SenSwimSpeed = 4, -- studs/s drifting
+	SenDartSpeed = 40, -- studs/s in a sudden move while hunting
+	SenDartSeconds = 1.1,
+	SenStillSeconds = 2.2, -- still between darts
+	SenIdleDepth = 7, -- studs under the surface (faint)
+	SenHuntDepth = 2.5, -- closer to the surface while hunting (clearer)
+	SenOffshore = 5, -- she waits this far out from the water's edge
+	SenReachDistance = 8, -- step 5 happens once she's this close to the edge by the player
+	SenArriveTimeout = 15, -- seconds the last warning waits for her to arrive
+	SenFootprints = 8, -- wet prints walking out of the water toward the player (camera only), steps 3-4
+	SenDragSeconds = 1.8, -- the body slides into the water (everyone sees it)
+	SenTakeSeconds = 6.5, -- the taken player's view: grab, drag, sinking; then the drowned festival
+	SenJumpscare = true, -- the face-in-hair sting at the grab (off: the drag only)
 
 	-- Taken / rescue (§5.6)
 	RescuesPerPlayerPerNight = 1,

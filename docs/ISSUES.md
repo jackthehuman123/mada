@@ -116,6 +116,21 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **Done when:** walking shrine → Sen's house ≈ 75 s, every house sees the lake, the cove can't be seen from any other
   house, `test.py` PASS, Catlyn approves screenshots.
 
+### I-16 · Sen: a threat that moves underwater, a jumpscare, the pull from your own eyes
+- **Needs:** Studio to see and tune it (shape visibility in the water, timings, the jumpscare's framing).
+- **What Catlyn asked (2026-11-02):** Sen as a threat that moves underwater but can reach the player; a jumpscare;
+  the player sees, from their own view, being dragged into the water.
+- **Built (branch `playtest-fixes`, not tested):** `SenService`: a pale shape under the surface with carp, visible to
+  all, drifting round the middle; while hunting it follows the target along the shore (still 2.2 s, then a 40
+  studs/s dart), rises nearer the surface; footprints walk out of the water toward the target (camera only); step 5
+  waits for her at the edge (15 s max). `Take`: everyone sees the body slide into the water (splash); the taken
+  player's view is `Controllers/SenController.luau` (jumpscare, hand, pull, sinking under the lanterns with her
+  beside them, black, ~6.5 s); Im lặng's takings are quiet (no sting). Rescue mid-way stops it. Tuning in
+  `Config` (Sen in the water block; `SenJumpscare` turns the sting off). `tests/08_sen.luau` extended.
+- **Ties to I-15:** if lanterns lure her, the lure moves her `goal` to the floating lantern.
+- **Done when:** in Studio the shape reads in the dark water and follows a lone player along the shore; the grab and
+  the pull play from the player's eyes and look right (Catlyn approves); `test.py` PASS.
+
 ### I-15 · Lanterns: a real role in play
 - **Needs:** Catlyn's pick first (`docs/LANTERNS_PROPOSAL.md`); then code, no Studio to write.
 - **What Catlyn said:** the lanterns are only tradition; hinting at Sen's house "doesn't look very good in gameplay".

@@ -211,7 +211,7 @@ local function silence()
 	-- and Sen comes for them one by one
 	for _, p in Players:GetPlayers() do
 		if p:GetAttribute("Taken") ~= true then
-			Sen.Take(p)
+			Sen.Take(p, true) -- quiet: no sting in the silence
 			pause(Config.SilenceTakeGapSeconds)
 		end
 	end

@@ -80,9 +80,12 @@ function StoryController.Start()
 		end
 		-- no "Light a lantern" once the night is over (Im lặng takes everyone in the finale)
 		local over = ReplicatedStorage:GetAttribute("Phase") == "Finale" or ReplicatedStorage:GetAttribute("Phase") == "Ending"
-		UI.SetTaken(player:GetAttribute("Taken") == true and player:GetAttribute("Stayed") ~= true and not over)
+		-- (not while the pull into the water is still playing: SenController)
+		UI.SetTaken(player:GetAttribute("Taken") == true and player:GetAttribute("Stayed") ~= true and not over
+			and player:GetAttribute("SenCinematic") ~= true)
 	end
 	player:GetAttributeChangedSignal("Taken"):Connect(onTaken)
+	player:GetAttributeChangedSignal("SenCinematic"):Connect(onTaken)
 	player:GetAttributeChangedSignal("Stayed"):Connect(onTaken)
 	ReplicatedStorage:GetAttributeChangedSignal("Phase"):Connect(onTaken)
 	onTaken()
