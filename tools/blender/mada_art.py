@@ -7,7 +7,10 @@ upload; every item split by material so the game colours it.
 Objects are named <Item>_<Part> (Sen_Shirt, Shrine_Roof...). Studs, Z up, front toward -Y (toward -Z in Roblox).
 Origins: figures and props stand on the ground at the origin; Face is centred on the face; Hand starts at the wrist and
 reaches up; the causeway stretch is 8 wide, 16 long, 1.25 deep. art_lua.py turns the uploaded result into
-src/shared/Content/ArtMeshes.luau. Low-poly on purpose: no item over ~2,000 triangles.
+src/shared/Content/ArtMeshes.luau. Low-poly on purpose: props ~300-2,000 triangles, buildings up to 5,000.
+Roblox draws only the front of a face, so every surface is a closed solid (or a sheet that closes with another part of
+the same item, like the shrine's Tile over its Boards); the build checks this (check_item) and prints PROBLEMS if not.
+--preview renders with back faces culled like Roblox: preview.png (all items) and close-ups (CLOSEUPS).
 """
 import json
 import math
@@ -74,6 +77,111 @@ def strand(bm, top, bottom, w, rng, thick=0.05, bend=V((0, 0, 0))):
     pts = [top.lerp(bottom, t) + bend * math.sin(t * math.pi) + V((rng.uniform(-0.02, 0.02), 0, 0)) for t in (0, 0.25, 0.5, 0.75, 1)]
     widths = [w, w * 1.05, w * 0.95, w * 0.8, w * 0.45]
     tube(bm, pts, widths, sides=4, squash=thick / max(w, 1e-3))
+
+
+def bevel_block(bm, lo, hi, off=0.08):
+    """block() with chamfered edges: a 0.05-0.15 chamfer catches light, a hard box edge reads as placeholder."""
+    res = bmesh.ops.create_cube(bm, size=1.0)
+    c, s = (lo + hi) / 2, hi - lo
+    for v in res["verts"]:
+        v.co = V((c.x + v.co.x * s.x, c.y + v.co.y * s.y, c.z + v.co.z * s.z))
+    edges = list({e for v in res["verts"] for e in v.link_edges})
+    bmesh.ops.bevel(bm, geom=edges, offset=off, segments=1, affect="EDGES", profile=0.5)
+
+
+def beam(bm, pts, w, h, tri=False, hang=True):
+    """A timber along pts, w wide and h deep, kept upright; hang: its top runs along pts (else centred on them); tri: a
+    three-sided rafter (flat top, an edge underneath). A closed solid."""
+    rings = []
+    for i, p in enumerate(pts):
+        d = (pts[min(i + 1, len(pts) - 1)] - pts[max(i - 1, 0)]).normalized()
+        side = d.cross(UP)
+        side = side.normalized() if side.length > 1e-4 else V((1, 0, 0))
+        up = side.cross(d).normalized()
+        top = 0.0 if hang else h / 2
+        if tri:
+            prof = [side * w / 2 + up * top, up * (top - h), -side * w / 2 + up * top]
+        else:
+            prof = [side * w / 2 + up * top, side * w / 2 + up * (top - h), -side * w / 2 + up * (top - h), -side * w / 2 + up * top]
+        rings.append([bm.verts.new(p + o) for o in prof])
+    k = len(rings[0])
+    for r0, r1 in zip(rings, rings[1:]):
+        for j in range(k):
+            bm.faces.new((r0[j], r0[(j + 1) % k], r1[(j + 1) % k], r1[j]))
+    bm.faces.new(list(reversed(rings[0])))
+    bm.faces.new(rings[-1])
+
+
+def hexa(bm, c):
+    """A closed six-sided solid from 8 corners: bottom 4 (c[0..3]) then the top 4 above them, both in the same order."""
+    vs = [bm.verts.new(p) for p in c]
+    for f in ((0, 1, 2, 3), (7, 6, 5, 4), (0, 4, 5, 1), (1, 5, 6, 2), (2, 6, 7, 3), (3, 7, 4, 0)):
+        bm.faces.new([vs[i] for i in f])
+
+
+def cone(bm, base, r, h, segs=4):
+    res = bmesh.ops.create_cone(bm, cap_ends=True, cap_tris=False, segments=segs, radius1=r, radius2=0.0, depth=h)
+    for v in res["verts"]:
+        v.co = base + V((v.co.x, v.co.y, v.co.z + h / 2))
+
+
+class Tier:
+    """One tier of a hipped Vietnamese roof, a closed shell: tiles on top (and the eave edge), boards underneath.
+    inner (w, d) = the half size where it starts (at z_in; a ridge when d is small), outer (W, D) = the eave (at z_out
+    mid-side). The slope is concave (steep at the top, flattening to the eave) and the eave sweeps up `lift` at the
+    corners. top(x, y)/under(x, y) give the surfaces, so rafters and walls can follow them exactly."""
+
+    def __init__(self, inner, outer, z_in, z_out, lift, thick, n=8, rings=3):
+        (self.w, self.d), (self.W, self.D) = inner, outer
+        self.z_in, self.z_out, self.lift, self.thick, self.n, self.rings = z_in, z_out, lift, thick, n, rings
+
+    def zr(self, r, t):
+        return self.z_in - (self.z_in - self.z_out) * math.sin(r * math.pi / 2) + self.lift * abs(t) ** 4 * r * r
+
+    def rt(self, x, y):
+        rx = (abs(x) - self.w) / (self.W - self.w)
+        ry = (abs(y) - self.d) / (self.D - self.d)
+        r = min(max(rx, ry, 0.0), 1.0)
+        t = y / (self.d + (self.D - self.d) * r) if rx >= ry else x / (self.w + (self.W - self.w) * r)
+        return r, max(-1.0, min(1.0, t))
+
+    def top(self, x, y):
+        return self.zr(*self.rt(x, y))
+
+    def under(self, x, y):
+        return self.top(x, y) - self.thick
+
+    def at(self, qx, qy, r, t, dz=0.0):
+        return V((qx * (self.w + (self.W - self.w) * r), qy * (self.d + (self.D - self.d) * r), self.zr(r, t) + dz))
+
+    def ring(self):
+        """(qx, qy, t) round the square, counter-clockwise seen from above, denser toward the corners."""
+        out = []
+        for side in range(4):
+            for k in range(self.n):
+                t = math.sin(math.pi / 2 * (-1 + 2 * k / self.n))
+                out.append(((t, -1.0), (1.0, t), (-t, 1.0), (-1.0, -t))[side] + (t,))
+        return out
+
+    def build(self, tile, boards, cap=False):
+        q = self.ring()
+        m, R = len(q), self.rings
+        T = [[tile.verts.new(self.at(qx, qy, j / R, t)) for (qx, qy, t) in q] for j in range(R + 1)]
+        Bt = {j: [tile.verts.new(self.at(qx, qy, j / R, t, -self.thick)) for (qx, qy, t) in q] for j in ((R,) if cap else (0, R))}
+        B = [[boards.verts.new(self.at(qx, qy, j / R, t, -self.thick)) for (qx, qy, t) in q] for j in range(R + 1)]
+        for i in range(m):
+            k = (i + 1) % m
+            for j in range(R):
+                tile.faces.new((T[j][i], T[j + 1][i], T[j + 1][k], T[j][k]))  # tiles, facing up
+                boards.faces.new((B[j][k], B[j + 1][k], B[j + 1][i], B[j][i]))  # boards, facing down
+            tile.faces.new((T[R][i], Bt[R][i], Bt[R][k], T[R][k]))  # the eave edge, facing out
+            if not cap:
+                tile.faces.new((T[0][i], T[0][k], Bt[0][k], Bt[0][i]))  # the inner edge, facing in
+        if cap:  # the flat strip under the ridge
+            f = tile.faces.new(T[0])
+            g = boards.faces.new(list(reversed(B[0])))
+            bmesh.ops.triangulate(tile, faces=[f], quad_method="BEAUTY", ngon_method="BEAUTY")
+            bmesh.ops.triangulate(boards, faces=[g], quad_method="BEAUTY", ngon_method="BEAUTY")
 
 
 # ---------------------------------------------------------------- figures
@@ -172,57 +280,172 @@ def hand(rng):
 # ---------------------------------------------------------------- the shrine
 
 def shrine(rng):
-    """The lakeside shrine (đình): a stone platform with steps toward the lane (+y), four lacquered posts on stone
-    plinths with carved brackets, a two-tier tiled roof with upturned corners and a ridge. Matches the graybox: 34 x 26
-    platform (top at z 1), posts at (±9, ±7) up to z 12, roof at z 12.5 over 24 x 20."""
-    stone, wood, tile, trim = bmesh.new(), bmesh.new(), bmesh.new(), bmesh.new()
-    block(stone, V((-17, -13, -1)), V((17, 13, 0.8)))
-    block(stone, V((-16.4, -12.4, 0.8)), V((16.4, 12.4, 1.0)))  # the top course, slightly in
-    for k in range(3):  # steps down toward the lane
-        block(stone, V((-4.5, 13 + k * 1.0, -1)), V((4.5, 14 + k * 1.0, 0.8 - (k + 1) * 0.6)))
+    """The lakeside shrine: a thủy đình-style pavilion. A stepped stone base (footing, body, an overhanging coping) with
+    steps and stair cheeks toward the lane (+y) and a stone balustrade round the edge (open at the steps and mid-sides);
+    four lacquered columns on lotus plinths; beams, a red frieze with knee braces and a name board; carved cantilever
+    brackets (bẩy) under the eave; a two-tier roof (chồng diêm) with real thickness, boards and rafters underneath, a
+    lattice band between the tiers, hip ridges ending in upturned corners (đao), a ridge with curled ends and two
+    dragons facing a pearl. Matches the graybox: 34 x 26 platform (top at z 1), posts at (±9, ±7), roof over 24 x 20
+    between z 12 and 17 (ornaments to ~19.5). Every surface is a closed shell (Roblox culls back faces)."""
+    stone, wood, tile, boards, trim = bmesh.new(), bmesh.new(), bmesh.new(), bmesh.new(), bmesh.new()
+    lower = Tier((9.2, 7.2), (13.0, 11.0), 13.5, 12.1, 1.3, 0.42, n=7)
+    upper = Tier((5.0, 0.35), (10.4, 8.4), 17.4, 14.4, 1.3, 0.45, n=7)
+
+    # -- the base: footing, body, coping (top at z 1), two steps and their cheeks toward the lane
+    block(stone, V((-17.6, -13.6, -1.4)), V((17.6, 13.6, -0.25)))
+    bevel_block(stone, V((-17.0, -13.0, -0.4)), V((17.0, 13.0, 0.84)), 0.1)
+    bevel_block(stone, V((-17.3, -13.3, 0.8)), V((17.3, 13.3, 1.0)), 0.06)
+    bevel_block(stone, V((-4.4, 12.9, -1.2)), V((4.4, 14.5, 0.67)), 0.06)
+    bevel_block(stone, V((-4.4, 14.4, -1.2)), V((4.4, 15.9, 0.33)), 0.06)
+    for sx in (-1, 1):  # stair cheeks sloping down from the balustrade, a block with a bud at the foot
+        a, b = sx * 4.4, sx * 5.2
+        hexa(stone, [V((a, 13.0, -1.2)), V((b, 13.0, -1.2)), V((b, 16.1, -1.2)), V((a, 16.1, -1.2)),
+                     V((a, 13.0, 2.0)), V((b, 13.0, 2.0)), V((b, 16.1, 1.0)), V((a, 16.1, 1.0))])
+        block(stone, V((sx * 4.8 - 0.55, 15.6, -1.2)), V((sx * 4.8 + 0.55, 16.7, 1.6)))
+        cone(stone, V((sx * 4.8, 16.15, 1.6)), 0.5, 0.6)
+
+    # -- the balustrade on the coping: posts with lotus-bud caps, a curb, a top rail, slim balusters
+    e, ex = 12.65, 16.65
+    runs = [((-ex, -e), (ex, -e), 7), ((-ex, e), (-4.4, e), 3), ((4.4, e), (ex, e), 3)]
+    for sx in (-1, 1):
+        runs += [((sx * ex, -e), (sx * ex, -3.0), 2), ((sx * ex, 3.0), (sx * ex, e), 2)]
+    posts = {}
+    for (ax, ay), (bx, by), n in runs:
+        a, b = V((ax, ay, 0)), V((bx, by, 0))
+        along = (b - a).normalized()
+        p0, p1 = a + along * 0.2, b - along * 0.2
+        for (z0, z1, w) in ((1.0, 1.3, 0.2), (2.3, 2.52, 0.16)):  # curb and rail, post to post
+            block(stone, V((min(p0.x, p1.x) - w, min(p0.y, p1.y) - w, z0)), V((max(p0.x, p1.x) + w, max(p0.y, p1.y) + w, z1)))
+        for k in range(n + 1):
+            p = a.lerp(b, k / n)
+            posts[(round(p.x, 2), round(p.y, 2))] = p
+            if k < n:
+                for f in (1 / 3, 2 / 3):
+                    q = a.lerp(b, (k + f) / n)
+                    block(stone, q + V((-0.09, -0.09, 1.3)), q + V((0.09, 0.09, 2.3)))
+    for p in posts.values():
+        block(stone, p + V((-0.24, -0.24, 1.0)), p + V((0.24, 0.24, 2.85)))
+        cone(stone, p + V((0, 0, 2.85)), 0.3, 0.42)
+
+    # -- columns on lotus plinths, beams, the red frieze, knee braces, the name board
     for sx in (-1, 1):
         for sy in (-1, 1):
             x, y = sx * 9, sy * 7
-            block(stone, V((x - 0.9, y - 0.9, 1)), V((x + 0.9, y + 0.9, 1.6)))
-            tube(wood, [V((x, y, 1.6)), V((x, y, 11.2))], [0.55, 0.5], sides=10)
-            for d in ((1, 0), (0, 1)):  # brackets under the beams
-                rot_block(wood, V((x - sx * d[0] * 0.9, y - sy * d[1] * 0.9, 10.6)), V((1.8 if d[0] else 0.4, 0.4 if d[0] else 1.8, 0.5)))
-    for sy in (-1, 1):  # beams and a red frieze
-        block(wood, V((-9.6, sy * 7 - 0.4, 11.0)), V((9.6, sy * 7 + 0.4, 11.9)))
-        block(trim, V((-9.6, sy * 7 - 0.45, 10.4)), V((9.6, sy * 7 + 0.45, 11.0)))
+            tube(stone, [V((x, y, 1.0)), V((x, y, 1.3)), V((x, y, 1.62))], [0.95, 0.9, 0.6], sides=8)
+            tube(wood, [V((x, y, 1.6)), V((x, y, 7.0)), V((x, y, 14.6))], [0.52, 0.5, 0.45], sides=8)
+            o = V((x, y, 0))
+            for d in (V((-sx, 0, 0)), V((0, -sy, 0))):  # knee braces along both beams, inward
+                beam(trim, [o + d * 0.4 + V((0, 0, 8.4)), o + d * 1.0 + V((0, 0, 9.35)), o + d * 2.0 + V((0, 0, 9.85))], 0.24, 0.3, hang=False)
+    for sy in (-1, 1):
+        block(wood, V((-9.7, sy * 7 - 0.36, 10.6)), V((9.7, sy * 7 + 0.36, 11.4)))
+        block(trim, V((-8.5, sy * 7 - 0.22, 9.85)), V((8.5, sy * 7 + 0.22, 10.6)))
     for sx in (-1, 1):
-        block(wood, V((sx * 9 - 0.4, -7.6, 11.0)), V((sx * 9 + 0.4, 7.6, 11.9)))
-        block(trim, V((sx * 9 - 0.45, -7.6, 10.4)), V((sx * 9 + 0.45, 7.6, 11.0)))
+        block(wood, V((sx * 9 - 0.36, -7.7, 10.6)), V((sx * 9 + 0.36, 7.7, 11.4)))
+        block(trim, V((sx * 9 - 0.22, -6.5, 9.85)), V((sx * 9 + 0.22, 6.5, 10.6)))
+    block(trim, V((-2.9, 7.3, 9.6)), V((2.9, 7.56, 11.35)))  # the name board (hoành phi) on the lane side
+    block(wood, V((-2.5, 7.5, 9.85)), V((2.5, 7.66, 11.1)))
 
-    def roof(z0, z1, w0, d0, w1, d1, lift):
-        """A hipped roof skin from a wide eave (w0 x d0 at z0) to a narrow top (w1 x d1 at z1); corners lift up."""
-        n = 4
-        lo, hi = [], []
-        for i in range(n * 4):
-            t = i / (n * 4)
-            side, f = int(t * 4), (t * 4) % 1
-            corners = [(-1, -1), (1, -1), (1, 1), (-1, 1), (-1, -1)]
-            a, b = corners[side], corners[side + 1]
-            cx, cy = a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f
-            corner = 1 - min(f, 1 - f) * 2  # 1 at a corner, 0 mid-side
-            lo.append(tile.verts.new(V((cx * w0 / 2, cy * d0 / 2, z0 + lift * corner ** 3))))
-            hi.append(tile.verts.new(V((cx * w1 / 2, cy * d1 / 2, z1))))
-        m = len(lo)
-        for i in range(m):
-            tile.faces.new((lo[i], lo[(i + 1) % m], hi[(i + 1) % m], hi[i]))
-        # the underside of the eave, so it isn't paper-thin from below
-        under = [tile.verts.new(V((v.co.x * 0.92, v.co.y * 0.92, v.co.z - 0.35))) for v in lo]
-        for i in range(m):
-            tile.faces.new((under[(i + 1) % m], under[i], lo[i], lo[(i + 1) % m]))
-        return hi
+    # -- cantilever brackets (bẩy) from each column out to the eave, a block (đấu) at each tip, the eave purlin
+    for sx in (-1, 1):
+        for sy in (-1, 1):
+            o = V((sx * 9, sy * 7, 0))
+            for d, reach in ((V((sx, 0, 0)), 3.3), (V((0, sy, 0)), 3.3), (V((sx, sy, 0)).normalized(), 3.6)):
+                tip = o + d * reach
+                zt = lower.under(tip.x, tip.y) - 0.28
+                beam(wood, [o + d * 0.4 + V((0, 0, 9.9)), o + d * 1.6 + V((0, 0, 10.9)), V((tip.x, tip.y, zt))], 0.26, 0.4, hang=False)
+                if d.x and d.y:
+                    block(wood, V((tip.x - 0.3, tip.y - 0.3, zt - 0.12)), V((tip.x + 0.3, tip.y + 0.3, lower.under(tip.x, tip.y) + 0.05)))
+    r = 0.86
+    hw, hd = lower.w + (lower.W - lower.w) * r, lower.d + (lower.D - lower.d) * r
+    for (qx, qy) in ((0, -1), (1, 0), (0, 1), (-1, 0)):  # the eave purlin on the bracket tips, following the sweep
+        pts = []
+        for k in range(4):
+            t = -1 + 2 * k / 3
+            x, y = (t * hw, qy * hd) if qx == 0 else (qx * hw, t * hd)
+            pts.append(V((x, y, lower.under(x, y) + 0.02)))
+        beam(wood, pts, 0.32, 0.34)
 
-    roof(12.0, 14.6, 26, 21, 15, 10, 1.6)
-    top = roof(14.6, 17.0, 15, 10, 8, 1.2, 0.0)
-    tile.faces.new(top)
-    tube(tile, [V((-5.4, 0, 17.2)), V((-4, 0, 17.0)), V((4, 0, 17.0)), V((5.4, 0, 17.2))], [0.45, 0.4, 0.4, 0.45], sides=6)  # ridge
-    for sx in (-1, 1):  # upturned ridge ends (dragon-tail curls, plain)
-        tube(trim, [V((sx * 5.3, 0, 17.2)), V((sx * 5.9, 0, 17.8)), V((sx * 5.7, 0, 18.4))], [0.3, 0.24, 0.12], sides=6)
-    return {"Stone": (stone, (138, 134, 124)), "Wood": (wood, (96, 34, 28)), "Tile": (tile, (64, 72, 66)), "Trim": (trim, (150, 44, 34))}
+    # -- the two roof tiers, the lattice band between them, rafters under both
+    lower.build(tile, boards)
+    upper.build(tile, boards, cap=True)
+    q = []  # the band (chồng diêm): a closed wall on the column line, its top tucked into the upper roof
+    for side in range(4):
+        for k in range(6):
+            t = -1 + 2 * k / 6
+            q.append(((t, -1), (1, t), (-t, 1), (-1, -t))[side])
+    ob, ot, ib, it = [], [], [], []
+    for (qx, qy) in q:
+        for (hx, hy), bot, topl in (((9.2, 7.2), ob, ot), ((8.8, 6.8), ib, it)):
+            x, y = qx * hx, qy * hy
+            bot.append(boards.verts.new(V((x, y, 11.4))))
+            topl.append(boards.verts.new(V((x, y, upper.under(x, y) + 0.12))))
+    m = len(q)
+    for i in range(m):
+        k = (i + 1) % m
+        boards.faces.new((ob[i], ob[k], ot[k], ot[i]))
+        boards.faces.new((ib[k], ib[i], it[i], it[k]))
+        boards.faces.new((ot[i], ot[k], it[k], it[i]))
+        boards.faces.new((ob[k], ob[i], ib[i], ib[k]))
+    for sy in (-1, 1):  # lattice studs on the band's outside
+        for k in range(5):
+            x = -6.8 + k * 3.4
+            y0, y1 = sorted((sy * 7.15, sy * 7.32))
+            block(wood, V((x - 0.09, y0, 12.4)), V((x + 0.09, y1, upper.under(x, sy * 7.3))))
+    for sx in (-1, 1):
+        for k in range(3):
+            y = -3.6 + k * 3.6
+            x0, x1 = sorted((sx * 9.15, sx * 9.32))
+            block(wood, V((x0, y - 0.09, 12.4)), V((x1, y + 0.09, upper.under(sx * 9.3, y))))
+    for sy in (-1, 1):  # rafters under the lower tier, straight sides
+        for k in range(8):
+            x = -7.875 + k * 2.25
+            pts = [V((x, sy * (lower.d + (lower.D - lower.d) * rr), 0)) for rr in (0.0, 0.5, 1.0)]
+            beam(wood, [p + V((0, 0, lower.under(p.x, p.y) + 0.02)) for p in pts], 0.2, 0.22, tri=True)
+    for sx in (-1, 1):
+        for k in range(6):
+            y = -6.0 + k * 2.4
+            pts = [V((sx * (lower.w + (lower.W - lower.w) * rr), y, 0)) for rr in (0.0, 0.5, 1.0)]
+            beam(wood, [p + V((0, 0, lower.under(p.x, p.y) + 0.02)) for p in pts], 0.2, 0.22, tri=True)
+    for sx in (-1, 1):  # corner rafters along the diagonals, heavier
+        for sy in (-1, 1):
+            beam(wood, [lower.at(sx, sy, rr, 1.0, -lower.thick + 0.02) for rr in (0.0, 0.5, 1.0)], 0.32, 0.34)
+    for sy in (-1, 1):  # inside, under the upper tier: rafters and purlins
+        for k in range(5):
+            x = -4.4 + k * 2.2
+            pts = [V((x, sy * y, 0)) for y in (0.35, 3.5, 6.8)]
+            beam(wood, [p + V((0, 0, upper.under(p.x, p.y) + 0.02)) for p in pts], 0.18, 0.2, tri=True)
+        for y in (3.8,):
+            pts = [V((x, sy * y, 0)) for x in (-6.2, 0.0, 6.2)]
+            beam(wood, [p + V((0, 0, upper.under(p.x, p.y) + 0.02)) for p in pts], 0.26, 0.28)
+    for sx in (-1, 1):  # tie beams and king posts up to the ridge
+        block(wood, V((sx * 4.6 - 0.3, -6.9, 11.4)), V((sx * 4.6 + 0.3, 6.9, 12.2)))
+        tube(wood, [V((sx * 4.6, 0, 12.2)), V((sx * 4.6, 0, upper.under(sx * 4.6, 0) + 0.05))], [0.24, 0.22], sides=8)
+
+    # -- ridges: hips ending in đao, the ridge with curled ends, two dragons facing the pearl (lưỡng long chầu nguyệt)
+    for tier, rs in ((lower, (0.0, 0.55, 1.0)), (upper, (0.0, 0.4, 0.75, 1.0))):
+        for sx in (-1, 1):
+            for sy in (-1, 1):
+                pts = [tier.at(sx, sy, rr, 1.0, 0.18) for rr in rs]
+                d = V((sx * (tier.W - tier.w), sy * (tier.D - tier.d), 0)).normalized()
+                end = pts[-1]
+                pts += [end + d * 0.65 + UP * 0.4, end + d * 0.95 + UP * 1.0]  # the đao: a short, thick upturn
+                tube(stone, pts, [0.22] * (len(rs) - 1) + [0.26, 0.24, 0.12], sides=4)
+    beam(stone, [V((-5.5, 0, 17.95)), V((-4.2, 0, 17.8)), V((4.2, 0, 17.8)), V((5.5, 0, 17.95))], 0.7, 0.7)
+    for sx in (-1, 1):
+        tube(stone, [V((sx * 5.3, 0, 17.6)), V((sx * 6.0, 0, 18.0)), V((sx * 6.3, 0, 18.75)), V((sx * 6.05, 0, 19.35)), V((sx * 5.6, 0, 19.3))],
+             [0.34, 0.3, 0.24, 0.16, 0.08], sides=4)
+        pts = []
+        for k in range(7):
+            u = k / 6
+            pts.append(V((sx * (4.5 - 3.2 * u), 0, 17.95 + 0.5 * abs(math.sin(u * 2.4 * math.pi)) + 0.35 * u)))
+        tube(trim, pts, [0.08, 0.15, 0.2, 0.21, 0.21, 0.22, 0.26], sides=4)
+        h = pts[-1]
+        rot_block(trim, h + V((-sx * 0.22, 0, 0.12)), V((0.6, 0.34, 0.36)))
+        cone(trim, h + V((sx * 0.05, 0, 0.28)), 0.12, 0.4)  # the horn
+    tube(stone, [V((0, 0, 17.9)), V((0, 0, 18.35))], [0.22, 0.14], sides=6)
+    ball(trim, V((0, 0, 18.8)), 0.42, subdiv=1)
+    return {"Stone": (stone, (150, 146, 136)), "Wood": (wood, (92, 34, 28)), "Tile": (tile, (58, 66, 60), "up"),
+            "Boards": (boards, (124, 88, 62), "down"), "Trim": (trim, (156, 46, 34))}
 
 
 def altar(rng):
@@ -291,19 +514,42 @@ def reeds(rng):
 
 
 def causeway(rng):
-    """16 studs of the causeway: an earth top between rough edging stones, a few moss patches; 8 wide (x), 16 long (y),
-    1.25 deep, top at z 1.25 (the graybox top is 1.2)."""
+    """16 studs of the causeway: a crowned, uneven earth top between rough chamfered edging stones of varied size and
+    tilt, moss patches; 8 wide (x), 16 long (y), top at z ~1.25 (the graybox top is 1.2). All closed shells."""
     earth, stone, moss = bmesh.new(), bmesh.new(), bmesh.new()
-    block(earth, V((-3.6, -8, 0)), V((3.6, 8, 1.2)))
+    xs, ys = [-3.6 + 7.2 * i / 6 for i in range(7)], [-8 + 16 * j / 8 for j in range(9)]
+    top = [[earth.verts.new(V((x, y, 1.16 + 0.1 * (1 - (x / 3.6) ** 2) + (rng.uniform(-0.04, 0.04) if 0 < j < 8 else 0))))
+            for x in xs] for j, y in enumerate(ys)]
+    bot = [[earth.verts.new(V((x, y, 0.0))) for x in xs] for y in ys]
+    for j in range(8):
+        for i in range(6):
+            earth.faces.new((top[j][i], top[j][i + 1], top[j + 1][i + 1], top[j + 1][i]))
+            earth.faces.new((bot[j + 1][i], bot[j + 1][i + 1], bot[j][i + 1], bot[j][i]))
+    for j in range(8):  # the long sides
+        earth.faces.new((top[j][0], top[j + 1][0], bot[j + 1][0], bot[j][0]))
+        earth.faces.new((top[j + 1][6], top[j][6], bot[j][6], bot[j + 1][6]))
+    for i in range(6):  # the ends
+        earth.faces.new((top[0][i + 1], top[0][i], bot[0][i], bot[0][i + 1]))
+        earth.faces.new((top[8][i], top[8][i + 1], bot[8][i + 1], bot[8][i]))
     for sx in (-1, 1):
         y = -8.0
-        while y < 8:
-            l = rng.uniform(1.1, 1.9)
-            rot_block(stone, V((sx * 3.8, min(y + l / 2, 7.5), 0.55 + rng.uniform(-0.05, 0.1))), V((0.9, l, 1.3 + rng.uniform(0, 0.2))), rz=rng.uniform(-0.08, 0.08))
-            y += l + 0.05
-    for _ in range(5):
-        c = V((rng.uniform(-2.8, 2.8), rng.uniform(-7, 7), 1.2))
-        ball(moss, c, rng.uniform(0.6, 1.2), (1.4, 1.0, 0.08), subdiv=1)
+        while y < 7.6:
+            l = min(rng.uniform(1.0, 1.9), 8.0 - y)
+            h, w = 1.25 + rng.uniform(0, 0.3), rng.uniform(0.8, 1.05)
+            tmp = bmesh.new()
+            bevel_block(tmp, V((-w / 2, -l / 2 + 0.04, 0)), V((w / 2, l / 2 - 0.04, h)), 0.09)
+            m = (Matrix.Translation(V((sx * (3.75 + rng.uniform(-0.08, 0.08)), y + l / 2, -0.05))) @ Matrix.Rotation(rng.uniform(-0.07, 0.07), 4, "Z")
+                 @ Matrix.Rotation(sx * rng.uniform(0.0, 0.06), 4, "Y"))
+            bmesh.ops.transform(tmp, matrix=m, verts=tmp.verts)
+            me = bpy.data.meshes.new("tmp")
+            tmp.to_mesh(me)
+            tmp.free()
+            stone.from_mesh(me)
+            bpy.data.meshes.remove(me)
+            y += l
+    for _ in range(6):
+        c = V((rng.uniform(-2.8, 2.8), rng.uniform(-7, 7), 1.24))
+        ball(moss, c, rng.uniform(0.5, 1.1), (1.4, 1.0, 0.07), subdiv=1)
     return {"Earth": (earth, (112, 94, 70)), "Stone": (stone, (118, 116, 106)), "Moss": (moss, (70, 92, 54))}
 
 
@@ -324,39 +570,61 @@ def fish_rack(rng):
 
 
 def boat(rng):
-    """A small sampan (thuyền): a wooden hull with a raised bow and stern, plank seats, a bamboo canopy in the middle;
-    10 long (y), sitting at the water line (origin)."""
+    """A small sampan (thuyền): a planked hull with thickness (outside, inside, gunwale, closed ends) rising to the bow
+    and stern, rub rails, three thwarts, a woven bamboo canopy (mui) on ribs, an oar; 10 long (y), sitting at the water
+    line (origin). All closed shells."""
     hull, wood, canopy = bmesh.new(), bmesh.new(), bmesh.new()
-    n = 9
-    sections = []
+    n, th = 11, 0.12
+    outs, ins, gun = [], [], []
     for i in range(n):
         t = i / (n - 1)
         y = -5 + 10 * t
-        w = 1.4 * math.sin(math.pi * (0.08 + 0.84 * t)) + 0.05
-        rise = 0.9 * (abs(t - 0.5) * 2) ** 3
-        sections.append((y, w, rise))
-    rings = []
-    for y, w, rise in sections:
-        ring = [hull.verts.new(V((-w, y, 0.9 + rise))), hull.verts.new(V((-w * 0.8, y, -0.2 + rise * 0.6))),
-                hull.verts.new(V((0, y, -0.5 + rise * 0.5))), hull.verts.new(V((w * 0.8, y, -0.2 + rise * 0.6))), hull.verts.new(V((w, y, 0.9 + rise)))]
-        rings.append(ring)
-    for r0, r1 in zip(rings, rings[1:]):
-        for k in range(4):
-            hull.faces.new((r0[k], r0[k + 1], r1[k + 1], r1[k]))
-    for y in (-2.5, 0.0, 2.5):
-        w = 1.4 * math.sin(math.pi * (0.08 + 0.84 * (y + 5) / 10)) - 0.1
-        block(wood, V((-w, y - 0.3, 0.45)), V((w, y + 0.3, 0.6)))
-    pts = []
-    for k in range(9):
-        a = math.pi * k / 8
-        pts.append(V((-math.cos(a) * 1.25, 0, 0.6 + math.sin(a) * 1.5)))
-    for y0 in (-1.6, 1.6):
-        tube(canopy, [p + V((0, y0, 0)) for p in pts], [0.05] * len(pts), sides=4)
-    shell = []
-    for p in pts:
-        shell.append((canopy.verts.new(p + V((0, -1.7, 0))), canopy.verts.new(p + V((0, 1.7, 0)))))
-    for (a0, b0), (a1, b1) in zip(shell, shell[1:]):
-        canopy.faces.new((a0, a1, b1, b0))
+        w = 1.25 * math.sin(math.pi * (0.04 + 0.92 * t)) + 0.22
+        rise = 1.0 * (abs(t - 0.5) * 2) ** 3
+        prof = [(-1.0, 0.95), (-0.88, 0.2), (-0.5, -0.32), (0.0, -0.48), (0.5, -0.32), (0.88, 0.2), (1.0, 0.95)]
+        o, inn = [], []
+        for k, (fx, fz) in enumerate(prof):
+            z = fz + rise * (1.0 if k in (0, 6) else 0.6)
+            o.append(hull.verts.new(V((fx * w, y, z))))
+            wi = max(w - th, 0.08)
+            inn.append(hull.verts.new(V((fx * wi, y, z if k in (0, 6) else z + th))))
+        outs.append(o)
+        ins.append(inn)
+        gun.append((V((-w, y, 0.95 + rise)), V((w, y, 0.95 + rise))))
+    for i in range(n - 1):
+        o0, o1, i0, i1 = outs[i], outs[i + 1], ins[i], ins[i + 1]
+        for k in range(6):
+            hull.faces.new((o0[k], o0[k + 1], o1[k + 1], o1[k]))
+            hull.faces.new((i0[k + 1], i0[k], i1[k], i1[k + 1]))
+        hull.faces.new((o0[0], o1[0], i1[0], i0[0]))  # the gunwale tops
+        hull.faces.new((o0[6], i0[6], i1[6], o1[6]))
+    for o, inn in ((outs[0], ins[0]), (outs[-1], ins[-1])):  # bow and stern closed
+        for k in range(6):
+            hull.faces.new((o[k], o[k + 1], inn[k + 1], inn[k]))
+    for side in (0, 1):  # rub rails along the gunwales
+        tube(wood, [g[side] + V((0.06 * (1 if side else -1), 0, -0.08)) for g in gun[1:-1]], [0.08] * (n - 2), sides=4)
+    for y in (-2.6, 0.0, 2.6):  # thwarts
+        t = (y + 5) / 10
+        w = 0.86 * (1.25 * math.sin(math.pi * (0.04 + 0.92 * t)) + 0.22 - th)  # inside the planks at seat height
+        bevel_block(wood, V((-w, y - 0.3, 0.42)), V((w, y + 0.3, 0.58)), 0.04)
+    ro, ri = 1.22, 1.12  # the canopy: an arched mat with thickness, closed at both ends, standing inside the gunwales
+    arc_o = [V((-math.cos(math.pi * k / 8) * ro, 0, 0.88 + math.sin(math.pi * k / 8) * ro * 1.2)) for k in range(9)]
+    arc_i = [V((-math.cos(math.pi * k / 8) * ri, 0, 0.88 + math.sin(math.pi * k / 8) * ri * 1.2)) for k in range(9)]
+    of = [canopy.verts.new(p + V((0, -1.7, 0))) for p in arc_o]
+    ob = [canopy.verts.new(p + V((0, 1.7, 0))) for p in arc_o]
+    inf = [canopy.verts.new(p + V((0, -1.7, 0))) for p in arc_i]
+    ib = [canopy.verts.new(p + V((0, 1.7, 0))) for p in arc_i]
+    for k in range(8):
+        canopy.faces.new((of[k], ob[k], ob[k + 1], of[k + 1]))
+        canopy.faces.new((inf[k + 1], ib[k + 1], ib[k], inf[k]))
+        canopy.faces.new((of[k + 1], inf[k + 1], inf[k], of[k]))
+        canopy.faces.new((ob[k], ib[k], ib[k + 1], ob[k + 1]))
+    for k in (0, 8):
+        canopy.faces.new((of[k], inf[k], ib[k], ob[k]))
+    for y0 in (-1.75, 0.0, 1.75):  # bamboo ribs over it
+        tube(wood, [V((p.x * (ro + 0.05) / ro, y0, 0.88 + (p.z - 0.88) * (ro + 0.05) / ro)) for p in arc_o], [0.05] * 9, sides=4)
+    tube(wood, [V((0.9, 3.4, 1.0)), V((0.5, 6.2, 0.2))], [0.06, 0.06], sides=5)  # the oar, resting over the stern
+    rot_block(wood, V((0.45, 6.6, 0.05)), V((0.08, 1.0, 0.36)), rz=0.14, rx=0.28)
     return {"Hull": (hull, (84, 62, 44)), "Wood": (wood, (120, 92, 60)), "Canopy": (canopy, (146, 122, 78))}
 
 
@@ -590,10 +858,50 @@ ITEMS = {"Sen": sen, "Child": child, "Face": face, "Hand": hand, "Shrine": shrin
 
 # ---------------------------------------------------------------- export
 
-def to_object(bm, name, rgb):
+def _islands(bm):
+    bm.faces.ensure_lookup_table()
+    seen, out = set(), []
+    for f in bm.faces:
+        if f.index in seen:
+            continue
+        stack, isl = [f], []
+        seen.add(f.index)
+        while stack:
+            g = stack.pop()
+            isl.append(g)
+            for e in g.edges:
+                for h in e.link_faces:
+                    if h.index not in seen:
+                        seen.add(h.index)
+                        stack.append(h)
+        out.append(isl)
+    return out
+
+
+def _volume(faces):
+    vol = 0.0
+    for f in faces:
+        vs = [v.co for v in f.verts]
+        for k in range(1, len(vs) - 1):
+            vol += vs[0].dot(vs[k].cross(vs[k + 1])) / 6
+    return vol
+
+
+def to_object(bm, name, rgb, facing=None):
+    """facing None: closed solids, normals made to point out (any island still inside-out is flipped). facing 'up' /
+    'down': a part built as an open sheet that closes with another part of the same item (roof tiles over boards);
+    its winding is already right and is only checked."""
     me = bpy.data.meshes.new(name)
-    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-4)
-    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    if facing is None:
+        bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+        for isl in _islands(bm):
+            closed = all(len(e.link_faces) == 2 for f in isl for e in f.edges)
+            if closed and _volume(isl) < 0:
+                bmesh.ops.reverse_faces(bm, faces=isl)
+    else:
+        nz = sum(f.normal.z * f.calc_area() for f in bm.faces)
+        if (nz > 0) != (facing == "up"):
+            print(f"WARNING {name}: faces point {'up' if nz > 0 else 'down'}, expected {facing}")
     bm.to_mesh(me)
     bm.free()
     for p in me.polygons:
@@ -606,6 +914,27 @@ def to_object(bm, name, rgb):
     return ob
 
 
+def check_item(item, obs):
+    """Roblox draws only the front of a face: an item is see-through wherever its parts together leave an open edge, or
+    where a closed shell faces inward. Returns the problems (holes, inside-out shells, slivers)."""
+    bm = bmesh.new()
+    for ob in obs:
+        bm.from_mesh(ob.data)
+    bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=1e-3)
+    holes = sum(1 for e in bm.edges if len(e.link_faces) == 1)
+    slivers = sum(1 for f in bm.faces if f.calc_area() < 1e-6)
+    inverted = 0
+    for ob in obs:
+        b = bmesh.new()
+        b.from_mesh(ob.data)
+        for isl in _islands(b):
+            if all(len(e.link_faces) == 2 for f in isl for e in f.edges) and _volume(isl) < -1e-6:
+                inverted += 1
+        b.free()
+    bm.free()
+    return {"open_edges": holes, "inside_out": inverted, "slivers": slivers}
+
+
 def box(ob):
     vs = [ob.matrix_world @ v.co for v in ob.data.vertices]
     lo = V((min(v.x for v in vs), min(v.y for v in vs), min(v.z for v in vs)))
@@ -613,17 +942,10 @@ def box(ob):
     return {"min": list(lo), "max": list(hi), "tris": sum(len(p.vertices) - 2 for p in ob.data.polygons)}
 
 
-def render(path, obs):
+def setup_render():
+    """Workbench with back-face culling on, so the preview hides exactly what Roblox hides (a single-sided skin shows
+    as a hole here too)."""
     scene = bpy.context.scene
-    lo = V((min(min(v[0] for v in [box(o)["min"]]) for o in obs), min(box(o)["min"][1] for o in obs), min(box(o)["min"][2] for o in obs)))
-    hi = V((max(box(o)["max"][0] for o in obs), max(box(o)["max"][1] for o in obs), max(box(o)["max"][2] for o in obs)))
-    centre, size = (lo + hi) / 2, (hi - lo).length
-    cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
-    scene.collection.objects.link(cam)
-    cam.location = centre + V((size * 0.45, -size * 0.75, size * 0.45))
-    cam.rotation_euler = (centre - cam.location).to_track_quat("-Z", "Y").to_euler()
-    cam.data.lens = 40
-    scene.camera = cam
     sun = bpy.data.objects.new("Sun", bpy.data.lights.new("Sun", "SUN"))
     sun.data.energy = 3.5
     sun.rotation_euler = (math.radians(50), 0, math.radians(30))
@@ -632,11 +954,45 @@ def render(path, obs):
     world.color = (0.5, 0.52, 0.56)
     scene.world = world
     scene.render.engine = "BLENDER_WORKBENCH"
-    scene.display.shading.color_type = "MATERIAL"
-    scene.display.shading.light = "STUDIO"
-    scene.render.resolution_x, scene.render.resolution_y = 1600, 1000
+    sh = scene.display.shading
+    sh.color_type = "MATERIAL"
+    sh.light = "STUDIO"
+    sh.show_backface_culling = True
+    sh.show_cavity = True
+    cam = bpy.data.objects.new("Cam", bpy.data.cameras.new("Cam"))
+    scene.collection.objects.link(cam)
+    scene.camera = cam
+    return cam
+
+
+def render_view(cam, path, loc, target, lens=35, res=(1600, 1000), show=None):
+    scene = bpy.context.scene
+    for ob in scene.objects:
+        if ob.type == "MESH":
+            ob.hide_render = show is not None and ob not in show
+    cam.location = loc
+    cam.rotation_euler = (target - loc).to_track_quat("-Z", "Y").to_euler()
+    cam.data.lens = lens
+    cam.data.clip_start = 0.05
+    scene.render.resolution_x, scene.render.resolution_y = res
     scene.render.filepath = str(path)
     bpy.ops.render.render(write_still=True)
+
+
+def render(cam, path, obs):
+    lo = V((min(box(o)["min"][0] for o in obs), min(box(o)["min"][1] for o in obs), min(box(o)["min"][2] for o in obs)))
+    hi = V((max(box(o)["max"][0] for o in obs), max(box(o)["max"][1] for o in obs), max(box(o)["max"][2] for o in obs)))
+    centre, size = (lo + hi) / 2, (hi - lo).length
+    render_view(cam, path, centre + V((size * 0.45, -size * 0.75, size * 0.45)), centre, 40, show=obs)
+
+
+# close-ups at the player's scale (camera, target, lens), the shrine from where players see it: the lane, the beach,
+# standing under its roof looking up, and from above
+CLOSEUPS = {
+    "Shrine": {"lane": (V((16, 38, 6)), V((0, 0, 8)), 30), "beach": (V((-40, 10, 5)), V((0, 0, 9)), 30),
+               "under": (V((5.5, 3.5, 4.2)), V((-3, -2, 14)), 14), "above": (V((28, -34, 34)), V((0, 0, 9)), 30)},
+    "Boat": {"side": (V((9, -10, 5)), V((0, 0, 0.6)), 35), "low": (V((-6, 3, 0.4)), V((0, 0, 1.2)), 28)},
+}
 
 
 def main():
@@ -644,29 +1000,43 @@ def main():
     out = Path(argv[0] if argv else "build/art")
     out.mkdir(parents=True, exist_ok=True)
     bpy.ops.wm.read_factory_settings(use_empty=True)
-    meta, objs, per_item = {}, [], {}
+    meta, objs, per_item, by_item = {}, [], {}, {}
     for item, build in ITEMS.items():
         rng = random.Random(item)
-        for part, (bm, rgb) in build(rng).items():
-            ob = to_object(bm, f"{item}_{part}", rgb)
+        for part, spec in build(rng).items():
+            bm, rgb = spec[0], spec[1]
+            ob = to_object(bm, f"{item}_{part}", rgb, spec[2] if len(spec) > 2 else None)
             meta[ob.name] = {**box(ob), "rgb": list(rgb)}
             per_item[item] = per_item.get(item, 0) + meta[ob.name]["tris"]
+            by_item.setdefault(item, []).append(ob)
             objs.append(ob)
+    problems = {}
+    for item, obs in by_item.items():
+        c = check_item(item, obs)
+        if any(c.values()):
+            problems[item] = c
+        if per_item[item] > 5000:
+            problems.setdefault(item, {})["over_budget_tris"] = per_item[item]
     (out / "set").mkdir(exist_ok=True)
     bpy.ops.export_scene.gltf(filepath=str(out / "set" / "mada_art.glb"), export_format="GLB", export_apply=True, export_yup=True)
     (out / "set" / "meta.json").write_text(json.dumps({"source": "own", "id": "mada_art", "name": "Làng Vọng models", "author": "Raumania",
         "license": "own", "license_label": "Made for Raumania", "url": "tools/blender/mada_art.py", "credit": "Làng Vọng's own models"}))
     (out / "art.json").write_text(json.dumps(meta, indent=1))
-    if "--preview" in argv:  # every item side by side, big ones scaled down so the little ones show
-        spots = {}
+    if "--preview" in argv:
+        cam = setup_render()
+        for item, views in CLOSEUPS.items():
+            for view, (loc, target, lens) in views.items():
+                render_view(cam, out / f"preview_{item.lower()}_{view}.png", loc, target, lens, (1200, 800), show=by_item[item])
+        spots = {}  # every item side by side, big ones scaled down so the little ones show
         for i, item in enumerate(ITEMS):
             spots[item] = V(((i % 5) * 7.0, -(i // 5) * 8.0, 0))
         for ob in objs:
             item = ob.name.split("_")[0]
             k = 0.18 if item == "Shrine" else (0.4 if item in ("Causeway", "Boat") else (0.25 if item.startswith("House") else 1.0))
             ob.data.transform(Matrix.Translation(spots[item]) @ Matrix.Scale(k, 4))
-        render(out / "preview.png", objs)
+        render(cam, out / "preview.png", objs)
     print(json.dumps(per_item))
+    print("PROBLEMS " + json.dumps(problems) if problems else "CHECK OK: every item closed, no inside-out shells, all under 5,000 tris")
 
 
 if __name__ == "__main__":

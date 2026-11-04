@@ -40,5 +40,19 @@
     "license_label": "Made for Raumania",
     "url": "tools/blender/mada_art.py",
     "credit": "Làng Vọng's own models"
+  },
+  {
+    "roblox_asset_id": 123069688640001,
+    "roblox_name": "LV Mada art set 4",
+    "uploaded": "2026-11-04",
+    "file": "mada_art.glb",
+    "source": "own",
+    "id": "mada_art",
+    "name": "Làng Vọng models",
+    "author": "Raumania",
+    "license": "own",
+    "license_label": "Made for Raumania",
+    "url": "tools/blender/mada_art.py",
+    "credit": "Làng Vọng's own models"
   }
 ]

@@ -372,6 +372,13 @@ local function shrine(parent: Instance): Model
 	local altar = P(m, { Name = "Altar", Size = Vector3.new(8, 3.5, 3), Position = c + Vector3.new(0, 2.75, -8), Color = rgb(88, 30, 26), Material = M.Wood })
 	tag(altar, Tags.ShrineAltar)
 	-- the Blender shrine and altar (the graybox stays as the floor, the collisions and the altar's prompt)
+	-- the balustrade of the Blender shrine stops you (open at the steps and toward the lane)
+	for _, b in { { Vector3.new(0, 1.95, -12.65), Vector3.new(33.3, 1.9, 0.5) }, { Vector3.new(10.5, 1.95, 12.65), Vector3.new(12.25, 1.9, 0.5) },
+		{ Vector3.new(-10.5, 1.95, 12.65), Vector3.new(12.25, 1.9, 0.5) }, { Vector3.new(16.65, 1.95, 7.8), Vector3.new(0.5, 1.9, 9.65) },
+		{ Vector3.new(-16.65, 1.95, 7.8), Vector3.new(0.5, 1.9, 9.65) }, { Vector3.new(16.65, 1.95, -7.8), Vector3.new(0.5, 1.9, 9.65) },
+		{ Vector3.new(-16.65, 1.95, -7.8), Vector3.new(0.5, 1.9, 9.65) } } do
+		P(m, { Name = "Balustrade", Size = b[2], Position = c + b[1], Transparency = 1, CanQuery = false })
+	end
 	Art.place("Shrine", CFrame.new(c), m, 1, function()
 		for _, d in m:GetChildren() do
 			if d:IsA("BasePart") and (d.Name == "Platform" or d.Name == "Post" or d.Name == "Roof") then
