@@ -17,3 +17,4 @@ Thumbs.db
 build/
 tools/factory/reports/
 __pycache__/
+graphify-out/
