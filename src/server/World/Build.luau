@@ -203,8 +203,8 @@ local function terrainPass()
 	t:SetMaterialColor(M.Ground, rgb(92, 74, 56))
 	t:SetMaterialColor(M.Mud, rgb(62, 54, 44))
 	t:SetMaterialColor(M.Sand, rgb(104, 94, 76))
-	t:SetMaterialColor(M.Limestone, rgb(150, 150, 142))
-	t:SetMaterialColor(M.Rock, rgb(92, 90, 86))
+	t:SetMaterialColor(M.Limestone, rgb(66, 72, 70)) -- (light limestone under the moon read brighter than the sky: the black sky between the towers looked like a hanging ceiling)
+	t:SetMaterialColor(M.Rock, rgb(58, 60, 58))
 	-- the rock ridge that hides the cove from the lane and the shore (only the back yard leads round it)
 	for z = -70, 40, 10 do
 		t:FillBall(Vector3.new(298 + (z % 20) * 0.2, 2, z), 11, M.Rock)
@@ -867,8 +867,8 @@ local function lighting()
 	local atm = L:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
 	atm.Density = 0.3 -- (0.42 hid the karst towers' feet in haze: their tops hung in the sky)
 	atm.Offset = 0
-	atm.Color = rgb(120, 130, 156)
-	atm.Decay = rgb(60, 70, 96)
+	atm.Color = rgb(40, 46, 64) -- (a light haze made distant land brighter than the night sky: the sky between the towers read as a hanging ceiling)
+	atm.Decay = rgb(18, 22, 34)
 	atm.Glare = 0
 	atm.Haze = 2.2
 	atm.Parent = L
