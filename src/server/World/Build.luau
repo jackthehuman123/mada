@@ -865,8 +865,8 @@ local function lighting()
 	L.FogEnd = 420
 	L.GlobalShadows = true
 	local atm = L:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
-	atm.Density = 0.42
-	atm.Offset = 0.1
+	atm.Density = 0.3 -- (0.42 hid the karst towers' feet in haze: their tops hung in the sky)
+	atm.Offset = 0
 	atm.Color = rgb(120, 130, 156)
 	atm.Decay = rgb(60, 70, 96)
 	atm.Glare = 0

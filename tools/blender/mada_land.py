@@ -76,7 +76,9 @@ def shore_z(x):
 def lake_depth(x, z):
     """> 0 inside the lake: how far in from its edge (studs)"""
     # an organic oval, cut off straight-ish on the village side by the shore line
-    dx, dz = (x - 0) / 470, (z + 330) / 310
+    # (wide enough that the village side is the shore line itself from the shrine to the cove: a narrower oval pulled the
+    # shore south at the shrine's end and buried Bin's camera in the reeds, 2026-11-04)
+    dx, dz = (x - 0) / 620, (z + 340) / 380
     rim = 1 - math.sqrt(dx * dx + dz * dz) + fbm(x, z, 140, 5, 3) * 0.12
     inside_oval = rim * 300
     inside_shore = shore_z(x) - z

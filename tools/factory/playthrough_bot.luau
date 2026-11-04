@@ -111,11 +111,17 @@ local PPS = game:GetService("ProximityPromptService")
 local function hold(p, pos)
 	local fired = false
 	local con = PPS.PromptTriggered:Connect(function(t) if t == p then fired = true end end)
+	local shown = false
+	local con2 = PPS.PromptShown:Connect(function(t) if t == p then shown = true end end)
 	for _ = 1, 3 do
 		walkTo(pos, math.max(2, p.MaxActivationDistance - 3))
 		local h, r = hum(), root()
 		if h and r then h:MoveTo(r.Position) end
-		task.wait(0.6)
+		-- look at it, as a player does: Roblox only shows a prompt that is on screen (looking straight ahead, things on
+		-- the floor or in the water below you never showed)
+		local cam = workspace.CurrentCamera
+		cam.CFrame = CFrame.lookAt(cam.CFrame.Position, pos)
+		task.wait(0.8)
 		p:InputHoldBegin()
 		task.wait(p.HoldDuration + 0.5)
 		p:InputHoldEnd()
@@ -123,6 +129,8 @@ local function hold(p, pos)
 		if fired or not p.Parent or not p.Enabled then break end
 	end
 	con:Disconnect()
+	con2:Disconnect()
+	tick("prompt showed on screen: " .. p.ActionText, shown)
 	return fired or not p.Parent or not p.Enabled
 end
 -- only what happened since this step began
