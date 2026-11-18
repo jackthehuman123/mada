@@ -1,4 +1,6 @@
 --!strict
+--!nolint DeprecatedApi
+-- (DeprecatedApi off: LoadCharacter/IsInGroup kept on purpose until a playtest, see docs/ISSUES.md)
 -- Owns the run's phase and clock (PROTOTYPE_BRIEF §3).
 -- Phase is replicated as an attribute on ReplicatedStorage ("Phase"), clock as "ClockHour" (number, e.g. 21.5).
 -- The machine reacts to the current phase every tick, so a debug jump to any phase just works.
@@ -136,6 +138,7 @@ function GameStateService.Reset()
 	local players = inRun()
 	for _, p in players do
 		task.spawn(function()
+			-- selene: allow(deprecated)
 			p:LoadCharacter()
 		end)
 	end

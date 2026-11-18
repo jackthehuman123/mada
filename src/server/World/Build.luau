@@ -873,7 +873,7 @@ end
 local function lanternPaths(parent: Instance)
 	local m = model(parent, "LanternPaths")
 	for _, stop in CollectionService:GetTagged(Tags.LanternStop) do
-		local house = stop:GetAttribute("House")
+		local houseName = stop:GetAttribute("House")
 		local x = (stop :: BasePart).Position.X
 		local points = {
 			Vector3.new(-330, WATER_Y + 0.6, SHORE_Z - 34),
@@ -884,7 +884,7 @@ local function lanternPaths(parent: Instance)
 		for i, p in points do
 			tag(
 				P(m, {
-					Name = `Path_{house}_{i}`,
+					Name = `Path_{houseName}_{i}`,
 					Size = Vector3.new(1, 1, 1),
 					Position = p,
 					Transparency = 1,
@@ -892,7 +892,7 @@ local function lanternPaths(parent: Instance)
 					CanQuery = false,
 				}),
 				Tags.LanternPath,
-				{ House = house, Index = i }
+				{ House = houseName, Index = i }
 			)
 		end
 	end
@@ -972,7 +972,7 @@ local function furnish(village: Instance)
 		end
 		error(loc)
 	end
-	local paper, ink = rgb(226, 214, 186), rgb(40, 40, 60)
+	local paper = rgb(226, 214, 186)
 
 	-- the teacher's house (Minh): the unsent report, Minh's exercise book; the class photo is on the back wall
 	do

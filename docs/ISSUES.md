@@ -193,6 +193,9 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **What:** the warning comes from something in the place, not our code. Find what uses it and remove or replace it.
 - **Done when:** a playtest starts with the warning gone.
 
+### I-18 · Replace deprecated LoadCharacter/IsInGroup; needs a playtest.
+- **Where:** `GameStateService`, `MenuService` (`LoadCharacter`), `PlaytestGate` (`IsInGroup`); each file has `--!nolint DeprecatedApi` to remove afterwards.
+
 ---
 
 ## Waiting on Catlyn

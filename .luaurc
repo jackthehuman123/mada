@@ -1,1 +1,1 @@
-{"languageMode": "strict"}
+{"languageMode": "strict", "lint": {"LocalUnused": false}}

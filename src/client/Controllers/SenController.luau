@@ -72,10 +72,10 @@ local function bodyView(on: boolean)
 		if d:IsA("BasePart") or d:IsA("Decal") then
 			-- only your legs stay: looking down at her hand, your own torso and arms filled the whole view (Studio pass,
 			-- 2026-11-03: the grab showed nothing but the shirt)
-			local part = if d:IsA("Decal") then d.Parent else d
-			local name = part and part.Name or ""
+			local owner = if d:IsA("Decal") then d.Parent else d
+			local name = owner and owner.Name or ""
 			local leg = (name:find("Leg") or name:find("Foot"))
-				and not (part and part.Parent and part.Parent:IsA("Accessory"));
+				and not (owner and owner.Parent and owner.Parent:IsA("Accessory"));
 			(d :: any).LocalTransparencyModifier = if on and not leg then 1 else 0
 		end
 	end

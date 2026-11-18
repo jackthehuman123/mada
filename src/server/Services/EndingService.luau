@@ -26,9 +26,8 @@ local Tags = require(Shared:WaitForChild("Tags"))
 local EndingService = {}
 
 local rgb = Color3.fromRGB
-local GameState: any, Dialogue: any, Mystery: any, Bin: any, Director: any, Lanterns: any, Sen: any
+local GameState: any, Dialogue: any, Mystery: any, Bin: any, Director: any, Sen: any
 local LAKE_CENTRE = Vector3.new(0, -1, -265)
-local STEPS_BOTTOM = Vector3.new(350, -7.3, -16) -- the last carp step (World/Build.luau: cove)
 local STEPS_TOP = Vector3.new(350, 1, 14)
 
 local thuHome: CFrame? = nil
@@ -601,7 +600,6 @@ function EndingService.Start()
 	Mystery = require(script.Parent:WaitForChild("MysteryService"))
 	Bin = require(script.Parent:WaitForChild("BinService"))
 	Director = require(script.Parent:WaitForChild("NightOneDirector"))
-	Lanterns = require(script.Parent:WaitForChild("LanternService"))
 	Sen = require(script.Parent:WaitForChild("SenService"))
 	local m = thu()
 	thuHome = m and m:GetPivot()

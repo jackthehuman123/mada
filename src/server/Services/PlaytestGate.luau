@@ -1,4 +1,6 @@
 --!strict
+--!nolint DeprecatedApi
+-- (DeprecatedApi off: LoadCharacter/IsInGroup kept on purpose until a playtest, see docs/ISSUES.md)
 -- Closed playtest: a live server lets in only members of Config.PlaytestGroupId; everyone else is kicked on join.
 -- Studio (tests, local servers) is never gated. If Roblox's group check keeps failing, the player is asked to rejoin
 -- (it used to let them in: a closed playtest open to anyone whenever the group service hiccupped).
@@ -16,6 +18,7 @@ local PlaytestGate = {}
 local function check(player: Player)
 	local ok, member = false, nil
 	for try = 1, 3 do
+		-- selene: allow(deprecated)
 		ok, member = pcall(player.IsInGroup, player, Config.PlaytestGroupId)
 		if ok or not player.Parent then
 			break

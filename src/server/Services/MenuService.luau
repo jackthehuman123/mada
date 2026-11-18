@@ -1,4 +1,6 @@
 --!strict
+--!nolint DeprecatedApi
+-- (DeprecatedApi off: LoadCharacter/IsInGroup kept on purpose until a playtest, see docs/ISSUES.md)
 -- The menu and teams (docs/ISSUES.md I-09). Every server is one of three kinds (ReplicatedStorage attribute "ServerKind"):
 --   Menu    a public live server: players see the menu and make teams of up to 4; Begin teleports a team to its own
 --           reserved server of this same place, so nobody else can walk into their run
@@ -159,6 +161,7 @@ end
 local function spawnIn(p: Player)
 	p:SetAttribute("InRun", true)
 	task.spawn(function()
+		-- selene: allow(deprecated)
 		p:LoadCharacter()
 	end)
 end
@@ -409,6 +412,7 @@ local function watchCharacter(p: Player)
 			hum.Died:Connect(function()
 				task.wait(Config.RespawnSeconds)
 				if p.Parent and p:GetAttribute("InRun") and p.Character == char then
+					-- selene: allow(deprecated)
 					p:LoadCharacter()
 				end
 			end)

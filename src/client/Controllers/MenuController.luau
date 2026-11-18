@@ -306,7 +306,7 @@ local function build()
 
 	noticeLabel = new("TextLabel", {
 		Name = "Notice",
-		Size = UDim2.new(0, 380, 0, 40),
+		Size = UDim2.fromOffset(380, 40),
 		Position = UDim2.new(0, 60, 1, -60),
 		BackgroundTransparency = 1,
 		Text = "",

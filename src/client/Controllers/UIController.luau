@@ -393,8 +393,8 @@ local function build()
 			Parent = vf,
 		})
 	end
-	UI.vfRec = vhs("Rec", UDim2.new(0, 70, 0, 70), Vector2.new(0, 0), rgb(255, 60, 50))
-	UI.vfMode = vhs("Mode", UDim2.new(0, 70, 0, 104), Vector2.new(0, 0))
+	UI.vfRec = vhs("Rec", UDim2.fromOffset(70, 70), Vector2.new(0, 0), rgb(255, 60, 50))
+	UI.vfMode = vhs("Mode", UDim2.fromOffset(70, 104), Vector2.new(0, 0))
 	UI.vfTime = vhs("Time", UDim2.new(1, -70, 0, 70), Vector2.new(1, 0))
 	UI.vfBattery = vhs("Battery", UDim2.new(1, -70, 1, -70), Vector2.new(1, 1))
 	UI.viewfinder = vf
@@ -453,7 +453,7 @@ local function build()
 	})
 	cardText = new("TextLabel", {
 		Name = "Text",
-		Size = UDim2.new(0.6, 0, 0.5, 0),
+		Size = UDim2.fromScale(0.6, 0.5),
 		Position = UDim2.fromScale(0.5, 0.5),
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		BackgroundTransparency = 1,
@@ -469,7 +469,7 @@ local function build()
 	-- (on a dark backing, sized to the line: thin light text alone vanished on dark frames; release council 11-03)
 	messageLabel = new("TextLabel", {
 		Name = "Message",
-		Size = UDim2.new(0, 0, 0, 44),
+		Size = UDim2.fromOffset(0, 44),
 		AutomaticSize = Enum.AutomaticSize.X,
 		Position = UDim2.new(0.5, 0, 1, -110),
 		AnchorPoint = Vector2.new(0.5, 1),
@@ -597,7 +597,7 @@ local function build()
 	stayPanel = new("Frame", {
 		Name = "Stay",
 		Size = UDim2.fromOffset(460, 170),
-		Position = UDim2.new(0.5, 0, 0.7, 0),
+		Position = UDim2.fromScale(0.5, 0.7),
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		BackgroundColor3 = rgb(10, 14, 18),
 		BackgroundTransparency = 0.15,
@@ -717,7 +717,7 @@ local function build()
 	})
 	memoryText = new("TextLabel", {
 		Name = "Text",
-		Size = UDim2.new(0.6, 0, 0.3, 0),
+		Size = UDim2.fromScale(0.6, 0.3),
 		Position = UDim2.fromScale(0.5, 0.5),
 		AnchorPoint = Vector2.new(0.5, 0.5),
 		BackgroundTransparency = 1,

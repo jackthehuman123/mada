@@ -82,13 +82,7 @@ local function build(at: Vector3): Model
 	on("LegR", Vector3.new(0.9, 2, 0.9), Vector3.new(0.5, -2, 0), rgb(40, 50, 70))
 	on("ArmL", Vector3.new(0.8, 1.9, 0.8), Vector3.new(-1.4, 0, 0), rgb(255, 140, 30))
 	on("ArmR", Vector3.new(0.8, 1.9, 0.8), Vector3.new(1.4, 0.2, -0.6), rgb(255, 140, 30))
-	local head = on(
-		"Head",
-		Vector3.new(1.2, 1.2, 1.2),
-		Vector3.new(0, 1.6, 0),
-		rgb(222, 184, 150),
-		{ Shape = Enum.PartType.Ball }
-	)
+	on("Head", Vector3.new(1.2, 1.2, 1.2), Vector3.new(0, 1.6, 0), rgb(222, 184, 150), { Shape = Enum.PartType.Ball })
 	local lamp = on(
 		"Headlamp",
 		Vector3.new(0.5, 0.3, 0.2),
