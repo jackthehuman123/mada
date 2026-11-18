@@ -30,6 +30,21 @@ for _, entry in loaded do
 	end
 end
 
+-- Scenes (prefab layout + mood) load after Init and before Start; a failed scene must not stop the game.
+local SceneLoader = require(script:WaitForChild("SceneLoader")) :: any
+local activeScenes = require(script:WaitForChild("Scenes"):WaitForChild("active")) :: { string }
+for _, sceneName in activeScenes do
+	local ok, placed, warnings = pcall(SceneLoader.load, sceneName)
+	if not ok then
+		warn(`[LangVong] scene {sceneName} failed to load: {placed}`)
+	else
+		for _, w in warnings do
+			warn(`[LangVong] {w}`)
+		end
+		print(`[LangVong] scene {sceneName}: {placed} prefabs placed`)
+	end
+end
+
 for _, entry in loaded do
 	if entry.module.Start then
 		task.spawn(entry.module.Start)
