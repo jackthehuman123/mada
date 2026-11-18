@@ -32,7 +32,14 @@ if [ ${#lune_files[@]} -gt 0 ]; then
 		grep -E '^[^ ]+:[0-9]+:[0-9]+:' | sed -E 's/^([^:]+):([0-9]+):[0-9]+: /\1:\2: /' >>"$out"
 fi
 
-rojo sourcemap default.project.json -o sourcemap.json >/dev/null 2>&1 || echo "default.project.json:1: rojo sourcemap failed" >>"$out"
+# A prefab Rojo can't read must fail the check instead of crashing `rojo serve`.
+rojo_build=$(rojo build default.project.json -o "$(dirname "$out")/check.rbxl" 2>&1) || {
+	bad=$(printf '%s\n' "$rojo_build" | grep -oE '[A-Za-z0-9_./-]+\.rbxm' | head -1 | sed "s|^$PWD/||")
+	build_failed=1
+	echo "${bad:-default.project.json}:1: rojo build failed${bad:+ (unreadable prefab)}" >>"$out"
+}
+rm -f "$(dirname "$out")/check.rbxl"
+[ -z "${build_failed:-}" ] && { rojo sourcemap default.project.json -o sourcemap.json >/dev/null 2>&1 || echo "default.project.json:1: rojo sourcemap failed" >>"$out"; }
 if [ ${#typed_files[@]} -gt 0 ] && [ -f tools/types/globalTypes.d.luau ]; then
 	luau-lsp analyze --definitions=@roblox=tools/types/globalTypes.d.luau --sourcemap=sourcemap.json "${typed_files[@]}" 2>&1 |
 		grep -E '^[^ ]+\([0-9]+,[0-9]+\): ' | sed -E 's/^([^(]+)\(([0-9]+),[0-9]+\): /\1:\2: /' >>"$out"
