@@ -158,7 +158,7 @@ Optional extras (Blender for free CC0 models, ElevenLabs for voice/music): `docs
    > Read CLAUDE.md and follow it. Do milestone M0 only, then stop and tell me what you verified.
 
    After that:
-   > Continue with the next milestone in docs/PROGRESS.md. Use the qa-tester subagent before marking it done.
+   > Pick up the next open issue in docs/ISSUES.md. Use the studio-tester subagent for its [playtest] checks before marking it done.
 6. At the end: **save/publish the place** in Studio, then `git push`.
 
 ## 7. Troubleshooting

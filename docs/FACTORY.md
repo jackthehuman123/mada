@@ -43,11 +43,15 @@ check(gui.Viewfinder.Visible, "no VHS overlay")
 
 - The runner works next to Claude Code's own Roblox Studio MCP connection (checked 2026-11-02: three Studio MCP
   connections were open during passing runs). It opens a separate Studio window, so run it only when no other agent
-  is using Studio (CLAUDE.md). `qa-tester` runs it first, then checks by hand what the tests don't cover.
+  is using Studio (CLAUDE.md). `studio-tester` runs it first, then checks by hand what the tests don't cover.
 - The tests run on the graybox from git by default. The art is tested both ways (Catlyn, 2026-11-02): by the same
   tests on an export of the art, and by a hand playthrough for looks and mood. See "Testing the art" below.
 
 ## Testing the art
+
+> Superseded 2026-11-17 (`docs/DECISIONS.md`): new art is prefabs in `assets/prefabs/` placed by
+> `Scenes/<name>/layout.luau`, so it is already in git. The export below is only for art still hand-placed in the
+> shared place.
 
 The art layer lives in the shared place, so it gets exported into git after each art session:
 
@@ -57,7 +61,7 @@ The art layer lives in the shared place, so it gets exported into git after each
    the place too.
 3. `python tools/factory/test.py --art` merges those files into the place built from git (`tools/art/merge.luau`)
    and runs every test on it. It catches art that breaks gameplay: a model blocking a path, a lost tag, a renamed part.
-4. If it passes, commit `art/`. Then play it by hand for the looks (qa-tester screenshots, Catlyn).
+4. If it passes, commit `art/`. Then play it by hand for the looks (Catlyn; `studio-tester` screenshots when she asks).
 
 ## Working on it day to day
 

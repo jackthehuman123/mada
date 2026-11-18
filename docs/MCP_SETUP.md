@@ -9,7 +9,7 @@ Three pieces work together:
 | **Rojo** | Syncs the Luau code in `src/` (git) into the open Studio place, live. | Yes |
 | **Roblox Studio MCP server** (built into Studio) | Lets Claude Code drive Studio: build the world, run Luau, **search and insert free Creator Store assets**, generate meshes, playtest, read the console, take screenshots. | Yes |
 | **Blender MCP** | Lets Claude pull free CC0 models from Poly Haven / Poly Pizza / Sketchfab into Blender, then you import them to Roblox. | Optional |
-| **ElevenLabs MCP** | Lets the `voice-over` and `sound-designer` subagents generate speech, sound effects and music. | Optional (§6) |
+| **ElevenLabs MCP** | Lets Claude generate speech, sound effects and music. | Optional (§6) |
 
 > Run Claude Code **on the same computer as Roblox Studio** (Windows or macOS), natively — not inside WSL or a cloud machine. The Studio MCP server is a local process that talks over stdio.
 
@@ -124,7 +124,7 @@ Other free CC0 sources a human can download by hand: Kenney (kenney.nl), Quatern
 
 ## 6. Optional: generated voice, sound effects and music (ElevenLabs MCP)
 
-The `sound-designer` subagent uses free, Roblox-cleared audio from the Creator Store first, through the Studio MCP. That needs nothing extra.
+Free, Roblox-cleared audio from the Creator Store comes first, through the Studio MCP. That needs nothing extra.
 
 To also **generate** voice-over, sound effects or music, connect ElevenLabs' official MCP server:
 
@@ -137,13 +137,13 @@ To also **generate** voice-over, sound effects or music, connect ElevenLabs' off
 
 Generated files land in `audio/vo/`, `audio/sfx/` and `audio/music/`. **Uploading audio to Roblox is a human step:** Creator Hub → Creations → Development Items → Audio, or Studio's Asset Manager → Bulk Import. Uploads go through moderation and there are monthly upload limits. After uploading, put the asset IDs in `docs/ASSETS.md` / `docs/SOUND.md`.
 
-Check that a voice supports the language and names you need (Vietnamese names like Bà Thu, Hạnh, Tí) before generating a whole script; the subagent makes 2–3 samples first.
+Check that a voice supports the language and names you need (Vietnamese names like Bà Thu, Hạnh, Tí) before generating a whole script; make 2–3 samples first.
 
 ## 7. Using the subagents
 
 The specialists in `.claude/agents/` load automatically when Claude Code starts in this folder. Check them with `/agents`. Claude delegates on its own based on each agent's description, or you can ask directly:
 
-> Use the world-builder subagent to build the shrine area from PROTOTYPE_BRIEF §8.
-> Use the qa-tester subagent to check milestone M2.
+> Use the world-builder subagent to move the lanterns in the village layout.
+> Use the studio-tester subagent to run the [playtest] checks in docs/specs/scene-village.md.
 
 Only one agent should use Roblox Studio at a time (see `CLAUDE.md`).

@@ -156,23 +156,25 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
   bring a taken friend home with their name, and the ending's name. Extras: hold one for light, ghost lantern on
   camera, the lake as a clock.
 
-### I-02 · Art pass: Creator Store models in the shared place
-- **Needs:** Studio (`world-builder` subagent).
-- **Where:** the shared place, `Workspace.World.<Area>`; `docs/ASSETS.md`; `tools/art/`.
-- **What:** dress the graybox with free models (houses, shrine, dock, reeds, lanterns, puppet stage) keeping every
-  name, tag and position the code uses. Sanitize every model (`docs/GAME.md`). Before the first export:
-  `rokit trust lune-org/lune`.
-- **Done when:** `tools/art/export` writes `art/*.rbxm`, `python tools/factory/test.py --art` → PASS (it has never
-  been run), screenshots of each area in `PROGRESS.md`, every asset logged in `ASSETS.md`.
+### I-02 · Art pass: Creator Store models as prefabs
+- **Needs:** Studio (Catlyn or the main session builds, skill `new-prefab`; `world-builder` places, skill `edit-scene`).
+- **Where:** `Workspace.PrefabWorkshop` → `assets/prefabs/`; `src/server/Scenes/village/layout.luau`; `docs/ASSETS.md`.
+- **What:** turn the graybox's houses, shrine, dock, reeds, lanterns and puppet stage into prefabs placed by the
+  village layout (decision 2026-11-17), keeping every name, tag and position the code uses. Sanitize every model
+  (`docs/GAME.md`).
+- **Done when:** the pieces are prefabs placed by `layout.luau`, `tools/check.sh` OK, the factory tests PASS,
+  screenshots of each area in `PROGRESS.md`, every asset logged in `ASSETS.md`.
 
 ### I-03 · QA pass on M7 and M8
-- **Needs:** Studio (`qa-tester` subagent; nothing else using Studio at the time).
+- **Needs:** Studio (`studio-tester` for playtest checks, `story-keeper` for content; nothing else using Studio at the
+  time).
 - **What:** acceptance checks, console errors, unsafe-script scan, content rules and story accuracy on the build as it
   stands (`docs/HANDOFF.md` §5 on the issue-6 branch).
-- **Done when:** `qa-tester` reports PASS, or every finding is fixed or added here as an issue.
+- **Done when:** `studio-tester` and `story-keeper` report PASS, or every finding is fixed or added here as an issue.
 
 ### I-04 · Get the build ready for the first human playtest (2–4 players)
-- **Needs:** no Studio for the checklist; human for publishing (private test place, `CLAUDE.md` §9).
+- **Needs:** no Studio for the checklist; human for publishing (private test place; `CLAUDE.md` Rules: publishing is
+  Catlyn's).
 - **What:** write `docs/PLAYTEST.md`: how to join, what to try, what to watch for (Night 1 pacing ~4 min, the stuck
   hint, Sen's warnings, Im lặng with 2+ players, the finale), and a short feedback form. Point to the
   `[Analytics] summary` line for numbers.
