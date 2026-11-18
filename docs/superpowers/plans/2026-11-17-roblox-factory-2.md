@@ -48,6 +48,8 @@ Each line has a test in the owning task (Tasks 2, 3, 4, 5).
 
 ### Task 0: Baseline measurement (Catlyn does this by hand — not an agent task)
 
+> Skipped (2026-11-17): Task 9's first run creates `docs/BASELINE.md` and serves as the baseline; later runs compare against it.
+
 - [ ] **Step 1:** On the current mada setup, run two real tasks: one small Luau feature and one "change this part of the world" request.
 - [ ] **Step 2:** In each session, run `/context` halfway and `/cost` at the end. Write both numbers plus one line on what went wrong (rework, forgotten feedback, broken thing) into `docs/BASELINE.md`.
 - [ ] **Step 3:** Commit: `git add docs/BASELINE.md && git commit -m "docs: token baseline before factory 2.0"`
@@ -190,7 +192,7 @@ Prefabs live at `ServerStorage.Prefabs`; scenes are placed under `workspace.Scen
 - [ ] **Step 2:** Implement `SceneLoader.load`: destroy and recreate `workspace.Scenes[sceneName]` (so loading twice never duplicates); run both validators, and if mood is invalid, return its errors without touching `Lighting`; for each entry, skip unknown prefabs with a warning, else `Clone()`, `PivotTo(CFrame.new(x, y, z) * CFrame.Angles(0, math.rad(rot or 0), 0))`, add `tags` via CollectionService, parent to the scene folder; apply mood to `Lighting` (+ an `Atmosphere` child when `atmosphereDensity` is set). Under ~120 lines; no other logic belongs here.
 - [ ] **Step 3:** Bootstrap calls `SceneLoader.load` for each name in `active.luau` (start with `{"village"}`) and `warn`s each warning.
 - [ ] **Step 4:** `tools/check.sh` → expected `OK`.
-- [ ] **Step 5: Studio check (one MCP call, or Catlyn by hand).** With `rojo serve` running, put one throwaway Model named `Probe` in `assets/prefabs` (via Task 5 or Studio's Save to File), set village layout to two entries (`Probe`, `Missing`), then in edit mode run `require(game.ServerScriptService.SceneLoader).load("village")` **twice**. Expected: returns `1` and one warning mentioning `Missing`; `workspace.Scenes.village` contains exactly one `Probe`. Remove the probe entries afterwards.
+- [ ] **Step 5: Studio check (one MCP call, or Catlyn by hand).** With `rojo serve` running, put one throwaway Model named `Probe` in `assets/prefabs` (via Task 5 or Studio's Save to File), set village layout to two entries (`Probe`, `Missing`), then in edit mode run `require(game.ServerScriptService.Server.SceneLoader).load("village")` **twice**. Expected: returns `1` and one warning mentioning `Missing`; `workspace.Scenes.village` contains exactly one `Probe`. Remove the probe entries afterwards.
 - [ ] **Step 6:** Commit: `git commit -m "feat: SceneLoader places prefabs from layout data"`.
 
 ---
