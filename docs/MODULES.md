@@ -26,7 +26,7 @@ Index of `src/`. Read this before searching code. Services/controllers all expos
 | `Services/GoalService` | current objective text | `Current` |
 | `Services/BodyService` | player body/first-person state | — |
 | `Services/BoundaryService` | keeps players inside the village | `Return` |
-| `Services/WorldService` | lighting and world setup | — |
+| `Services/WorldService` | builds graybox world via World/Build if not already built; sets walk speed; removes default Baseplate | — |
 | `Services/ArtService` | builds art templates | — |
 | `Services/DebugService` | Studio-only debug commands (`/lv`, `ServerScriptService.Debug`) | — |
 

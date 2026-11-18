@@ -18,6 +18,5 @@ Playtest build. Everything is merged on `main`; the factory-2 branch (`factory-2
 
 ## Known issues
 - `village/layout.luau` is empty: no prefabs placed until the workshop is extracted into `assets/prefabs/`.
-- `SceneLoader` and `WorldService` may both set Lighting; the later one wins.
 - `luau-lsp` doesn't typecheck Lune-host files (`tests/run.luau`, `tools/*.luau`, specs using `@lune/*`).
 - `AGENTS.md` is gone; older docs and `docs/PROGRESS.md` entries may still mention its section numbers.

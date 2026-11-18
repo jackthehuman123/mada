@@ -9,6 +9,7 @@
 - Services and controllers return a table with `Init()` then `Start()`; the boot scripts load every module in `Services/` / `Controllers/`.
 - Naming: modules and types `PascalCase`, functions and variables `camelCase`, constants in `Config`. Prefab names match `^[A-Za-z][A-Za-z0-9_]*$` and are unique.
 - No magic numbers (use `Config`); no hard-coded player text (use `Content/`). Keep Vietnamese diacritics.
+- Base Lighting is owned only by `Scenes/<name>/mood.luau` via `SceneLoader`. Runtime effects may change it temporarily and must restore it.
 - Scene `layout.luau` / `mood.luau` hold only numbers, strings, booleans and tables, so Lune can load them.
 - Shared libraries (Signal, Janitor, data persistence) come from Wally, added only when a feature needs them; never hand-rolled. Never keep scripts that come inside free models.
 - Disconnect or clean up every connection a module makes after Init.
