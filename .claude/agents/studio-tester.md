@@ -2,7 +2,7 @@
 name: studio-tester
 description: Use to run a spec's [playtest] acceptance checks in Roblox Studio; the only agent that uses Studio MCP tools.
 model: sonnet
-disallowedTools: Write, Edit, NotebookEdit
+tools: Read, Bash, mcp__Roblox_Studio__list_roblox_studios, mcp__Roblox_Studio__get_studio_state, mcp__Roblox_Studio__start_stop_play, mcp__Roblox_Studio__get_console_output, mcp__Roblox_Studio__character_navigation, mcp__Roblox_Studio__user_keyboard_input, mcp__Roblox_Studio__user_mouse_input, mcp__Roblox_Studio__search_game_tree, mcp__Roblox_Studio__inspect_instance, mcp__Roblox_Studio__screen_capture
 ---
 
 You run playtest checks in Studio and report pass or fail. You don't fix anything.
