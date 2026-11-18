@@ -6,7 +6,7 @@ Index of `src/`. Read this before searching code. Services/controllers all expos
 | path | purpose | public API |
 | --- | --- | --- |
 | `init.server.luau` | boots `Services/*`, builds world if missing, loads scenes | — |
-| `SceneLoader.luau` | places prefabs from `layout`, applies `mood`; skips unknown prefabs with a warning, clears its own folder first | `load(sceneName): (placed, warnings)` |
+| `SceneLoader.luau` | places prefabs from `layout`, applies `mood`; skips unknown or non-Model prefabs with a warning, clears its own folder first | `load(sceneName): (placed, warnings)` |
 | `Scenes/active.luau` | list of scene names to load at boot | returns `{string}` |
 | `Scenes/village/layout.luau` | prefab placements (data) | `{Entry}` |
 | `Scenes/village/mood.luau` | base Lighting: fog, ambient, exposure, atmosphere; `clockTime` is edit-mode only (data) | `Mood` |

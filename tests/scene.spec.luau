@@ -1,3 +1,4 @@
+--!strict
 local Layout = require("../src/shared/Scene/Layout")
 local Mood = require("../src/shared/Scene/Mood")
 local names = { StiltHouse_A = true, Shrine = true }

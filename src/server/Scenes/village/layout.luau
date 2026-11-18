@@ -1,3 +1,4 @@
+--!strict
 -- Prefab placements for the village. Each entry:
 --   prefab = a name from `lune run tools/list-prefabs`
 --   at     = { x, y, z } studs, the prefab's pivot

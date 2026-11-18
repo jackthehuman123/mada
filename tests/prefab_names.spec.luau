@@ -22,4 +22,13 @@ return function(test: (name: string, fn: () -> ()) -> ())
 		assert(contains(errs[1], "2Lantern"), errs[1])
 		assert(contains(errs[2], "Old House"), errs[2])
 	end)
+
+	test("names differing only by case are duplicates", function()
+		local errs = prefabNames.check({ "Lantern", "lantern" })
+		assert(#errs == 1, `expected 1 error, got {#errs}`)
+		assert(
+			contains(errs[1], "duplicate") and contains(errs[1], "lantern") and contains(errs[1], "Lantern"),
+			errs[1]
+		)
+	end)
 end

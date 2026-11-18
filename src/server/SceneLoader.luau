@@ -124,6 +124,13 @@ function SceneLoader.load(sceneName: string): (number, { string })
 			table.insert(warnings, `scene '{sceneName}' entry {i}: unknown prefab '{e.prefab}', skipped`)
 			continue
 		end
+		if not prefab:IsA("Model") then
+			table.insert(
+				warnings,
+				`scene '{sceneName}' entry {i}: prefab '{e.prefab}' is a {prefab.ClassName}, not a Model, skipped`
+			)
+			continue
+		end
 		local clone = prefab:Clone() :: Model
 		clone:PivotTo(CFrame.new(e.at[1], e.at[2], e.at[3]) * CFrame.Angles(0, math.rad(e.rot or 0), 0))
 		local tags: { string } = e.tags or {}
