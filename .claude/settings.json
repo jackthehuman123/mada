@@ -1,0 +1,45 @@
+{
+	"permissions": {
+		"deny": [
+			"Read(./Packages/**)",
+			"Read(**/*.rbxl)",
+			"Read(**/*.rbxlx)",
+			"Read(**/*.rbxm)",
+			"Read(./sourcemap.json)",
+			"Read(./work/**)",
+			"Grep(./Packages/**)",
+			"Grep(**/*.rbxl)",
+			"Grep(**/*.rbxlx)",
+			"Grep(**/*.rbxm)",
+			"Grep(./sourcemap.json)",
+			"Grep(./work/**)",
+			"Glob(./Packages/**)",
+			"Glob(**/*.rbxl)",
+			"Glob(**/*.rbxlx)",
+			"Glob(**/*.rbxm)",
+			"Glob(./sourcemap.json)",
+			"Glob(./work/**)"
+		],
+		"allow": [
+			"Bash(tools/check.sh)",
+			"Bash(rojo *)",
+			"Bash(lune *)",
+			"Bash(git status)",
+			"Bash(git diff*)",
+			"Bash(git log*)"
+		]
+	},
+	"hooks": {
+		"PostToolUse": [
+			{
+				"matcher": "Edit|Write",
+				"hooks": [
+					{
+						"type": "command",
+						"command": "\"$CLAUDE_PROJECT_DIR\"/tools/hooks/post-edit.sh"
+					}
+				]
+			}
+		]
+	}
+}
