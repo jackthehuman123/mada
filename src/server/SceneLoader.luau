@@ -89,7 +89,8 @@ function SceneLoader.load(sceneName: string): (number, { string })
 		end
 		local clone = prefab:Clone() :: Model
 		clone:PivotTo(CFrame.new(e.at[1], e.at[2], e.at[3]) * CFrame.Angles(0, math.rad(e.rot or 0), 0))
-		for _, tag in e.tags or {} do
+		local tags: { string } = e.tags or {}
+		for _, tag in tags do
 			CollectionService:AddTag(clone, tag)
 		end
 		clone.Parent = folder

@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Quiet check: prints exactly "OK" on success; on failure only `file:line: message` lines (max 30), exit 1.
+# Quiet check: prints "OK" on success; on failure only `file:line: message` lines (max 30), exit 1.
+# Type errors ratchet against tools/type-baseline.txt: a file may not go above its count (files not listed: 0).
+# A count that dropped adds one `tools/type-baseline.txt:N: ... lower it` line before OK (not a failure).
 # Covers all of src/, the Lune tools (tools/*.luau, tools/lib/) and tests (Lune specs + tests/hook.test.sh).
 # Not covered: tests/NN_*.luau (Studio factory tests, run by tools/factory/test.py; StyLua can't parse them)
 # and tools/types/ (downloaded Roblox definitions).
@@ -20,9 +22,13 @@ if [ -n "$missing" ]; then
 	exit 1
 fi
 
+BASELINE=tools/type-baseline.txt
+
 out=$(mktemp)
 log=$(mktemp)
-trap 'rm -f "$out" "$log"' EXIT
+lsp=$(mktemp)   # luau-lsp findings, normalized to `path:line: message`
+notes=$(mktemp) # non-failing hints, printed before OK
+trap 'rm -f "$out" "$log" "$lsp" "$notes"' EXIT
 
 # Adds `<where>:1: <name> failed (exit N): <first output line>` when a step exits non-zero
 # but produced no `file:line:` line of its own, so a crash or bad flag can't pass silently.
@@ -97,11 +103,47 @@ if [ ! -s "$TYPES" ]; then
 	fi
 fi
 if [ "$build_ok" -eq 1 ] && [ -s "$TYPES" ] && [ ${#typed_files[@]} -gt 0 ]; then
-	n=$(lines)
 	luau-lsp analyze --definitions=@roblox="$TYPES" --sourcemap=sourcemap.json "${typed_files[@]}" >"$log" 2>&1
 	rc=$?
-	grep -E '^[^ ]+\([0-9]+,[0-9]+\): ' "$log" | sed -E 's/^([^(]+)\(([0-9]+),[0-9]+\): /\1:\2: /' >>"$out"
-	fail_if_silent luau-lsp "$rc" "$n" default.project.json
+	# Lines look like `path(l,c): msg` or, with a sourcemap, `/abs/path [game/...](l,c): msg`.
+	# Multi-line type errors keep only their first line.
+	grep -E '^[^ ]+( \[[^]]*\])?\([0-9]+,[0-9]+\): ' "$log" |
+		sed -E -e 's/^([^ (]+)( \[[^]]*\])?\(([0-9]+),[0-9]+\): /\1:\3: /' -e "s|^$PWD/||" >"$lsp"
+	# luau-lsp exits non-zero for any type error, baselined or not: only a run with no findings is a crash.
+	if [ "$rc" -ne 0 ] && [ ! -s "$lsp" ]; then
+		echo "default.project.json:1: luau-lsp failed (exit $rc): $(grep -m1 -v '^[[:space:]]*$' "$log" | cut -c1-160)" >>"$out"
+	fi
+	# Lints (anything but TypeError) always fail; type errors are compared with the baseline.
+	grep -v ': TypeError: ' "$lsp" >>"$out"
+	grep ': TypeError: ' "$lsp" | awk -v base="$BASELINE" -v notes="$notes" '
+		BEGIN {
+			while ((getline line < base) > 0) {
+				n++
+				if (line ~ /^[[:space:]]*(#|$)/) continue
+				split(line, p, " ")
+				allowed[p[1]] = p[2] + 0
+				at[p[1]] = n
+			}
+		}
+		{
+			f = substr($0, 1, index($0, ":") - 1)
+			count[f]++
+			shown[f] = shown[f] $0 "\n"
+		}
+		END {
+			for (f in count) {
+				a = (f in allowed) ? allowed[f] : 0
+				if (count[f] > a) {
+					printf "%s:1: %d type errors, baseline allows %d (fix the new ones)\n", f, count[f], a
+					printf "%s", shown[f]
+				}
+			}
+			for (f in allowed) {
+				c = (f in count) ? count[f] : 0
+				if (c < allowed[f])
+					printf "%s:%d: %s has %d type errors now (baseline %d); lower it\n", base, at[f], f, c, allowed[f] > notes
+			}
+		}' >>"$out"
 fi
 
 # --- tests -----------------------------------------------------------------------------------
@@ -121,4 +163,5 @@ if [ -s "$out" ]; then
 	head -30 "$out"
 	exit 1
 fi
+sort "$notes" | head -29
 echo OK

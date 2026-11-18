@@ -14,3 +14,4 @@
 - Shared libraries (Signal, Janitor, data persistence) come from Wally, added only when a feature needs them; never hand-rolled. Never keep scripts that come inside free models.
 - Disconnect or clean up every connection a module makes after Init.
 - Format with StyLua, lint with selene; both run inside `tools/check.sh` and the post-edit hook.
+- When you edit a file in `tools/type-baseline.txt`, fix its type errors if cheap and lower its count.

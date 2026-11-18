@@ -196,6 +196,8 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 ### I-18 · Replace deprecated LoadCharacter/IsInGroup; needs a playtest.
 - **Where:** `GameStateService`, `MenuService` (`LoadCharacter`), `PlaytestGate` (`IsInGroup`); each file has `--!nolint DeprecatedApi` to remove afterwards.
 
+### I-19 · 94 legacy type errors (see `tools/type-baseline.txt`); some are real bugs, e.g. `UIController` `dialogueSkip`/`onDialogueSkip` keys not on `UI`. Fix in a playtested pass.
+
 ---
 
 ## Waiting on Catlyn

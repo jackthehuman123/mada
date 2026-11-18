@@ -1,0 +1,15 @@
+# luau-lsp type errors allowed per older file (2026-11-17). check.sh fails if a count rises or another file gets any.
+# When you edit one of these files, fix its type errors if cheap and lower its count (remove the line at 0).
+src/client/Controllers/CamcorderController.luau 1
+src/client/Controllers/SenController.luau 1
+src/client/Controllers/UIController.luau 20
+src/server/Services/ArtService.luau 1
+src/server/Services/BinService.luau 3
+src/server/Services/CamcorderService.luau 1
+src/server/Services/EndingService.luau 18
+src/server/Services/GameStateService.luau 10
+src/server/Services/MenuService.luau 1
+src/server/Services/MysteryService.luau 9
+src/server/Services/SenService.luau 4
+src/server/World/Build.luau 7
+src/shared/Art.luau 18

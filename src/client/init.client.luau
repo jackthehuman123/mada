@@ -21,8 +21,9 @@ end
 
 -- (each guarded: one controller that throws must not stop all the others, which meant a black screen or no menu)
 for _, entry in loaded do
-	if entry.module.Init then
-		local ok, err = pcall(entry.module.Init)
+	local init = entry.module.Init
+	if init then
+		local ok, err = pcall(init :: () -> any) -- (cast: pcall of a () -> () types as returning only `ok`)
 		if not ok then
 			warn(`[LangVong] {entry.name}.Init failed: {err}`)
 		end
