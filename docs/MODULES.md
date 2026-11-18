@@ -59,6 +59,7 @@ Index of `src/`. Read this before searching code. Services/controllers all expos
 | --- | --- |
 | `tools/check.sh` | StyLua, selene, luau-lsp, Lune specs, rojo build; prints `OK` or ≤30 `file:line: message` |
 | `tools/extract-prefabs.luau` | `lune run tools/extract-prefabs <place> [folder] [outDir]` → `assets/prefabs/*.rbxm` |
+| `tools/list-prefabs.luau` | `lune run tools/list-prefabs [dir]` → prefab names, one per line (agents use this, not Glob) |
 | `tools/lib/prefabNames.luau` | prefab-name rules shared by tools and tests |
 | `tools/hooks/post-edit.sh` | format-on-edit hook for `.luau` files |
 | `tools/factory/test.py` | builds the place from git, plays it in Studio, runs `tests/NN_*.luau` (`docs/FACTORY.md`) |
