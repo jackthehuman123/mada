@@ -18,3 +18,8 @@ build/
 tools/factory/reports/
 __pycache__/
 graphify-out/
+
+# Factory 2.0
+Packages/
+tools/types/
+work/
