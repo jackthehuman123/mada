@@ -1,5 +1,5 @@
 --!strict
--- Studio-only debug commands for testing (AGENTS.md §5). Does nothing in live servers.
+-- Studio-only debug commands for testing (docs/CONVENTIONS.md). Does nothing in live servers.
 -- Two ways in, same commands:
 --   chat:   /lv phase Open | /lv time 23.9 | /lv clue all | /lv goto SenHouse | /lv battery 20 | /lv reset
 --   agents: the BindableFunction ServerScriptService.Debug, e.g. Debug:Invoke("goto", "Shrine") from execute_luau

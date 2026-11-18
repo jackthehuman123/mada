@@ -41,7 +41,7 @@ the uploader) works the same for any source that gives a `.glb`.
 3. **Two previews, one download.** Make two previews (10 credits), compare them, download the better one. Never
    download "to see": a download is the scarce part.
 4. **One object per prompt**, ending with "single object, no ground, game asset"; say what to leave out ("no walls",
-   "no people"). Prompts follow `characters.md` and `story.md` only, and the content rules (`AGENTS.md` §8): Sen's
+   "no people"). Prompts follow `characters.md` and `story.md` only, and the content rules (`docs/GAME.md`): Sen's
    face hidden, nobody hurt, respectful altars.
 5. **Check before using up a download slot on a heavy model:** Meshy shows the polycount; Roblox takes up to ~20k
    triangles per MeshPart, and a prop used 40 times should stay well under 5k.
@@ -55,7 +55,7 @@ the uploader) works the same for any source that gives a `.glb`.
 | 2. Generate | Catlyn (Meshy web app, signed in) | Meshy 6 Lite, mesh only; two previews; paste the model's Meshy link into `meshyUrl`; status `generated` | meshy.ai |
 | 3. Download | Catlyn | download the better one as **.glb**, save as `art/meshy/in/<name>.glb` (the manifest name) | `art/meshy/in/` |
 | 4. Check | any session, no Studio | `lune run tools/meshy/check.luau art/meshy/in/<name>.glb`: triangles, size, textures vs Roblox limits; writes them to the manifest (`checked` / `too heavy`) | — |
-| 5. Upload | Catlyn's account (AGENTS.md §9) | `lune run tools/meshy/upload.luau <name>` with her Open Cloud key in the environment, **or** Studio's 3D Importer; asset id into the manifest (`uploaded`) | Roblox |
+| 5. Upload | Catlyn's account (CLAUDE.md, docs/GAME.md) | `lune run tools/meshy/upload.luau <name>` with her Open Cloud key in the environment, **or** Studio's 3D Importer; asset id into the manifest (`uploaded`) | Roblox |
 | 6. Place | `world-builder` in Studio | `insert_asset` the id, scale to `studs`, set material/colour, rename, keep every graybox name, tag and position the code uses, parent under `Workspace.World.<Area>`; status `placed`; row in `ASSETS.md` | the place |
 | 7. Test | Studio session | `python tools/factory/test.py --art` PASS, screenshot in `PROGRESS.md`, Catlyn approves | — |
 

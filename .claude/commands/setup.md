@@ -61,7 +61,7 @@ the human needs to do.
 2. Tell the human in a few lines: which branch, that it runs, what's done, what's open.
 3. Offer the next open task that fits this session (the first open issue in `docs/ISSUES.md` whose *Needs* fits),
    and the items under *Waiting on Catlyn*. If they say go, start it, following
-   `CLAUDE.md` and `AGENTS.md`.
+   `CLAUDE.md` and `docs/GAME.md`.
 
 Optional, only if they ask: `@claude` on GitHub (`docs/ASK_CLAUDE.md`) needs the repo owner to install the Claude
 GitHub app and add their own token as a repo secret.

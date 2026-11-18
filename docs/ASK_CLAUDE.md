@@ -8,7 +8,7 @@ pull request, and Claude replies there. It works on **this repo only** (`mada`):
 | It can | It can't |
 | --- | --- |
 | Answer questions about the game, the code and the design docs | Open Roblox Studio, play the game or run the tests (`tools/factory/test.py`) |
-| Draft or change clue texts, dialogue, ending cards (marked DRAFT, from `story.md` only, as `AGENTS.md` requires) | Merge anything, or push to `main` |
+| Draft or change clue texts, dialogue, ending cards (marked DRAFT, from `story.md` only, as `CLAUDE.md` requires) | Merge anything, or push to `main` |
 | Change code in `src/`, write tests in `tests/`, update `docs/` | Browse the web |
 | Review a pull request and comment on it | See other repos, your computer, or any keys |
 
@@ -74,7 +74,7 @@ take several. When it has changed files, the comment ends with a branch name and
 ## Tips
 
 - One request per comment works best. Say which file or section if you know it.
-- It follows `AGENTS.md`: no gore, no invented story, anything it writes for players is marked DRAFT and logged in
+- It follows `CLAUDE.md`: no gore, no invented story, anything it writes for players is marked DRAFT and logged in
   `docs/DECISIONS.md`.
 - It forgets between comments except for what's in the issue or pull request thread, so keep a topic in one thread.
 - Usage limits: each run is capped at 15 minutes (and 30 steps). It uses the plan or API key from setup step 2, plus

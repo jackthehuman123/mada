@@ -10,7 +10,7 @@ what's left.
    session has Studio (`list_roblox_studios` answers) or not (GitHub bot, or a computer without Studio).
 2. **Pick** the first issue under *Open* whose **Needs** fits: `Studio` issues only in a local session with Studio;
    `no Studio` issues anywhere. Skip anything under *Waiting on Catlyn* or *Parked*.
-3. **Build it** following `AGENTS.md` (tests, content rules, one coherent commit per step).
+3. **Build it** following `CLAUDE.md` (tests, content rules, one coherent commit per step).
 4. **Close it:** move it to *Done* with the date, the commit and how it was checked (the same line goes in
    `PROGRESS.md`). If it's only partly done, say what's left in the issue.
 5. **Found a new problem?** Add it under *Open* with the next number. Never reuse a number.
@@ -160,7 +160,7 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **Needs:** Studio (`world-builder` subagent).
 - **Where:** the shared place, `Workspace.World.<Area>`; `docs/ASSETS.md`; `tools/art/`.
 - **What:** dress the graybox with free models (houses, shrine, dock, reeds, lanterns, puppet stage) keeping every
-  name, tag and position the code uses. Sanitize every model (`AGENTS.md` §7). Before the first export:
+  name, tag and position the code uses. Sanitize every model (`docs/GAME.md`). Before the first export:
   `rokit trust lune-org/lune`.
 - **Done when:** `tools/art/export` writes `art/*.rbxm`, `python tools/factory/test.py --art` → PASS (it has never
   been run), screenshots of each area in `PROGRESS.md`, every asset logged in `ASSETS.md`.
@@ -172,7 +172,7 @@ Each issue: **Needs** (`Studio` / `no Studio` / `human`), **Where** (files), **D
 - **Done when:** `qa-tester` reports PASS, or every finding is fixed or added here as an issue.
 
 ### I-04 · Get the build ready for the first human playtest (2–4 players)
-- **Needs:** no Studio for the checklist; human for publishing (private test place, `AGENTS.md` §9).
+- **Needs:** no Studio for the checklist; human for publishing (private test place, `CLAUDE.md` §9).
 - **What:** write `docs/PLAYTEST.md`: how to join, what to try, what to watch for (Night 1 pacing ~4 min, the stuck
   hint, Sen's warnings, Im lặng with 2+ players, the finale), and a short feedback form. Point to the
   `[Analytics] summary` line for numbers.

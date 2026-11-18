@@ -43,7 +43,7 @@ check(gui.Viewfinder.Visible, "no VHS overlay")
 
 - The runner works next to Claude Code's own Roblox Studio MCP connection (checked 2026-11-02: three Studio MCP
   connections were open during passing runs). It opens a separate Studio window, so run it only when no other agent
-  is using Studio (AGENTS.md §10). `qa-tester` runs it first, then checks by hand what the tests don't cover.
+  is using Studio (CLAUDE.md). `qa-tester` runs it first, then checks by hand what the tests don't cover.
 - The tests run on the graybox from git by default. The art is tested both ways (Catlyn, 2026-11-02): by the same
   tests on an export of the art, and by a hand playthrough for looks and mood. See "Testing the art" below.
 

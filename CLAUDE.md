@@ -1,40 +1,32 @@
-@AGENTS.md
+# Làng Vọng — Claude Code router
 
-# Claude Code notes
+Playable prototype of a 1–4 player co-op story-horror Roblox game (Vietnamese *ma da* folklore). Luau, Rojo 7.7+, Lune tests.
+Game rules, story limits and tone: `docs/GAME.md`. Where the build stands: `docs/STATE.md`. Open work: `docs/ISSUES.md`.
 
-- `AGENTS.md` (imported above) is the full instruction set and applies to you. Everything below is Claude-specific.
-- The Roblox Studio MCP server is usually registered as `Roblox_Studio`, so its tools appear as `mcp__Roblox_Studio__<tool>` (for example `mcp__Roblox_Studio__execute_luau`). If none appear, run `/mcp` to check status, then follow `docs/MCP_SETUP.md`.
-- When the human says "continue" or "begin", start with the start-of-session routine in `AGENTS.md`, then work on the first open issue in `docs/ISSUES.md` that fits this session (Studio or not).
-- Use the task list for the milestone's tasks so the human can see progress.
-- For a whole milestone, plan first (list files to create, tags, remotes, test steps), then build. Keep each commit to one coherent step.
-- Code goes through normal file edits in `src/`. Use MCP for the world, assets, playtests, console and screenshots, not for editing Rojo-managed scripts.
-- Read big design docs with targeted reads when you only need one section; `story.md` is long.
+## Repo map
+- `src/server/` → `ServerScriptService.Server`: `Services/` (one module per system), `SceneLoader`, `Scenes/<name>/{layout,mood}.luau`, `World/Build.luau` (graybox)
+- `src/client/` → `Controllers/` (UI, camcorder, sound); `src/shared/` → `ReplicatedStorage.Shared`: `Config`, `Tags`, `Remotes`, `Content/` (all player text), `Scene/` (validators)
+- `assets/prefabs/*.rbxm` — built pieces (made rarely); `tools/` — `check.sh`, `extract-prefabs.luau`, `factory/test.py`, `worldgen/`
+- `tests/` — Lune specs (`*.spec.luau`) and Studio factory tests (`NN_*.luau`); `docs/specs/` — one spec per feature
+- `docs/MODULES.md` is the code index; `docs/CONVENTIONS.md` the code rules; `docs/REVIEW_CHECKLIST.md` the reviewer's list
 
-## Running as the GitHub bot
+## Workflow
+spec (`docs/specs/`) → build → `tools/check.sh` → reviewer only if risky → Catlyn playtests in Studio → write her words in the spec's Feedback log → update `docs/STATE.md`.
+Risky = remotes, DataStore, anything trusting the client, or a diff over ~150 lines.
 
-When you run on GitHub (someone wrote `@claude` in an issue or a pull request; set up in `.github/workflows/claude.yml`,
-explained in `docs/ASK_CLAUDE.md`):
-- There is no Roblox Studio and no MCP. Skip the start-of-session Studio and Rojo checks in `AGENTS.md` §2; read
-  `docs/ISSUES.md`, `docs/PROGRESS.md` and the files the request is about instead.
-- Answer questions in the thread. Make changes only when asked; they go to your own `claude/...` branch. Never merge,
-  never push to `main`, never edit `.github/workflows/`.
-- `AGENTS.md` still applies in full: no invented story (facts only from `docs/design/story.md`), player-facing text in
-  `src/shared/Content/` marked DRAFT and logged in `docs/DECISIONS.md`, no gore, update `docs/PROGRESS.md` and `docs/ISSUES.md`.
-- You can't playtest or run `tools/factory/test.py`. End every change with what a person must check in Studio
-  (and which test, if one exists).
-- Keep answers short; one request per run. Work on this repo only.
+## Model routing
+explorer = haiku; builder, world-builder, studio-tester = sonnet; reviewer = opus.
 
-## Help build the game
-
-Làng Vọng gets built by every Claude session that works in this repo, so treat each session as a chance to move the
-build forward, not only to answer:
-- **Where the build is:** `main` (every branch merged 2026-11-02). `docs/PROGRESS.md` is the history: M0–M6 done,
-  M7/M8 partly. Base build work on a branch off `main`.
-- **What's open:** `docs/ISSUES.md`. Pick the first open issue whose *Needs* fits this session; skip *Waiting on
-  Catlyn* and *Parked*. Close issues there when done and add any new problem you find.
-- **When a request is done and the session has room left,** offer the next open task that fits, in one line. When the
-  human has asked for build work, take the next task without waiting to be asked again.
-- **On GitHub (the bot):** end each answer with one next build step small enough for a single run, and say
-  "reply `@claude go` to do it". Work that needs Studio (art, playtests, `tools/factory/test.py`) is for a local session.
-- **In a local session with Studio:** that's where the art pass, the playtests and the tests happen; prefer those tasks there.
-- Stay inside the weekly budget (see `docs/ASK_CLAUDE.md`): if the bot has posted a budget heads-up this week, keep to small steps.
+## Rules
+- Read `docs/MODULES.md` before searching code.
+- Never search the notes vault (`~/Documents/vaults/roblox-brain`); anything needed is excerpted in `docs/GAME.md` or a spec.
+- Never read whole Studio trees through MCP; query specific paths or tags.
+- Scenes change through `layout.luau` / `mood.luau`, never by hand-placing parts. Code goes through file edits in `src/`, never MCP `multi_edit` on Rojo-managed scripts.
+- Run `tools/check.sh` before saying done; it prints `OK` or at most 30 `file:line: message` lines.
+- Before changing anything that has a spec, read every "Decided" line in its Feedback log; never revert one without asking.
+- Player-facing text lives in `src/shared/Content/`; numbers in `src/shared/Config.luau`; world objects are found by tag (`src/shared/Tags.luau`).
+- Don't invent story. Facts come from `docs/design/story.md`; new wording is marked `-- DRAFT: needs Catlyn review` and logged in `docs/DECISIONS.md`.
+- Never read `Packages/**`, `*.rbxl`, `*.rbxlx`, `*.rbxm`, `sourcemap.json`, `work/**`.
+- Run shell commands one at a time; never chain with `&&` or `;`.
+- One Studio user at a time (one place, one playtest). Stop and ask for: publishing, roblox.com settings, Robux, uploads, her account, or any change to the story or an ending.
+- End of a task: update `docs/STATE.md` and `docs/ISSUES.md`, log choices in `docs/DECISIONS.md`, commit, remind Catlyn to save the place in Studio. Don't push unless asked.

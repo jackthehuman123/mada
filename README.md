@@ -2,14 +2,14 @@
 
 A co-op story-horror game for Roblox, built on the Vietnamese *ma da* folklore and ghost month (*Rằm tháng bảy*). Four ghost-hunting friends walk into an abandoned lake village where the lanterns light themselves, lose their cameraman to the water, and have to work out who the girl in the lake is, and who is still waiting for her.
 
-This repo holds the design and the prototype code. It's set up so a coding agent (Claude Code or any agent that reads `AGENTS.md`) can build the prototype in Roblox Studio by following the files.
+This repo holds the design and the prototype code. It's set up so a coding agent (Claude Code) can build the prototype in Roblox Studio by following the files.
 
 ## Repo map
 
 | Path | What it is |
 | --- | --- |
-| `AGENTS.md` | Instructions for any coding agent. Start here. |
-| `CLAUDE.md` | Claude Code entry point (imports `AGENTS.md`). |
+| `docs/GAME.md` | Game rules and facts for agents. |
+| `CLAUDE.md` | Claude Code entry point (router). |
 | `docs/ASK_CLAUDE.md` | Asking Claude on GitHub: write `@claude` in an issue or pull request (setup + how to). |
 | `.claude/agents/` | Specialist subagents: world-builder, qa-tester, story-keeper, voice-over, sound-designer. |
 | `docs/PROTOTYPE_BRIEF.md` | The build spec: scope, rules, numbers, map, milestones, defaults. |

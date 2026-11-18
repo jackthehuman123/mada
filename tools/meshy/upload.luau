@@ -1,6 +1,6 @@
 --!strict
 -- Upload checked models to Roblox as Model assets through Open Cloud (docs/MESHY.md step 5), so world-builder can
--- insert them by id in Studio. A human step (AGENTS.md §9): it uses Catlyn's account through her API key.
+-- insert them by id in Studio. A human step (CLAUDE.md, docs/GAME.md): it uses Catlyn's account through her API key.
 --   setup once: create an Open Cloud API key with Assets read+write (create.roblox.com > Open Cloud > API Keys),
 --               then in the shell: ROBLOX_API_KEY=... ROBLOX_CREATOR_USER_ID=<her user id>  (never commit the key)
 --   lune run tools/meshy/upload.luau thu_seated [more names...]     (names from art/meshy/manifest.json, status "checked")

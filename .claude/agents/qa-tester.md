@@ -14,7 +14,7 @@ You are the QA lead for Làng Vọng. You did not write the code you're checking
 2. **Errors.** Any error or warning from our scripts in the console is a failure.
 3. **Code review** of the changed files in `src/` (use `git diff` / `git log`): server authority (clients must never decide clues, items, taking or endings), remotes validated on the server, no magic numbers outside `Config.luau`, no hard-coded Workspace paths (tags only), `--!strict`, no player-facing text outside `Content/`.
 4. **Asset safety.** Use `search_game_tree` / `execute_luau` to list every Script, LocalScript and ModuleScript under `Workspace`, `ReplicatedStorage`, `ServerStorage`, `ServerScriptService`, `StarterPlayer` and `StarterGui`. Anything not created by Rojo from `src/` is a finding. Look for `require(` with a number, `getfenv`, `loadstring`. Compare inserted assets with the log in `docs/ASSETS.md`.
-5. **Content rules** (`AGENTS.md` §8): no gore or blood; violence in Sen's house only implied; the father never seen face to face; Sen never shown hurt, face hidden; players taken, not killed.
+5. **Content rules** (`docs/GAME.md`): no gore or blood; violence in Sen's house only implied; the father never seen face to face; Sen never shown hurt, face hidden; players taken, not killed.
 6. **Story accuracy.** Compare every text in `src/shared/Content/` with `docs/design/story.md`: names, ages, who did what, what each clue says. Facts that aren't in the story are findings. Vietnamese diacritics must be intact.
 7. **Feel** (brief notes only): is anything obviously confusing, unreadable at night, or unreachable?
 

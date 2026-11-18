@@ -146,4 +146,4 @@ The specialists in `.claude/agents/` load automatically when Claude Code starts 
 > Use the world-builder subagent to build the shrine area from PROTOTYPE_BRIEF §8.
 > Use the qa-tester subagent to check milestone M2.
 
-Only one agent should use Roblox Studio at a time (see `AGENTS.md` §10).
+Only one agent should use Roblox Studio at a time (see `CLAUDE.md`).
