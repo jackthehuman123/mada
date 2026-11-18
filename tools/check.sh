@@ -1,51 +1,121 @@
 #!/usr/bin/env bash
 # Quiet check: prints exactly "OK" on success; on failure only `file:line: message` lines (max 30), exit 1.
-# Scope: factory-2.0 files only. Legacy src/ and the Studio factory tests (tests/NN_*.luau) are excluded
-# until they are brought up to standard (see ledger ruling, Task 1).
+# Covers all of src/, the Lune tools (tools/*.luau, tools/lib/) and tests (Lune specs + tests/hook.test.sh).
+# Not covered: tests/NN_*.luau (Studio factory tests, run by tools/factory/test.py; StyLua can't parse them)
+# and tools/types/ (downloaded Roblox definitions).
 set -u
 export PATH="$HOME/.rokit/bin:$PATH"
 cd "$(dirname "$0")/.."
 
-out=$(mktemp)
-trap 'rm -f "$out"' EXIT
+TYPES_URL="https://raw.githubusercontent.com/JohnnyMorganz/luau-lsp/main/scripts/globalTypes.d.luau"
+TYPES=tools/types/globalTypes.d.luau
 
-# Files owned by factory 2.0 (lune tools/tests, scene data/loader, specs).
-lune_files=()
-while IFS= read -r f; do lune_files+=("$f"); done < <(
+# Missing tools fail loudly, in one line, before anything else runs.
+missing=""
+for tool in stylua selene lune rojo luau-lsp; do
+	command -v "$tool" >/dev/null 2>&1 || missing="$missing $tool"
+done
+if [ -n "$missing" ]; then
+	echo "rokit.toml:1: missing tools:$missing (run rokit install)"
+	exit 1
+fi
+
+out=$(mktemp)
+log=$(mktemp)
+trap 'rm -f "$out" "$log"' EXIT
+
+# Adds `<where>:1: <name> failed (exit N): <first output line>` when a step exits non-zero
+# but produced no `file:line:` line of its own, so a crash or bad flag can't pass silently.
+# $1 = step name, $2 = exit code, $3 = line count of $out before the step, $4 = file to blame.
+fail_if_silent() {
+	if [ "$2" -ne 0 ] && [ "$(wc -l <"$out")" -eq "$3" ]; then
+		echo "$4:1: $1 failed (exit $2): $(grep -m1 -v '^[[:space:]]*$' "$log" | cut -c1-160)" >>"$out"
+	fi
+}
+lines() { wc -l <"$out"; }
+
+# --- file sets -------------------------------------------------------------------------------
+fmt_files=()  # StyLua: every Luau file we own
+lint_files=() # selene: src/ plus the Lune tools and specs
+while IFS= read -r f; do fmt_files+=("$f"); done < <(
+	find src tools tests -type f -name '*.luau' ! -path 'tools/types/*' ! -name '[0-9][0-9]_*.luau' | sort
+)
+while IFS= read -r f; do lint_files+=("$f"); done < <(
 	{
+		find src -type f -name '*.luau'
 		ls tests/run.luau tools/*.luau tools/lib/*.luau 2>/dev/null
-		find tests -type f -name '*.spec.luau' 2>/dev/null
-		ls src/server/SceneLoader.luau 2>/dev/null
-		find src/shared/Scene src/server/Scenes -type f -name '*.luau' 2>/dev/null
+		find tests -type f -name '*.spec.luau'
 	} | sort -u
 )
-# luau-lsp cannot resolve @lune/* requires, so it only checks files that don't host Lune APIs.
+# luau-lsp can't resolve @lune/* requires, so it skips files that use Lune APIs.
 typed_files=()
-for f in "${lune_files[@]}"; do
-	case "$f" in tests/run.luau | tools/*.luau | tools/lib/*.luau) ;; *) grep -q '@lune/' "$f" || typed_files+=("$f") ;; esac
+for f in "${lint_files[@]}"; do
+	case "$f" in tests/run.luau | tools/*) ;; *) grep -q '@lune/' "$f" || typed_files+=("$f") ;; esac
 done
 
-if [ ${#lune_files[@]} -gt 0 ]; then
-	stylua --check --output-format summary "${lune_files[@]}" 2>&1 |
-		grep -E '^[^ !✓✕].*\.luau$' | sed 's/$/:1: not formatted (run stylua)/' >>"$out"
-	selene --display-style quiet "${lune_files[@]}" 2>&1 |
-		grep -E '^[^ ]+:[0-9]+:[0-9]+:' | sed -E 's/^([^:]+):([0-9]+):[0-9]+: /\1:\2: /' >>"$out"
+# --- format ----------------------------------------------------------------------------------
+n=$(lines)
+stylua --check --output-format summary "${fmt_files[@]}" >"$log" 2>&1
+rc=$?
+grep -E '^[^ !✓✕].*\.luau$' "$log" | sed 's/$/:1: not formatted (run stylua)/' >>"$out"
+sed -nE 's/^error: could not format file ([^:]+): (.*)$/\1:1: \2/p' "$log" >>"$out"
+fail_if_silent stylua "$rc" "$n" stylua.toml
+
+# --- lint ------------------------------------------------------------------------------------
+n=$(lines)
+selene --display-style quiet "${lint_files[@]}" >"$log" 2>&1
+rc=$?
+grep -E '^[^ ]+:[0-9]+:[0-9]+:' "$log" | sed -E 's/^([^:]+):([0-9]+):[0-9]+: /\1:\2: /' >>"$out"
+fail_if_silent selene "$rc" "$n" selene.toml
+
+# --- rojo build (a prefab Rojo can't read must fail here, not crash `rojo serve`) -------------
+build_ok=1
+rbxl="$(dirname "$out")/check.rbxl"
+n=$(lines)
+rojo build default.project.json -o "$rbxl" >"$log" 2>&1
+rc=$?
+rm -f "$rbxl"
+if [ "$rc" -ne 0 ]; then
+	build_ok=0
+	bad=$(grep -oE '[A-Za-z0-9_./-]+\.rbxm' "$log" | head -1 | sed "s|^$PWD/||")
+	echo "${bad:-default.project.json}:1: rojo build failed${bad:+ (unreadable prefab)}: $(grep -m1 -v '^[[:space:]]*$' "$log" | cut -c1-160)" >>"$out"
 fi
 
-# A prefab Rojo can't read must fail the check instead of crashing `rojo serve`.
-rojo_build=$(rojo build default.project.json -o "$(dirname "$out")/check.rbxl" 2>&1) || {
-	bad=$(printf '%s\n' "$rojo_build" | grep -oE '[A-Za-z0-9_./-]+\.rbxm' | head -1 | sed "s|^$PWD/||")
-	build_failed=1
-	echo "${bad:-default.project.json}:1: rojo build failed${bad:+ (unreadable prefab)}" >>"$out"
-}
-rm -f "$(dirname "$out")/check.rbxl"
-[ -z "${build_failed:-}" ] && { rojo sourcemap default.project.json -o sourcemap.json >/dev/null 2>&1 || echo "default.project.json:1: rojo sourcemap failed" >>"$out"; }
-if [ ${#typed_files[@]} -gt 0 ] && [ -f tools/types/globalTypes.d.luau ]; then
-	luau-lsp analyze --definitions=@roblox=tools/types/globalTypes.d.luau --sourcemap=sourcemap.json "${typed_files[@]}" 2>&1 |
-		grep -E '^[^ ]+\([0-9]+,[0-9]+\): ' | sed -E 's/^([^(]+)\(([0-9]+),[0-9]+\): /\1:\2: /' >>"$out"
+# --- types -----------------------------------------------------------------------------------
+if [ "$build_ok" -eq 1 ]; then
+	n=$(lines)
+	rojo sourcemap default.project.json -o sourcemap.json >"$log" 2>&1
+	fail_if_silent "rojo sourcemap" "$?" "$n" default.project.json
+fi
+if [ ! -s "$TYPES" ]; then
+	mkdir -p tools/types
+	if ! curl -sfL "$TYPES_URL" -o "$TYPES.tmp" >"$log" 2>&1 || [ ! -s "$TYPES.tmp" ]; then
+		rm -f "$TYPES.tmp"
+		echo "$TYPES:1: could not download Roblox types from $TYPES_URL" >>"$out"
+	else
+		mv "$TYPES.tmp" "$TYPES"
+	fi
+fi
+if [ "$build_ok" -eq 1 ] && [ -s "$TYPES" ] && [ ${#typed_files[@]} -gt 0 ]; then
+	n=$(lines)
+	luau-lsp analyze --definitions=@roblox="$TYPES" --sourcemap=sourcemap.json "${typed_files[@]}" >"$log" 2>&1
+	rc=$?
+	grep -E '^[^ ]+\([0-9]+,[0-9]+\): ' "$log" | sed -E 's/^([^(]+)\(([0-9]+),[0-9]+\): /\1:\2: /' >>"$out"
+	fail_if_silent luau-lsp "$rc" "$n" default.project.json
 fi
 
-lune run tests/run 2>&1 | sed -E 's/^([^:]+): /\1:1: /' >>"$out"
+# --- tests -----------------------------------------------------------------------------------
+n=$(lines)
+lune run tests/run >"$log" 2>&1
+rc=$?
+sed -E 's/^([^:]+): /\1:1: /' "$log" >>"$out"
+fail_if_silent lune "$rc" "$n" tests/run.luau
+
+n=$(lines)
+bash tests/hook.test.sh >"$log" 2>&1
+rc=$?
+sed -nE 's/^FAIL: (.*)$/tests\/hook.test.sh:1: \1/p' "$log" >>"$out"
+fail_if_silent hook.test.sh "$rc" "$n" tests/hook.test.sh
 
 if [ -s "$out" ]; then
 	head -30 "$out"
