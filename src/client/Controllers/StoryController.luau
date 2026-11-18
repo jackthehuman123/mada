@@ -50,8 +50,12 @@ local function updateCamera()
 end
 
 function StoryController.State(): { [string]: any }
-	return { cinematic = cinematic, taken = player:GetAttribute("Taken") == true, memory = UI.MemoryShowing(),
-		stayOpen = UI.Gui():FindFirstChild("Stay") and (UI.Gui() :: any).Stay.Visible or false }
+	return {
+		cinematic = cinematic,
+		taken = player:GetAttribute("Taken") == true,
+		memory = UI.MemoryShowing(),
+		stayOpen = UI.Gui():FindFirstChild("Stay") and (UI.Gui() :: any).Stay.Visible or false,
+	}
 end
 
 function StoryController.Start()
@@ -79,10 +83,15 @@ function StoryController.Start()
 			UI.ToggleJournal(false)
 		end
 		-- no "Light a lantern" once the night is over (Im lặng takes everyone in the finale)
-		local over = ReplicatedStorage:GetAttribute("Phase") == "Finale" or ReplicatedStorage:GetAttribute("Phase") == "Ending"
+		local over = ReplicatedStorage:GetAttribute("Phase") == "Finale"
+			or ReplicatedStorage:GetAttribute("Phase") == "Ending"
 		-- (not while the pull into the water is still playing: SenController)
-		UI.SetTaken(player:GetAttribute("Taken") == true and player:GetAttribute("Stayed") ~= true and not over
-			and player:GetAttribute("SenCinematic") ~= true)
+		UI.SetTaken(
+			player:GetAttribute("Taken") == true
+				and player:GetAttribute("Stayed") ~= true
+				and not over
+				and player:GetAttribute("SenCinematic") ~= true
+		)
 	end
 	player:GetAttributeChangedSignal("Taken"):Connect(onTaken)
 	player:GetAttributeChangedSignal("SenCinematic"):Connect(onTaken)

@@ -57,8 +57,10 @@ end
 
 local function goalText(): string
 	if lp:GetAttribute("Taken") == true then
-		return if lp:GetAttribute("TakenFinal") == true then Text.Goals.takenFinal
-			elseif solo() then Text.Goals.takenSolo else Text.Goals.takenTeam
+		return if lp:GetAttribute("TakenFinal") == true
+			then Text.Goals.takenFinal
+			elseif solo() then Text.Goals.takenSolo
+			else Text.Goals.takenTeam
 	end
 	local key = ReplicatedStorage:GetAttribute("Goal")
 	return if typeof(key) == "string" and key ~= "" then ((Text.Goals :: any)[key] or "") else ""
@@ -68,7 +70,9 @@ local lastGoal = ""
 local function refresh()
 	local phase = ReplicatedStorage:GetAttribute("Phase")
 	local g = goalText()
-	local show = g ~= "" and lp:GetAttribute("InRun") == true and lp:GetAttribute("SenCinematic") ~= true
+	local show = g ~= ""
+		and lp:GetAttribute("InRun") == true
+		and lp:GetAttribute("SenCinematic") ~= true
 		and not (UI.viewfinder and UI.viewfinder.Visible) -- (top right: the chat window has the top left)
 	frame.Visible = show
 	if not show then
@@ -83,9 +87,14 @@ local function refresh()
 	end
 	if phase == "Open" or phase == "Finale" then
 		countsLabel.Visible = true
-		countsLabel.Text = string.format(Text.Goals.counts, (ReplicatedStorage:GetAttribute("CluesFound") :: number?) or 0,
-			(ReplicatedStorage:GetAttribute("CluesTotal") :: number?) or 0, (ReplicatedStorage:GetAttribute("MementosFound") :: number?) or 0,
-			(ReplicatedStorage:GetAttribute("MementosTotal") :: number?) or 0, (lp:GetAttribute("Incense") :: number?) or 0)
+		countsLabel.Text = string.format(
+			Text.Goals.counts,
+			(ReplicatedStorage:GetAttribute("CluesFound") :: number?) or 0,
+			(ReplicatedStorage:GetAttribute("CluesTotal") :: number?) or 0,
+			(ReplicatedStorage:GetAttribute("MementosFound") :: number?) or 0,
+			(ReplicatedStorage:GetAttribute("MementosTotal") :: number?) or 0,
+			(lp:GetAttribute("Incense") :: number?) or 0
+		)
 	else
 		countsLabel.Visible = false
 	end
@@ -123,7 +132,9 @@ local function showRecap()
 		string.format(R.clues, r.clues or 0, r.cluesTotal or 0),
 		string.format(R.mementos, r.mementos or 0, r.mementosTotal or 0),
 		if r.letter then R.letter else R.noLetter,
-		if typeof(r.taken) == "table" and #r.taken > 0 then string.format(R.taken, table.concat(r.taken, ", ")) else R.nobody,
+		if typeof(r.taken) == "table" and #r.taken > 0
+			then string.format(R.taken, table.concat(r.taken, ", "))
+			else R.nobody,
 		string.format(R.minutes, r.minutes or 1),
 		"",
 		if ReplicatedStorage:GetAttribute("ServerKind") == "Run" then R.backSoon else R.again,
@@ -139,30 +150,98 @@ end
 function GoalController.Start()
 	UI = require(script.Parent:WaitForChild("UIController"))
 	local gui = UI.Gui()
-	frame = new("Frame", { Name = "Goal", Size = UDim2.fromOffset(0, 0), AutomaticSize = Enum.AutomaticSize.XY, Position = UDim2.new(1, -20, 0, 64), AnchorPoint = Vector2.new(1, 0),
-		BackgroundColor3 = rgb(10, 12, 16), BackgroundTransparency = 0.4, Visible = false, ZIndex = 5, Parent = gui })
+	frame = new("Frame", {
+		Name = "Goal",
+		Size = UDim2.fromOffset(0, 0),
+		AutomaticSize = Enum.AutomaticSize.XY,
+		Position = UDim2.new(1, -20, 0, 64),
+		AnchorPoint = Vector2.new(1, 0),
+		BackgroundColor3 = rgb(10, 12, 16),
+		BackgroundTransparency = 0.4,
+		Visible = false,
+		ZIndex = 5,
+		Parent = gui,
+	})
 	new("UICorner", { CornerRadius = UDim.new(0, 8), Parent = frame })
-	new("UIPadding", { PaddingLeft = UDim.new(0, 14), PaddingRight = UDim.new(0, 14), PaddingTop = UDim.new(0, 8), PaddingBottom = UDim.new(0, 8),
-		Parent = frame })
+	new("UIPadding", {
+		PaddingLeft = UDim.new(0, 14),
+		PaddingRight = UDim.new(0, 14),
+		PaddingTop = UDim.new(0, 8),
+		PaddingBottom = UDim.new(0, 8),
+		Parent = frame,
+	})
 	new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0, 2), Parent = frame })
 	new("UISizeConstraint", { MaxSize = Vector2.new(420, 400), Parent = frame })
-	goalLabel = new("TextLabel", { Name = "Text", Size = UDim2.fromOffset(0, 0), AutomaticSize = Enum.AutomaticSize.XY, BackgroundTransparency = 1,
-		TextColor3 = rgb(240, 232, 214), Font = Enum.Font.Garamond, TextSize = 22, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left,
-		LayoutOrder = 1, ZIndex = 5, Text = "", Parent = frame })
+	goalLabel = new("TextLabel", {
+		Name = "Text",
+		Size = UDim2.fromOffset(0, 0),
+		AutomaticSize = Enum.AutomaticSize.XY,
+		BackgroundTransparency = 1,
+		TextColor3 = rgb(240, 232, 214),
+		Font = Enum.Font.Garamond,
+		TextSize = 22,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		LayoutOrder = 1,
+		ZIndex = 5,
+		Text = "",
+		Parent = frame,
+	})
 	new("UISizeConstraint", { MaxSize = Vector2.new(392, 200), Parent = goalLabel })
-	countsLabel = new("TextLabel", { Name = "Counts", Size = UDim2.fromOffset(0, 18), AutomaticSize = Enum.AutomaticSize.X, BackgroundTransparency = 1,
-		TextColor3 = rgb(176, 168, 150), Font = Enum.Font.Garamond, TextSize = 17, TextXAlignment = Enum.TextXAlignment.Left,
-		LayoutOrder = 2, ZIndex = 5, Text = "", Parent = frame })
+	countsLabel = new("TextLabel", {
+		Name = "Counts",
+		Size = UDim2.fromOffset(0, 18),
+		AutomaticSize = Enum.AutomaticSize.X,
+		BackgroundTransparency = 1,
+		TextColor3 = rgb(176, 168, 150),
+		Font = Enum.Font.Garamond,
+		TextSize = 17,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		LayoutOrder = 2,
+		ZIndex = 5,
+		Text = "",
+		Parent = frame,
+	})
 
 	-- the recap, over the ending's card (which it replaces after a few seconds)
-	recapPanel = new("Frame", { Name = "Recap", Size = UDim2.fromOffset(520, 300), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundColor3 = rgb(8, 9, 12), BackgroundTransparency = 0.05, Visible = false, ZIndex = 23, Parent = gui })
+	recapPanel = new("Frame", {
+		Name = "Recap",
+		Size = UDim2.fromOffset(520, 300),
+		Position = UDim2.fromScale(0.5, 0.5),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundColor3 = rgb(8, 9, 12),
+		BackgroundTransparency = 0.05,
+		Visible = false,
+		ZIndex = 23,
+		Parent = gui,
+	})
 	new("UICorner", { CornerRadius = UDim.new(0, 10), Parent = recapPanel })
-	new("TextLabel", { Name = "Title", Size = UDim2.new(1, -40, 0, 44), Position = UDim2.fromOffset(20, 16), BackgroundTransparency = 1,
-		Text = Text.Recap.title, TextColor3 = rgb(236, 200, 150), Font = Enum.Font.Merriweather, TextSize = 28, ZIndex = 24, Parent = recapPanel })
-	recapText = new("TextLabel", { Name = "Text", Size = UDim2.new(1, -40, 1, -80), Position = UDim2.fromOffset(20, 66), BackgroundTransparency = 1,
-		TextColor3 = rgb(236, 230, 214), Font = Enum.Font.Garamond, TextSize = 22, TextWrapped = true, TextYAlignment = Enum.TextYAlignment.Top,
-		Text = "", ZIndex = 24, Parent = recapPanel })
+	new("TextLabel", {
+		Name = "Title",
+		Size = UDim2.new(1, -40, 0, 44),
+		Position = UDim2.fromOffset(20, 16),
+		BackgroundTransparency = 1,
+		Text = Text.Recap.title,
+		TextColor3 = rgb(236, 200, 150),
+		Font = Enum.Font.Merriweather,
+		TextSize = 28,
+		ZIndex = 24,
+		Parent = recapPanel,
+	})
+	recapText = new("TextLabel", {
+		Name = "Text",
+		Size = UDim2.new(1, -40, 1, -80),
+		Position = UDim2.fromOffset(20, 66),
+		BackgroundTransparency = 1,
+		TextColor3 = rgb(236, 230, 214),
+		Font = Enum.Font.Garamond,
+		TextSize = 22,
+		TextWrapped = true,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		Text = "",
+		ZIndex = 24,
+		Parent = recapPanel,
+	})
 
 	ReplicatedStorage:GetAttributeChangedSignal("Phase"):Connect(function()
 		local phase = ReplicatedStorage:GetAttribute("Phase")

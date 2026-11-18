@@ -69,7 +69,9 @@ end
 
 local function promptFor(inst: Instance)
 	local id = inst:GetAttribute("ClueId")
-	local part = if inst:IsA("BasePart") then inst else (inst:IsA("Model") and (inst.PrimaryPart or inst:FindFirstChildWhichIsA("BasePart", true))) or nil
+	local part = if inst:IsA("BasePart")
+		then inst
+		else (inst:IsA("Model") and (inst.PrimaryPart or inst:FindFirstChildWhichIsA("BasePart", true))) or nil
 	if typeof(id) ~= "string" or not part or part:FindFirstChildOfClass("ProximityPrompt") then
 		return
 	end

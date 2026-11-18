@@ -30,9 +30,18 @@ local Tapes = require(Shared:WaitForChild("Content"):WaitForChild("Tapes"))
 local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 
 type Sample = { t: number, cf: CFrame }
-type Clip = { samples: { Sample }, events: { { id: string, t: number } }, length: number,
-	ghosts: { Tapes.Ghost }?, staticFrom: number?, handheld: boolean?, name: string?, stamp: string?,
-	glitches: { Tapes.Glitch }?, underwaterFrom: number? }
+type Clip = {
+	samples: { Sample },
+	events: { { id: string, t: number } },
+	length: number,
+	ghosts: { Tapes.Ghost }?,
+	staticFrom: number?,
+	handheld: boolean?,
+	name: string?,
+	stamp: string?,
+	glitches: { Tapes.Glitch }?,
+	underwaterFrom: number?,
+}
 
 local Camcorder = {}
 
@@ -108,12 +117,16 @@ local function updateHud()
 	end
 	UI.vfTime.Text = if playing and playingStamp then playingStamp else clockText()
 	local b = battery()
-	UI.vfBattery.Text = if b <= 0 then Text.UI.noBattery else string.format("%s %d%%", Text.UI.battery, math.floor(b + 0.5))
+	UI.vfBattery.Text = if b <= 0
+		then Text.UI.noBattery
+		else string.format("%s %d%%", Text.UI.battery, math.floor(b + 0.5))
 	if playing then
 		UI.vfRec.Text = ""
 		UI.vfMode.Text = "▶ " .. Text.UI.play
 	elseif recording then
-		UI.vfRec.Text = (os.clock() % 1 < 0.6 and "● " or "  ") .. Text.UI.rec .. string.format(" %02d", math.floor(os.clock() - recStart))
+		UI.vfRec.Text = (os.clock() % 1 < 0.6 and "● " or "  ")
+			.. Text.UI.rec
+			.. string.format(" %02d", math.floor(os.clock() - recStart))
 		UI.vfMode.Text = ""
 	else
 		UI.vfRec.Text = ""
@@ -150,14 +163,14 @@ function Camcorder.Lower()
 	savedMode = nil
 	if not playing then
 		UI.viewfinder.Visible = false
-	local look = Workspace.CurrentCamera:FindFirstChild("CamcorderLook")
-	if look then
-		look:Destroy()
-	end
-	local jb = UI.Gui():FindFirstChild("JournalButton")
-	if jb then
-		(jb :: GuiObject).Visible = true
-	end
+		local look = Workspace.CurrentCamera:FindFirstChild("CamcorderLook")
+		if look then
+			look:Destroy()
+		end
+		local jb = UI.Gui():FindFirstChild("JournalButton")
+		if jb then
+			(jb :: GuiObject).Visible = true
+		end
 		setVisible(Tags.CameraOnly, false)
 	end
 	Remotes.event(Remotes.Names.CameraRaised):FireServer(false)
@@ -218,8 +231,18 @@ local function tapeClip(tape: Tapes.Tape): Clip
 		table.insert(samples, { t = t, cf = CFrame.lookAt(a.pos:Lerp(b.pos, s), a.look:Lerp(b.look, s)) })
 		t += step
 	end
-	return { samples = samples, events = {}, length = tape.length, ghosts = tape.ghosts, staticFrom = tape.staticFrom,
-		handheld = tape.handheld, name = tape.id, stamp = tape.stamp, glitches = tape.glitches, underwaterFrom = tape.underwaterFrom }
+	return {
+		samples = samples,
+		events = {},
+		length = tape.length,
+		ghosts = tape.ghosts,
+		staticFrom = tape.staticFrom,
+		handheld = tape.handheld,
+		name = tape.id,
+		stamp = tape.stamp,
+		glitches = tape.glitches,
+		underwaterFrom = tape.underwaterFrom,
+	}
 end
 
 -- figures that exist only on a tape, built locally (never on the server, never seen by eyes)
@@ -365,7 +388,8 @@ local function playClip(clip: Clip)
 		local a, b = samples[i], samples[i + 1]
 		local cf = a.cf:Lerp(b.cf, math.clamp((t - a.t) / math.max(b.t - a.t, 1e-3), 0, 1))
 		if clip.handheld then -- a person holding it: a slow sway and a little breathing
-			cf = cf * CFrame.new(0, math.sin(t * 2.3) * 0.04, 0)
+			cf = cf
+				* CFrame.new(0, math.sin(t * 2.3) * 0.04, 0)
 				* CFrame.Angles(math.sin(t * 1.7) * 0.012, math.sin(t * 1.3) * 0.016, math.sin(t * 2.1) * 0.006)
 		end
 		cam.CFrame = cf
@@ -517,13 +541,23 @@ function Camcorder.State(): { [string]: any }
 			break
 		end
 	end
-	return { raised = raised, recording = recording, playing = playing, clips = #clips,
-		cameraOnlyT = foot and foot.Transparency or -1, hiddenOnCameraT = thu and thu.Transparency or -1,
-		fov = Workspace.CurrentCamera.FieldOfView, battery = battery(),
+	return {
+		raised = raised,
+		recording = recording,
+		playing = playing,
+		clips = #clips,
+		cameraOnlyT = foot and foot.Transparency or -1,
+		hiddenOnCameraT = thu and thu.Transparency or -1,
+		fov = Workspace.CurrentCamera.FieldOfView,
+		battery = battery(),
 		lastClipEvents = clips[#clips] and #clips[#clips].events or 0,
-		tapes = Camcorder.HasTapes(), playingName = playingName, static = staticOn,
-		ghosts = ghostFolder and #ghostFolder:GetChildren() or 0, playT = if playing then playT else -1,
-		murky = murk ~= nil }
+		tapes = Camcorder.HasTapes(),
+		playingName = playingName,
+		static = staticOn,
+		ghosts = ghostFolder and #ghostFolder:GetChildren() or 0,
+		playT = if playing then playT else -1,
+		murky = murk ~= nil,
+	}
 end
 
 function Camcorder.Init()
@@ -552,7 +586,11 @@ function Camcorder.Start()
 			return
 		end
 		if input.KeyCode == Enum.KeyCode.F then
-			if raised then Camcorder.Lower() else Camcorder.Raise() end
+			if raised then
+				Camcorder.Lower()
+			else
+				Camcorder.Raise()
+			end
 		elseif input.UserInputType == Enum.UserInputType.MouseButton2 then
 			Camcorder.Raise()
 		elseif input.KeyCode == Enum.KeyCode.R then
@@ -597,7 +635,10 @@ function Camcorder.Start()
 		local cam = Workspace.CurrentCamera
 		table.insert(clip.samples, { t = t, cf = cam.CFrame })
 		for _, inst in CollectionService:GetTagged(Tags.CameraOnly) do
-			local pos = if inst:IsA("Model") then inst:GetPivot().Position elseif inst:IsA("BasePart") then inst.Position else nil
+			local pos = if inst:IsA("Model")
+				then inst:GetPivot().Position
+				elseif inst:IsA("BasePart") then inst.Position
+				else nil
 			if pos then
 				local _, onScreen = cam:WorldToViewportPoint(pos)
 				if onScreen and (pos - cam.CFrame.Position).Magnitude < 150 then

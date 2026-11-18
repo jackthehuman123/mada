@@ -60,7 +60,10 @@ local function upload(e: any): string
 			return tostring(op.response.assetId)
 		end
 		task.wait(2)
-		local poll = net.request({ url = "https://apis.roblox.com/assets/v1/" .. path, headers = { ["x-api-key"] = KEY :: string } })
+		local poll = net.request({
+			url = "https://apis.roblox.com/assets/v1/" .. path,
+			headers = { ["x-api-key"] = KEY :: string },
+		})
 		assert(poll.ok, `{e.name}: polling failed ({poll.statusCode}): {poll.body}`)
 		op = serde.decode("json", poll.body)
 	end

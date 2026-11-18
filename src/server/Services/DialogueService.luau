@@ -18,8 +18,16 @@ local Remotes = require(Shared:WaitForChild("Remotes"))
 local Tags = require(Shared:WaitForChild("Tags"))
 local Text = require(Shared:WaitForChild("Content"):WaitForChild("Text"))
 
-type Session = { id: string, audience: { Player }, advanced: boolean, stopped: boolean, lastAdvance: number, chose: boolean,
-	skips: { [Player]: boolean }, skipped: boolean }
+type Session = {
+	id: string,
+	audience: { Player },
+	advanced: boolean,
+	stopped: boolean,
+	lastAdvance: number,
+	chose: boolean,
+	skips: { [Player]: boolean },
+	skipped: boolean,
+}
 
 local DialogueService = {}
 
@@ -48,7 +56,16 @@ function DialogueService.Play(id: string, audience: { Player }?): boolean
 	local conv = (Dialogue :: any)[id]
 	assert(conv, `unknown conversation {id}`)
 	local who = audience or Players:GetPlayers()
-	local s: Session = { id = id, audience = who, advanced = false, stopped = false, lastAdvance = 0, chose = false, skips = {}, skipped = false }
+	local s: Session = {
+		id = id,
+		audience = who,
+		advanced = false,
+		stopped = false,
+		lastAdvance = 0,
+		chose = false,
+		skips = {},
+		skipped = false,
+	}
 	table.insert(sessions, s)
 	local show, done = Remotes.event(Remotes.Names.DialogueShow), Remotes.event(Remotes.Names.DialogueEnd)
 	for i, line in conv.lines do
@@ -75,7 +92,12 @@ function DialogueService.Play(id: string, audience: { Player }?): boolean
 			end
 			print(`[Dialogue] {id}: "{line.choice}"`)
 		else
-			while not s.advanced and not s.stopped and not s.skipped and os.clock() - t0 < Pace.seconds(Config.DialogueAutoSeconds) do
+			while
+				not s.advanced
+				and not s.stopped
+				and not s.skipped
+				and os.clock() - t0 < Pace.seconds(Config.DialogueAutoSeconds)
+			do
 				task.wait(0.1)
 			end
 		end
@@ -186,7 +208,8 @@ local function setupThuPrompt(thu: Instance)
 	prompt.MaxActivationDistance = Config.TalkPromptDistance
 	prompt.RequiresLineOfSight = false
 	local function enabled(): boolean
-		return ReplicatedStorage:GetAttribute("Phase") == "Open" and ReplicatedStorage:GetAttribute("NameWritten") ~= true
+		return ReplicatedStorage:GetAttribute("Phase") == "Open"
+			and ReplicatedStorage:GetAttribute("NameWritten") ~= true
 	end
 	prompt.Enabled = enabled()
 	prompt.Triggered:Connect(function(player: Player)

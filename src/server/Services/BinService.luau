@@ -27,8 +27,14 @@ local job = 0 -- bumped whenever Bin gets a new order, so an old walking loop st
 
 -- along the shore, west to east, from the shrine (§4 beat 4: "walks east along the shore")
 local WANDER = {
-	Vector3.new(-318, 0, -46), Vector3.new(-290, 0, -46), Vector3.new(-250, 0, -46), Vector3.new(-210, 0, -46),
-	Vector3.new(-170, 0, -46), Vector3.new(-120, 0, -46), Vector3.new(-80, 0, -46), Vector3.new(-40, 0, -46),
+	Vector3.new(-318, 0, -46),
+	Vector3.new(-290, 0, -46),
+	Vector3.new(-250, 0, -46),
+	Vector3.new(-210, 0, -46),
+	Vector3.new(-170, 0, -46),
+	Vector3.new(-120, 0, -46),
+	Vector3.new(-80, 0, -46),
+	Vector3.new(-40, 0, -46),
 }
 
 local function part(parent: Instance, props: { [string]: any }): BasePart
@@ -53,10 +59,17 @@ end
 local function build(at: Vector3): Model
 	local m = Instance.new("Model")
 	m.Name = "Bin"
-	local root = part(m, { Name = "HumanoidRootPart", Size = Vector3.new(2, 2, 1), Transparency = 1, CanCollide = true, Massless = false,
-		CFrame = CFrame.new(at + Vector3.new(0, 3, 0)) })
+	local root = part(m, {
+		Name = "HumanoidRootPart",
+		Size = Vector3.new(2, 2, 1),
+		Transparency = 1,
+		CanCollide = true,
+		Massless = false,
+		CFrame = CFrame.new(at + Vector3.new(0, 3, 0)),
+	})
 	local function on(name: string, size: Vector3, offset: Vector3, color: Color3, extra: { [string]: any }?): BasePart
-		local props: { [string]: any } = { Name = name, Size = size, CFrame = root.CFrame * CFrame.new(offset), Color = color }
+		local props: { [string]: any } =
+			{ Name = name, Size = size, CFrame = root.CFrame * CFrame.new(offset), Color = color }
 		for k, v in extra or {} do
 			props[k] = v
 		end
@@ -69,8 +82,20 @@ local function build(at: Vector3): Model
 	on("LegR", Vector3.new(0.9, 2, 0.9), Vector3.new(0.5, -2, 0), rgb(40, 50, 70))
 	on("ArmL", Vector3.new(0.8, 1.9, 0.8), Vector3.new(-1.4, 0, 0), rgb(255, 140, 30))
 	on("ArmR", Vector3.new(0.8, 1.9, 0.8), Vector3.new(1.4, 0.2, -0.6), rgb(255, 140, 30))
-	local head = on("Head", Vector3.new(1.2, 1.2, 1.2), Vector3.new(0, 1.6, 0), rgb(222, 184, 150), { Shape = Enum.PartType.Ball })
-	local lamp = on("Headlamp", Vector3.new(0.5, 0.3, 0.2), Vector3.new(0, 1.85, -0.6), rgb(255, 255, 230), { Material = Enum.Material.Neon })
+	local head = on(
+		"Head",
+		Vector3.new(1.2, 1.2, 1.2),
+		Vector3.new(0, 1.6, 0),
+		rgb(222, 184, 150),
+		{ Shape = Enum.PartType.Ball }
+	)
+	local lamp = on(
+		"Headlamp",
+		Vector3.new(0.5, 0.3, 0.2),
+		Vector3.new(0, 1.85, -0.6),
+		rgb(255, 255, 230),
+		{ Material = Enum.Material.Neon }
+	)
 	local beam = Instance.new("SpotLight")
 	beam.Face = Enum.NormalId.Front
 	beam.Range = 26
@@ -211,7 +236,10 @@ function BinService.StandAt(pos: Vector3, look: Vector3)
 	end
 	hum:MoveTo(pos)
 	local t0 = os.clock()
-	while (r.Position * Vector3.new(1, 0, 1) - pos * Vector3.new(1, 0, 1)).Magnitude > 2.5 and os.clock() - t0 < Pace.seconds(8) do
+	while
+		(r.Position * Vector3.new(1, 0, 1) - pos * Vector3.new(1, 0, 1)).Magnitude > 2.5
+		and os.clock() - t0 < Pace.seconds(8)
+	do
 		task.wait(0.2)
 	end
 	if (r.Position - pos).Magnitude > 4 then
@@ -276,7 +304,10 @@ function BinService.WanderOff(): Vector3
 			end
 			hum:MoveTo(WANDER[math.min(i, #WANDER)])
 		end
-		if t >= Pace.seconds(Config.BinWanderMaxSeconds) or (t >= Pace.seconds(Config.BinWanderMinSeconds) and not BinService.Seen()) then
+		if
+			t >= Pace.seconds(Config.BinWanderMaxSeconds)
+			or (t >= Pace.seconds(Config.BinWanderMinSeconds) and not BinService.Seen())
+		then
 			break
 		end
 		task.wait(0.25)

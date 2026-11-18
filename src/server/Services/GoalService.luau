@@ -74,21 +74,27 @@ end
 local function recap()
 	local taken = {}
 	for _, p in Players:GetPlayers() do
-		if p:GetAttribute("InRun") ~= false and (p:GetAttribute("Taken") == true or ((p:GetAttribute("Rescues") :: number?) or 0) > 0) then
+		if
+			p:GetAttribute("InRun") ~= false
+			and (p:GetAttribute("Taken") == true or ((p:GetAttribute("Rescues") :: number?) or 0) > 0)
+		then
 			table.insert(taken, p.DisplayName)
 		end
 	end
 	local started = (ReplicatedStorage:GetAttribute("RunStart") :: number?) or os.clock()
-	ReplicatedStorage:SetAttribute("Recap", HttpService:JSONEncode({
-		ending = ReplicatedStorage:GetAttribute("Ending") or "silence",
-		clues = cluesFound(),
-		cluesTotal = CLUES_TOTAL,
-		mementos = mementosFound(),
-		mementosTotal = MEMENTOS_TOTAL,
-		letter = Mystery.LetterFound(),
-		taken = taken,
-		minutes = math.max(1, math.floor((os.clock() - started) / 60 + 0.5)),
-	}))
+	ReplicatedStorage:SetAttribute(
+		"Recap",
+		HttpService:JSONEncode({
+			ending = ReplicatedStorage:GetAttribute("Ending") or "silence",
+			clues = cluesFound(),
+			cluesTotal = CLUES_TOTAL,
+			mementos = mementosFound(),
+			mementosTotal = MEMENTOS_TOTAL,
+			letter = Mystery.LetterFound(),
+			taken = taken,
+			minutes = math.max(1, math.floor((os.clock() - started) / 60 + 0.5)),
+		})
+	)
 end
 
 function GoalService.Init()

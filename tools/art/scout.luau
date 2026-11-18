@@ -55,7 +55,9 @@ end
 for i = first, #args do
 	local keyword = args[i]
 	local category = if audio then "Audio" else "Model"
-	local data = get(`https://apis.roblox.com/toolbox-service/v2/assets:search?searchCategoryType={category}&query={url(keyword)}&maxPageSize={per}`)
+	local data = get(
+		`https://apis.roblox.com/toolbox-service/v2/assets:search?searchCategoryType={category}&query={url(keyword)}&maxPageSize={per}`
+	)
 	local rows = if data then data.creatorStoreAssets or {} else {}
 	if audio then
 		for _, r in rows do
@@ -64,7 +66,11 @@ for i = first, #args do
 			if r.creator and r.creator.verified then
 				who ..= " ✓"
 			end
-			print(`| {keyword} | {a.id} | {clean(a.title or a.name)} | {clean(a.artist)} | {clean(a.album)} | {a.durationSeconds or "?"} | {clean(a.audioType)} | {who} |`)
+			print(
+				`| {keyword} | {a.id} | {clean(a.title or a.name)} | {clean(a.artist)} | {clean(a.album)} | {a.durationSeconds or "?"} | {clean(
+					a.audioType
+				)} | {who} |`
+			)
 		end
 	else
 		local ids = {}
@@ -73,7 +79,8 @@ for i = first, #args do
 		end
 		local thumbs = {}
 		if #ids > 0 then
-			local t = get(`https://thumbnails.roblox.com/v1/assets?assetIds={table.concat(ids, ",")}&size=420x420&format=Png`)
+			local t =
+				get(`https://thumbnails.roblox.com/v1/assets?assetIds={table.concat(ids, ",")}&size=420x420&format=Png`)
 			for _, d in (if t then t.data else {}) do
 				if d.state == "Completed" and d.imageUrl then
 					thumbs[tostring(d.targetId)] = d.imageUrl
@@ -93,7 +100,9 @@ for i = first, #args do
 					thumb = `{id}.png`
 				end
 			end
-			print(`| {keyword} | {id} | {clean(a.name)} | {r.creator and r.creator.name or "?"} | {tris} | {a.scriptCount or 0} | {v.upVotes or 0}/{v.downVotes or 0} | {thumb} |`)
+			print(
+				`| {keyword} | {id} | {clean(a.name)} | {r.creator and r.creator.name or "?"} | {tris} | {a.scriptCount or 0} | {v.upVotes or 0}/{v.downVotes or 0} | {thumb} |`
+			)
 		end
 	end
 	task.wait(0.5)

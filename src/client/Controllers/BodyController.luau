@@ -98,8 +98,12 @@ local function attachedToHead(part: BasePart, head: BasePart?): boolean
 		-- anything worn on the head, however it is fastened (newer avatars hold hair with a RigidConstraint, not a weld:
 		-- long hair then filled the first-person view; playthrough bot 2026-11-04)
 		local kind = (acc :: Accessory).AccessoryType
-		if kind == Enum.AccessoryType.Hat or kind == Enum.AccessoryType.Hair or kind == Enum.AccessoryType.Face
-			or kind == Enum.AccessoryType.Neck then
+		if
+			kind == Enum.AccessoryType.Hat
+			or kind == Enum.AccessoryType.Hair
+			or kind == Enum.AccessoryType.Face
+			or kind == Enum.AccessoryType.Neck
+		then
 			return true
 		end
 		local w = part:FindFirstChildWhichIsA("JointInstance") :: any
@@ -107,7 +111,8 @@ local function attachedToHead(part: BasePart, head: BasePart?): boolean
 			return true
 		end
 		local rc = part:FindFirstChildWhichIsA("RigidConstraint")
-		local other = rc and (if rc.Attachment0 and rc.Attachment0.Parent ~= part then rc.Attachment0 else rc.Attachment1)
+		local other = rc
+			and (if rc.Attachment0 and rc.Attachment0.Parent ~= part then rc.Attachment0 else rc.Attachment1)
 		if other and other.Parent == head then
 			return true
 		end

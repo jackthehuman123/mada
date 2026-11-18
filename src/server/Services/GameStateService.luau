@@ -159,7 +159,8 @@ local function tick(dt: number)
 			end
 		end
 	elseif phase == "Open" then
-		local hour = GameStateService.GetClock() + (Config.MidnightHour - Config.OpenPhaseStartHour) / Config.OpenPhaseRealSeconds * dt
+		local hour = GameStateService.GetClock()
+			+ (Config.MidnightHour - Config.OpenPhaseStartHour) / Config.OpenPhaseRealSeconds * dt
 		setClock(math.min(hour, Config.MidnightHour))
 		if hour >= Config.MidnightHour then
 			GameStateService.SetPhase("Finale")
@@ -213,7 +214,10 @@ function GameStateService.Init()
 					if n > 6 then
 						break
 					end
-					if typeof(k) == "string" and (typeof(v) == "number" or typeof(v) == "boolean" or (typeof(v) == "string" and #v <= 60)) then
+					if
+						typeof(k) == "string"
+						and (typeof(v) == "number" or typeof(v) == "boolean" or (typeof(v) == "string" and #v <= 60))
+					then
 						d[k] = v
 					end
 				end

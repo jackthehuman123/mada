@@ -61,7 +61,12 @@ function MysteryService.SpawnCarp(center: Vector3, count: number, radius: number
 		p.Material = Enum.Material.SmoothPlastic
 		p.Anchored, p.CanCollide, p.CanQuery = true, false, false
 		p.Parent = f
-		table.insert(fish, { part = p, a = math.random() * math.pi * 2, r = radius * (0.4 + math.random() * 0.6), s = 0.4 + math.random() * 0.5 })
+		table.insert(fish, {
+			part = p,
+			a = math.random() * math.pi * 2,
+			r = radius * (0.4 + math.random() * 0.6),
+			s = 0.4 + math.random() * 0.5,
+		})
 	end
 	Remotes.event(Remotes.Names.Sfx):FireAllClients("carp_splash", center)
 	task.spawn(function()
@@ -201,7 +206,10 @@ function MysteryService.TakeLetter(player: Player)
 		end
 	end)
 	tool.Parent = player:FindFirstChildOfClass("Backpack") or player
-	Analytics.track("letter_found", { t = math.floor(os.clock() - (ReplicatedStorage:GetAttribute("RunStart") or os.clock()) :: number), by = player.Name })
+	Analytics.track("letter_found", {
+		t = math.floor(os.clock() - (ReplicatedStorage:GetAttribute("RunStart") or os.clock()) :: number),
+		by = player.Name,
+	})
 	ClueService.Inspect(player, "sen_letter")
 	print("[Mystery] the letter was found")
 end
@@ -377,8 +385,13 @@ end
 
 function MysteryService.State(): { [string]: any }
 	local holder = MysteryService.LetterHolder()
-	return { letterFound = letterFound, letterHolder = holder and holder.Name or nil, mementos = mementosSeen,
-		hint = hintFolder and hintFolder.Parent and hintFolder:GetAttribute("Place") or nil, unfound = unfoundPlaces() }
+	return {
+		letterFound = letterFound,
+		letterHolder = holder and holder.Name or nil,
+		mementos = mementosSeen,
+		hint = hintFolder and hintFolder.Parent and hintFolder:GetAttribute("Place") or nil,
+		unfound = unfoundPlaces(),
+	}
 end
 
 function MysteryService.Progress()
@@ -457,7 +470,13 @@ function MysteryService.Start()
 				local r = p.Character and p.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
 				local q = r and r.Position
 				-- on the steps themselves (World/Build.luau: x 346.5-353.5, from z 10 down to z -18)
-				if q and math.abs(q.X - 350) <= Config.CarpStepsRadius / 2 and q.Z <= 10 and q.Z >= -18 and q.Y < 3.5 then
+				if
+					q
+					and math.abs(q.X - 350) <= Config.CarpStepsRadius / 2
+					and q.Z <= 10
+					and q.Z >= -18
+					and q.Y < 3.5
+				then
 					carpCooldown = os.clock() + Pace.seconds(40)
 					MysteryService.SpawnCarp(bottom + Vector3.new(0, 0, -4), 10, 7, 30)
 					print("[Mystery] the carp rise at the steps")

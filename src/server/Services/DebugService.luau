@@ -46,8 +46,14 @@ local function run(caller: Player?, cmd: string, arg: any): any
 		for _, p in Players:GetPlayers() do
 			batteries[p.Name] = p:GetAttribute("Battery")
 		end
-		return { phase = GameState.GetPhase(), clock = GameState.GetClock(), clues = ClueService.Found(), batteries = batteries,
-			players = #Players:GetPlayers(), beat = ReplicatedStorage:GetAttribute("Night1Beat") }
+		return {
+			phase = GameState.GetPhase(),
+			clock = GameState.GetClock(),
+			clues = ClueService.Found(),
+			batteries = batteries,
+			players = #Players:GetPlayers(),
+			beat = ReplicatedStorage:GetAttribute("Night1Beat"),
+		}
 	elseif cmd == "begin" then
 		assert(player, "no player")
 		local Menu = require(script.Parent:WaitForChild("MenuService")) :: any

@@ -5,7 +5,9 @@ dbg("speed", 25)
 dbg("sen", "off")
 dbg("phase", "Night1")
 local t0 = os.clock()
-while (game.ReplicatedStorage:GetAttribute("Night1Beat") or 0) < 6 and os.clock() - t0 < 30 do task.wait(0.2) end
+while (game.ReplicatedStorage:GetAttribute("Night1Beat") or 0) < 6 and os.clock() - t0 < 30 do
+	task.wait(0.2)
+end
 local params = RaycastParams.new()
 params.FilterType = Enum.RaycastFilterType.Include
 params.FilterDescendantsInstances = { workspace.Terrain }
@@ -20,7 +22,16 @@ for _, pp in workspace:GetDescendants() do
 			local hit = workspace:Raycast(Vector3.new(pos.X, pos.Y + 60, pos.Z), Vector3.new(0, -60, 0), params)
 			local top = part:IsA("BasePart") and pos.Y + part.Size.Y / 2 or pos.Y
 			if hit and hit.Position.Y > top + 0.3 then
-				table.insert(buried, string.format("%s on %s (top %.1f, ground %.1f)", pp.ActionText, part:GetFullName(), top, hit.Position.Y))
+				table.insert(
+					buried,
+					string.format(
+						"%s on %s (top %.1f, ground %.1f)",
+						pp.ActionText,
+						part:GetFullName(),
+						top,
+						hit.Position.Y
+					)
+				)
 			end
 		end
 	end

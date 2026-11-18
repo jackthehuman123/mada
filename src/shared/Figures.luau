@@ -11,8 +11,16 @@ local rgb = Color3.fromRGB
 
 -- the Blender model (Shared/Art) in place of the graybox: a tiny root part named like the graybox's primary part (the
 -- callers move and fade the whole model), the mesh pieces around it
-local function dressed(name: string, item: string, root: string, rootCf: CFrame, at: CFrame, scale: number, parent: Instance?,
-	tint: Color3?): Model?
+local function dressed(
+	name: string,
+	item: string,
+	root: string,
+	rootCf: CFrame,
+	at: CFrame,
+	scale: number,
+	parent: Instance?,
+	tint: Color3?
+): Model?
 	if not Art.template(item) then
 		return nil
 	end
@@ -119,8 +127,16 @@ end
 -- one of the lost children (or Bin), a dark silhouette; height in studs (6-12 year olds: 3.4-4.4)
 function Figures.Child(cf: CFrame, name: string, height: number, parent: Instance?): Model
 	-- (the model is 2.8 tall; the graybox's figure spans about 0.92 x height, feet at -0.5 x height)
-	local mesh = dressed(name, "Child", "Body", cf * CFrame.new(0, -height * 0.19, 0), cf * CFrame.new(0, -height * 0.5, 0), height * 0.92 / 2.8,
-		parent, rgb(14, 16, 22))
+	local mesh = dressed(
+		name,
+		"Child",
+		"Body",
+		cf * CFrame.new(0, -height * 0.19, 0),
+		cf * CFrame.new(0, -height * 0.5, 0),
+		height * 0.92 / 2.8,
+		parent,
+		rgb(14, 16, 22)
+	)
 	if mesh then
 		return mesh
 	end
@@ -128,7 +144,14 @@ function Figures.Child(cf: CFrame, name: string, height: number, parent: Instanc
 	m.Name = name
 	local dark = rgb(14, 16, 22)
 	local body = piece(m, "Body", Vector3.new(1.3, height * 0.62, 0.8), cf * CFrame.new(0, -height * 0.19, 0), dark)
-	piece(m, "Head", Vector3.new(height * 0.27, height * 0.27, height * 0.27), cf * CFrame.new(0, height * 0.27, 0), dark, true)
+	piece(
+		m,
+		"Head",
+		Vector3.new(height * 0.27, height * 0.27, height * 0.27),
+		cf * CFrame.new(0, height * 0.27, 0),
+		dark,
+		true
+	)
 	m.PrimaryPart = body
 	m.Parent = parent
 	return m

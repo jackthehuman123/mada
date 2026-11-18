@@ -31,13 +31,27 @@ function Analytics.summary(ending: string): string
 		count[e.name] = (count[e.name] or 0) + 1
 	end
 	local function at(name: string): string
-		return if first[name] then string.format("%dm%02ds", math.floor(first[name] / 60), math.floor(first[name] % 60)) else "-"
+		return if first[name]
+			then string.format("%dm%02ds", math.floor(first[name] / 60), math.floor(first[name] % 60))
+			else "-"
 	end
 	local line = string.format(
 		"[Analytics] summary ending=%s run=%s open=%s first_clue=%s clues=%d mementos=%d tapes=%d letter_found=%s letter_given=%s thu_at_steps=%s warnings=%d taken=%d rescued=%d hints=%d",
-		ending, at("ending"), at("phase_change_Open"), at("clue_found"), count.clue_found or 0, count.memento_viewed or 0,
-		count.bin_tape_played or 0, at("letter_found"), at("letter_given"), at("thu_at_steps"), count.sen_warning or 0,
-		count.player_taken or 0, count.player_rescued or 0, count.hint_fired or 0)
+		ending,
+		at("ending"),
+		at("phase_change_Open"),
+		at("clue_found"),
+		count.clue_found or 0,
+		count.memento_viewed or 0,
+		count.bin_tape_played or 0,
+		at("letter_found"),
+		at("letter_given"),
+		at("thu_at_steps"),
+		count.sen_warning or 0,
+		count.player_taken or 0,
+		count.player_rescued or 0,
+		count.hint_fired or 0
+	)
 	print(line)
 	return line
 end

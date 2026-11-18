@@ -5,7 +5,7 @@
 local Text = {
 	Cards = {
 		-- brief §3: the rumor video the channel watched. Approved by Catlyn 2026-11-02
-		intro = "From a video the channel watched last week:\n\n\"In Làng Vọng, the lanterns light themselves.\"",
+		intro = 'From a video the channel watched last week:\n\n"In Làng Vọng, the lanterns light themselves."',
 		-- the endings (brief §7), the teller's voice, adapted from story.md §15 and §16. Approved by Catlyn 2026-11-02
 		-- (ending_stay: Ở lại is cut, Config.StayEnding)
 		ending_home = "That was all Sen ever wanted, I think. Someone to say her name and hold on to her.\n\nIn the morning the causeway was dry, and Bin woke up on the bank with his camera in his arms.\n\n(Về nhà)",

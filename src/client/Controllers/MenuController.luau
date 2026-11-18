@@ -66,27 +66,52 @@ end
 
 local function button(parent: Instance, text: string, order: number, onClick: () -> ()): TextButton
 	local b = new("TextButton", {
-		Size = UDim2.new(1, 0, 0, 46), LayoutOrder = order, BackgroundColor3 = rgb(20, 18, 16), BackgroundTransparency = 0.25,
-		BorderSizePixel = 0, Text = text, TextColor3 = PAPER, Font = Enum.Font.Merriweather, TextSize = 22,
-		AutoButtonColor = true, Parent = parent,
+		Size = UDim2.new(1, 0, 0, 46),
+		LayoutOrder = order,
+		BackgroundColor3 = rgb(20, 18, 16),
+		BackgroundTransparency = 0.25,
+		BorderSizePixel = 0,
+		Text = text,
+		TextColor3 = PAPER,
+		Font = Enum.Font.Merriweather,
+		TextSize = 22,
+		AutoButtonColor = true,
+		Parent = parent,
 	})
 	new("UICorner", { CornerRadius = UDim.new(0, 6), Parent = b })
-	new("UIStroke", { Color = rgb(90, 80, 64), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = b })
+	new(
+		"UIStroke",
+		{ Color = rgb(90, 80, 64), Thickness = 1, ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Parent = b }
+	)
 	b.Activated:Connect(onClick)
 	return b
 end
 
 local function label(parent: Instance, text: string, order: number, size: number, color: Color3?): TextLabel
 	return new("TextLabel", {
-		Size = UDim2.new(1, 0, 0, size + 10), AutomaticSize = Enum.AutomaticSize.Y, LayoutOrder = order,
-		BackgroundTransparency = 1, Text = text, TextColor3 = color or PAPER, Font = Enum.Font.Garamond, TextSize = size,
-		TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, Parent = parent,
+		Size = UDim2.new(1, 0, 0, size + 10),
+		AutomaticSize = Enum.AutomaticSize.Y,
+		LayoutOrder = order,
+		BackgroundTransparency = 1,
+		Text = text,
+		TextColor3 = color or PAPER,
+		Font = Enum.Font.Garamond,
+		TextSize = size,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = parent,
 	})
 end
 
 local function pageFrame(name: string): Frame
-	local f = new("Frame", { Name = name, Size = UDim2.new(1, 0, 1, -170), Position = UDim2.fromOffset(0, 170),
-		BackgroundTransparency = 1, Visible = false, Parent = panel })
+	local f = new("Frame", {
+		Name = name,
+		Size = UDim2.new(1, 0, 1, -170),
+		Position = UDim2.fromOffset(0, 170),
+		BackgroundTransparency = 1,
+		Visible = false,
+		Parent = panel,
+	})
 	new("UIListLayout", { Padding = UDim.new(0, 10), SortOrder = Enum.SortOrder.LayoutOrder, Parent = f })
 	return f
 end
@@ -95,7 +120,13 @@ local function headshot(userId: number): string
 	if headshots[userId] == nil then
 		headshots[userId] = ""
 		task.spawn(function()
-			local ok, img = pcall(Players.GetUserThumbnailAsync, Players, userId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
+			local ok, img = pcall(
+				Players.GetUserThumbnailAsync,
+				Players,
+				userId,
+				Enum.ThumbnailType.HeadShot,
+				Enum.ThumbnailSize.Size48x48
+			)
 			headshots[userId] = if ok then img else ""
 			MenuController.Render()
 		end)
@@ -137,19 +168,60 @@ local function invite()
 end
 
 local function build()
-	gui = new("ScreenGui", { Name = "LangVongMenu", ResetOnSpawn = false, IgnoreGuiInset = true, DisplayOrder = 20,
-		Parent = lp:WaitForChild("PlayerGui") })
-	shade = new("Frame", { Name = "Shade", Size = UDim2.new(0, 560, 1, 0), BackgroundColor3 = rgb(0, 0, 0),
-		BorderSizePixel = 0, Parent = gui })
-	new("UIGradient", { Transparency = NumberSequence.new({ NumberSequenceKeypoint.new(0, 0.15), NumberSequenceKeypoint.new(0.7, 0.45),
-		NumberSequenceKeypoint.new(1, 1) }), Parent = shade })
-	panel = new("Frame", { Name = "Panel", Size = UDim2.new(0, 380, 1, -120), Position = UDim2.fromOffset(60, 70),
-		BackgroundTransparency = 1, Parent = gui })
-	new("TextLabel", { Name = "Title", Size = UDim2.new(1, 0, 0, 80), BackgroundTransparency = 1, Text = T.title,
-		TextColor3 = PAPER, Font = Enum.Font.Merriweather, TextSize = 64, TextXAlignment = Enum.TextXAlignment.Left, Parent = panel })
-	new("TextLabel", { Name = "Tagline", Size = UDim2.new(1, 0, 0, 60), Position = UDim2.fromOffset(0, 86), BackgroundTransparency = 1,
-		Text = T.tagline, TextColor3 = DIM, Font = Enum.Font.Garamond, TextSize = 22, TextWrapped = true,
-		TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, Parent = panel })
+	gui = new("ScreenGui", {
+		Name = "LangVongMenu",
+		ResetOnSpawn = false,
+		IgnoreGuiInset = true,
+		DisplayOrder = 20,
+		Parent = lp:WaitForChild("PlayerGui"),
+	})
+	shade = new("Frame", {
+		Name = "Shade",
+		Size = UDim2.new(0, 560, 1, 0),
+		BackgroundColor3 = rgb(0, 0, 0),
+		BorderSizePixel = 0,
+		Parent = gui,
+	})
+	new("UIGradient", {
+		Transparency = NumberSequence.new({
+			NumberSequenceKeypoint.new(0, 0.15),
+			NumberSequenceKeypoint.new(0.7, 0.45),
+			NumberSequenceKeypoint.new(1, 1),
+		}),
+		Parent = shade,
+	})
+	panel = new("Frame", {
+		Name = "Panel",
+		Size = UDim2.new(0, 380, 1, -120),
+		Position = UDim2.fromOffset(60, 70),
+		BackgroundTransparency = 1,
+		Parent = gui,
+	})
+	new("TextLabel", {
+		Name = "Title",
+		Size = UDim2.new(1, 0, 0, 80),
+		BackgroundTransparency = 1,
+		Text = T.title,
+		TextColor3 = PAPER,
+		Font = Enum.Font.Merriweather,
+		TextSize = 64,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Parent = panel,
+	})
+	new("TextLabel", {
+		Name = "Tagline",
+		Size = UDim2.new(1, 0, 0, 60),
+		Position = UDim2.fromOffset(0, 86),
+		BackgroundTransparency = 1,
+		Text = T.tagline,
+		TextColor3 = DIM,
+		Font = Enum.Font.Garamond,
+		TextSize = 22,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		Parent = panel,
+	})
 
 	homePage = pageFrame("Home")
 	button(homePage, T.playAlone, 1, function()
@@ -166,13 +238,36 @@ local function build()
 	teamPage = pageFrame("Team")
 	teamTitle = label(teamPage, "", 1, 28)
 	for i = 1, Config.TeamMax do
-		local slot = new("Frame", { Name = "Slot" .. i, Size = UDim2.new(1, 0, 0, 44), LayoutOrder = 1 + i,
-			BackgroundColor3 = rgb(20, 18, 16), BackgroundTransparency = 0.4, BorderSizePixel = 0, Parent = teamPage })
+		local slot = new("Frame", {
+			Name = "Slot" .. i,
+			Size = UDim2.new(1, 0, 0, 44),
+			LayoutOrder = 1 + i,
+			BackgroundColor3 = rgb(20, 18, 16),
+			BackgroundTransparency = 0.4,
+			BorderSizePixel = 0,
+			Parent = teamPage,
+		})
 		new("UICorner", { CornerRadius = UDim.new(0, 6), Parent = slot })
-		new("ImageLabel", { Name = "Face", Size = UDim2.fromOffset(36, 36), Position = UDim2.fromOffset(4, 4),
-			BackgroundTransparency = 1, Image = "", Parent = slot })
-		new("TextLabel", { Name = "Name", Size = UDim2.new(1, -56, 1, 0), Position = UDim2.fromOffset(50, 0), BackgroundTransparency = 1,
-			Text = "", TextColor3 = PAPER, Font = Enum.Font.Garamond, TextSize = 22, TextXAlignment = Enum.TextXAlignment.Left, Parent = slot })
+		new("ImageLabel", {
+			Name = "Face",
+			Size = UDim2.fromOffset(36, 36),
+			Position = UDim2.fromOffset(4, 4),
+			BackgroundTransparency = 1,
+			Image = "",
+			Parent = slot,
+		})
+		new("TextLabel", {
+			Name = "Name",
+			Size = UDim2.new(1, -56, 1, 0),
+			Position = UDim2.fromOffset(50, 0),
+			BackgroundTransparency = 1,
+			Text = "",
+			TextColor3 = PAPER,
+			Font = Enum.Font.Garamond,
+			TextSize = 22,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			Parent = slot,
+		})
 		teamSlots[i] = slot
 	end
 	openButton = button(teamPage, "", 10, function()
@@ -192,26 +287,65 @@ local function build()
 	end)
 
 	joinPage = pageFrame("Join")
-	joinList = new("ScrollingFrame", { Name = "List", Size = UDim2.new(1, 0, 0, 300), LayoutOrder = 1, BackgroundTransparency = 1,
-		BorderSizePixel = 0, ScrollBarThickness = 4, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(),
-		Parent = joinPage })
+	joinList = new("ScrollingFrame", {
+		Name = "List",
+		Size = UDim2.new(1, 0, 0, 300),
+		LayoutOrder = 1,
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 4,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		Parent = joinPage,
+	})
 	new("UIListLayout", { Padding = UDim.new(0, 8), SortOrder = Enum.SortOrder.LayoutOrder, Parent = joinList })
 	button(joinPage, T.back, 2, function()
 		page = "home"
 		MenuController.Render()
 	end)
 
-	noticeLabel = new("TextLabel", { Name = "Notice", Size = UDim2.new(0, 380, 0, 40), Position = UDim2.new(0, 60, 1, -60),
-		BackgroundTransparency = 1, Text = "", TextColor3 = rgb(240, 150, 120), Font = Enum.Font.Garamond, TextSize = 20,
-		TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left, Visible = false, Parent = gui })
+	noticeLabel = new("TextLabel", {
+		Name = "Notice",
+		Size = UDim2.new(0, 380, 0, 40),
+		Position = UDim2.new(0, 60, 1, -60),
+		BackgroundTransparency = 1,
+		Text = "",
+		TextColor3 = rgb(240, 150, 120),
+		Font = Enum.Font.Garamond,
+		TextSize = 20,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Visible = false,
+		Parent = gui,
+	})
 
 	-- the run server's pieces
-	waitingLabel = new("TextLabel", { Name = "Waiting", Size = UDim2.new(1, 0, 0, 40), Position = UDim2.new(0, 0, 0.5, -20),
-		BackgroundTransparency = 1, Text = "", TextColor3 = PAPER, Font = Enum.Font.Garamond, TextSize = 28,
-		Visible = false, Parent = gui })
-	backButton = new("TextButton", { Name = "BackToMenu", Size = UDim2.fromOffset(200, 40), Position = UDim2.new(1, -220, 1, -60),
-		BackgroundColor3 = rgb(20, 18, 16), BackgroundTransparency = 0.25, BorderSizePixel = 0, Text = T.backToMenu,
-		TextColor3 = PAPER, Font = Enum.Font.Merriweather, TextSize = 18, Visible = false, Parent = gui })
+	waitingLabel = new("TextLabel", {
+		Name = "Waiting",
+		Size = UDim2.new(1, 0, 0, 40),
+		Position = UDim2.new(0, 0, 0.5, -20),
+		BackgroundTransparency = 1,
+		Text = "",
+		TextColor3 = PAPER,
+		Font = Enum.Font.Garamond,
+		TextSize = 28,
+		Visible = false,
+		Parent = gui,
+	})
+	backButton = new("TextButton", {
+		Name = "BackToMenu",
+		Size = UDim2.fromOffset(200, 40),
+		Position = UDim2.new(1, -220, 1, -60),
+		BackgroundColor3 = rgb(20, 18, 16),
+		BackgroundTransparency = 0.25,
+		BorderSizePixel = 0,
+		Text = T.backToMenu,
+		TextColor3 = PAPER,
+		Font = Enum.Font.Merriweather,
+		TextSize = 18,
+		Visible = false,
+		Parent = gui,
+	})
 	new("UICorner", { CornerRadius = UDim.new(0, 6), Parent = backButton })
 	backButton.Activated:Connect(function()
 		send("backToMenu")
@@ -237,7 +371,9 @@ local function renderJoinList()
 		if t.canJoin and not t.starting then
 			n += 1
 			local full = #t.members >= Config.TeamMax
-			local text = `{string.format(T.teamOf, leaderName(t))}  ({#t.members}/{Config.TeamMax})  {if full then T.full else T.join}`
+			local text = `{string.format(T.teamOf, leaderName(t))}  ({#t.members}/{Config.TeamMax})  {if full
+				then T.full
+				else T.join}`
 			local b = button(joinList, text, n, function()
 				send("join", t.id)
 			end)

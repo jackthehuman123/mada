@@ -74,8 +74,9 @@ local function bodyView(on: boolean)
 			-- 2026-11-03: the grab showed nothing but the shirt)
 			local part = if d:IsA("Decal") then d.Parent else d
 			local name = part and part.Name or ""
-			local leg = (name:find("Leg") or name:find("Foot")) and not (part and part.Parent and part.Parent:IsA("Accessory"))
-			;(d :: any).LocalTransparencyModifier = if on and not leg then 1 else 0
+			local leg = (name:find("Leg") or name:find("Foot"))
+				and not (part and part.Parent and part.Parent:IsA("Accessory"));
+			(d :: any).LocalTransparencyModifier = if on and not leg then 1 else 0
 		end
 	end
 end
@@ -161,7 +162,8 @@ local function playInner(water: Vector3, quiet: boolean)
 		local e = ease(math.min(1, a * 1.4))
 		local jolt = if a < 0.15 then (0.15 - a) * 0.6 else 0
 		local look = startLook:Lerp(ankle(), e)
-		cam.CFrame = CFrame.lookAt(eye(), look) * CFrame.new((math.random() - 0.5) * jolt, (math.random() - 0.5) * jolt, 0)
+		cam.CFrame = CFrame.lookAt(eye(), look)
+			* CFrame.new((math.random() - 0.5) * jolt, (math.random() - 0.5) * jolt, 0)
 	end)
 
 	-- 2 the pull: backward across the ground and into the water, still looking at her hand
@@ -223,7 +225,8 @@ local function playInner(water: Vector3, quiet: boolean)
 		ok = over(my, Config.SenDrownSeconds, function(a)
 			local e = ease(a)
 			local pos = sink:Lerp(deep, e)
-			cam.CFrame = CFrame.lookAt(pos, pos + dir * 3 + Vector3.new(0, 10, 0)) * CFrame.Angles(0, 0, math.rad(math.sin(a * 2.5) * 5))
+			cam.CFrame = CFrame.lookAt(pos, pos + dir * 3 + Vector3.new(0, 10, 0))
+				* CFrame.Angles(0, 0, math.rad(math.sin(a * 2.5) * 5))
 			blur.Size = 6 + e * 22
 			cc.Brightness = -0.15 - e * 0.5
 		end)
@@ -233,7 +236,9 @@ local function playInner(water: Vector3, quiet: boolean)
 	if ok then
 		black.BackgroundTransparency = 1
 		black.Visible = true
-		local used = Config.SenGrabSeconds + Config.SenDragSeconds + Config.SenDrownSeconds
+		local used = Config.SenGrabSeconds
+			+ Config.SenDragSeconds
+			+ Config.SenDrownSeconds
 			+ (if quiet or not Config.SenJumpscare then 0 else Config.SenFaceSeconds)
 		over(my, math.max(0.1, Config.SenTakeSeconds - used), function(a)
 			black.BackgroundTransparency = 1 - a

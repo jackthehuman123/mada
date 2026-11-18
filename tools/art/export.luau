@@ -18,9 +18,22 @@ local SRC = process.args[1] or "build/art-source.rbxl"
 local OUT = process.args[2] or "art"
 local SCRIPTS = { Script = true, LocalScript = true, ModuleScript = true }
 -- the Lighting properties the art pass may tune (stored as attributes on Environment.Lighting)
-local LIGHT_PROPS = { "Ambient", "OutdoorAmbient", "Brightness", "ColorShift_Bottom", "ColorShift_Top",
-	"EnvironmentDiffuseScale", "EnvironmentSpecularScale", "ExposureCompensation", "FogColor", "FogEnd", "FogStart",
-	"GeographicLatitude", "GlobalShadows", "ShadowSoftness" }
+local LIGHT_PROPS = {
+	"Ambient",
+	"OutdoorAmbient",
+	"Brightness",
+	"ColorShift_Bottom",
+	"ColorShift_Top",
+	"EnvironmentDiffuseScale",
+	"EnvironmentSpecularScale",
+	"ExposureCompensation",
+	"FogColor",
+	"FogEnd",
+	"FogStart",
+	"GeographicLatitude",
+	"GlobalShadows",
+	"ShadowSoftness",
+}
 
 if not fs.isFile(SRC) then
 	print(`No place file at {SRC}.`)
@@ -98,7 +111,9 @@ for _, d in world:GetDescendants() do
 	end
 end
 print(`Exported Workspace.World ({#world:GetDescendants()} instances, {parts} parts) -> {OUT}/World.rbxm`)
-print(`Exported {terrain and "the Terrain" or "no Terrain"} and {#lighting:GetChildren()} Lighting effects -> {OUT}/Environment.rbxm`)
+print(
+	`Exported {terrain and "the Terrain" or "no Terrain"} and {#lighting:GetChildren()} Lighting effects -> {OUT}/Environment.rbxm`
+)
 if #removed > 0 then
 	print(`Removed {#removed} script(s) that came with models (they stay in the place; delete them there too):`)
 	for _, n in removed do

@@ -141,7 +141,8 @@ local function swim(dt: number)
 		end
 	else
 		wanderAngle += dt * Config.SenSwimSpeed / Config.SenWanderRadius
-		target = Config.LakeMiddle * flat + Vector3.new(math.cos(wanderAngle), 0, math.sin(wanderAngle)) * Config.SenWanderRadius
+		target = Config.LakeMiddle * flat
+			+ Vector3.new(math.cos(wanderAngle), 0, math.sin(wanderAngle)) * Config.SenWanderRadius
 		speed = Config.SenSwimSpeed
 	end
 	local to = target - senPos
@@ -459,7 +460,8 @@ function SenService.Take(p: Player, quiet: boolean?)
 			r.Anchored = false
 			if fest and taken(p) then
 				r.AssemblyLinearVelocity = Vector3.zero
-				r.CFrame = CFrame.new((fest :: Model):GetPivot().Position + Vector3.new(0, 3, 0)) * CFrame.Angles(0, math.pi, 0)
+				r.CFrame = CFrame.new((fest :: Model):GetPivot().Position + Vector3.new(0, 3, 0))
+					* CFrame.Angles(0, math.pi, 0)
 			end
 		end
 		-- the letter drops where they stood (after they're gone, or they'd just pick it up again)
@@ -543,8 +545,12 @@ function SenService.Hunt(p: Player): boolean
 		if step == 5 then
 			-- the grab needs her to reach them (on land), or at the edge by them (over the water)
 			local t0 = os.clock()
-			while still() and not walkerNear(p) and not (walker == nil and arrived())
-				and os.clock() - t0 < Pace.seconds(Config.SenArriveTimeout) do
+			while
+				still()
+				and not walkerNear(p)
+				and not (walker == nil and arrived())
+				and os.clock() - t0 < Pace.seconds(Config.SenArriveTimeout)
+			do
 				task.wait(0.1)
 			end
 		end
@@ -588,7 +594,12 @@ end
 local function giveIncense(p: Player)
 	local count = (p:GetAttribute("Incense") :: number?) or 0
 	local backpack = p:FindFirstChildOfClass("Backpack")
-	if count <= 0 or not backpack or backpack:FindFirstChild("Incense") or (p.Character and p.Character:FindFirstChild("Incense")) then
+	if
+		count <= 0
+		or not backpack
+		or backpack:FindFirstChild("Incense")
+		or (p.Character and p.Character:FindFirstChild("Incense"))
+	then
 		return
 	end
 	local tool = Instance.new("Tool")
@@ -725,8 +736,10 @@ local function puppetShow()
 		while true do
 			local t = os.clock()
 			for i, pp in puppets do
-				pp.part.CFrame = CFrame.new(stage.Position + Vector3.new(pp.x + math.sin(t * 0.8 + i) * 2, 2.6 + math.abs(math.sin(t * 2 + i)) * 0.8, 0))
-					* CFrame.Angles(0, 0, math.sin(t * 3 + i) * 0.3)
+				pp.part.CFrame = CFrame.new(
+					stage.Position
+						+ Vector3.new(pp.x + math.sin(t * 0.8 + i) * 2, 2.6 + math.abs(math.sin(t * 2 + i)) * 0.8, 0)
+				) * CFrame.Angles(0, 0, math.sin(t * 3 + i) * 0.3)
 			end
 			task.wait(1 / 15)
 		end
@@ -793,8 +806,13 @@ local function laneScare()
 	end
 	for _, p in Players:GetPlayers() do
 		local r = rootOf(p)
-		if r and not taken(p) and r.Position.X >= Config.LaneScareX[1] and r.Position.X <= Config.LaneScareX[2]
-			and math.abs(r.Position.Z - Config.LaneZ) <= 25 then
+		if
+			r
+			and not taken(p)
+			and r.Position.X >= Config.LaneScareX[1]
+			and r.Position.X <= Config.LaneScareX[2]
+			and math.abs(r.Position.Z - Config.LaneZ) <= 25
+		then
 			laneScared = true
 			print(`[Sen] the lane ({p.Name})`)
 			Analytics.track("lane_scare", { player = p.Name })
@@ -864,9 +882,11 @@ function SenService.Start()
 		task.wait(0.5)
 		laneScare()
 		if GameState.GetPhase() ~= "Open" or ReplicatedStorage:GetAttribute("SenOff") == true then
-			nextHunt = os.clock() + Pace.seconds(rng:NextNumber(Config.SenTargetIntervalMin, Config.SenTargetIntervalMax))
+			nextHunt = os.clock()
+				+ Pace.seconds(rng:NextNumber(Config.SenTargetIntervalMin, Config.SenTargetIntervalMax))
 		elseif not hunting and os.clock() >= nextHunt then
-			nextHunt = os.clock() + Pace.seconds(rng:NextNumber(Config.SenTargetIntervalMin, Config.SenTargetIntervalMax))
+			nextHunt = os.clock()
+				+ Pace.seconds(rng:NextNumber(Config.SenTargetIntervalMin, Config.SenTargetIntervalMax))
 			local targets = {}
 			for _, p in Players:GetPlayers() do
 				if SenService.Exposed(p) then

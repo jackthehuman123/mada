@@ -86,7 +86,8 @@ end
 -- Bà Thu walks from the shrine, along the lane, through her own back yard and down the carp steps
 local function walkPath(from: Vector3): { Vector3 }
 	local pts: { Vector3 } = {}
-	local path = PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 5, AgentCanJump = false, WaypointSpacing = 6 })
+	local path =
+		PathfindingService:CreatePath({ AgentRadius = 2, AgentHeight = 5, AgentCanJump = false, WaypointSpacing = 6 })
 	local ok = pcall(function()
 		path:ComputeAsync(from, STEPS_TOP)
 	end)
@@ -96,8 +97,17 @@ local function walkPath(from: Vector3): { Vector3 }
 		end
 	else
 		warn("[Ending] no walking path for Bà Thu; she takes the lane")
-		for _, p in { Vector3.new(-330, 1, -50), Vector3.new(-296, 0, -20), Vector3.new(272, 0, -20), Vector3.new(272, 0, 70),
-			Vector3.new(330, 0, 70), Vector3.new(345, 0, 44), STEPS_TOP } do
+		for _, p in
+			{
+				Vector3.new(-330, 1, -50),
+				Vector3.new(-296, 0, -20),
+				Vector3.new(272, 0, -20),
+				Vector3.new(272, 0, 70),
+				Vector3.new(330, 0, 70),
+				Vector3.new(345, 0, 44),
+				STEPS_TOP,
+			}
+		do
 			table.insert(pts, p)
 		end
 	end
@@ -126,8 +136,11 @@ local function walkThu()
 			local step = math.min(Config.ThuWalkSpeed * Pace.scale() * dt, (target - pos).Magnitude)
 			pos += (target - pos).Unit * step
 			local ahead = Vector3.new(target.X, pos.Y, target.Z)
-			m:PivotTo(if (ahead - pos).Magnitude > 0.1 then CFrame.lookAt(pos + Vector3.new(0, lift, 0), ahead + Vector3.new(0, lift, 0))
-				else CFrame.new(pos + Vector3.new(0, lift, 0)))
+			m:PivotTo(
+				if (ahead - pos).Magnitude > 0.1
+					then CFrame.lookAt(pos + Vector3.new(0, lift, 0), ahead + Vector3.new(0, lift, 0))
+					else CFrame.new(pos + Vector3.new(0, lift, 0))
+			)
 		end
 		if walking ~= my then
 			return
@@ -176,8 +189,15 @@ local function lanternParts(): { BasePart }
 	local out = {}
 	local w = Workspace:FindFirstChild("World")
 	for _, d in (w and w:GetDescendants() or {}) do
-		if d:IsA("BasePart") and ((d.Material == Enum.Material.Neon and (d.Name == "LanternCore" or d.Name == "Glow" or d.Name == "HintLantern"))
-			or d:GetAttribute("LitColor") ~= nil) then
+		if
+			d:IsA("BasePart")
+			and (
+				(
+					d.Material == Enum.Material.Neon
+					and (d.Name == "LanternCore" or d.Name == "Glow" or d.Name == "HintLantern")
+				) or d:GetAttribute("LitColor") ~= nil
+			)
+		then
 			table.insert(out, d)
 		end
 	end
@@ -451,8 +471,11 @@ local function atTheSteps(): { Player }
 	local out = {}
 	for _, p in Players:GetPlayers() do
 		local r = p.Character and p.Character:FindFirstChild("HumanoidRootPart") :: BasePart?
-		if r and p:GetAttribute("Taken") ~= true
-			and (r.Position * Vector3.new(1, 0, 1) - Vector3.new(350, 0, -2)).Magnitude <= Config.StayRadius then
+		if
+			r
+			and p:GetAttribute("Taken") ~= true
+			and (r.Position * Vector3.new(1, 0, 1) - Vector3.new(350, 0, -2)).Magnitude <= Config.StayRadius
+		then
 			table.insert(out, p)
 		end
 	end
@@ -533,8 +556,10 @@ function EndingService.Reset()
 			local p = d :: BasePart
 			p.Color = lit
 			local mat = p:GetAttribute("LitMaterial")
-			p.Material = if typeof(mat) == "string" then (Enum.Material :: any)[mat]
-				elseif p.Name == "LanternCore" then Enum.Material.Neon else Enum.Material.SmoothPlastic
+			p.Material = if typeof(mat) == "string"
+				then (Enum.Material :: any)[mat]
+				elseif p.Name == "LanternCore" then Enum.Material.Neon
+				else Enum.Material.SmoothPlastic
 			local l = p:FindFirstChildOfClass("PointLight")
 			if l then
 				l.Enabled = true
@@ -547,8 +572,13 @@ function EndingService.Reset()
 end
 
 function EndingService.State(): { [string]: any }
-	return { letterGiven = letterGiven, thuAtSteps = thuAtSteps, walking = ReplicatedStorage:GetAttribute("ThuWalking") == true,
-		ending = ReplicatedStorage:GetAttribute("Ending"), nameWritten = ReplicatedStorage:GetAttribute("NameWritten") == true }
+	return {
+		letterGiven = letterGiven,
+		thuAtSteps = thuAtSteps,
+		walking = ReplicatedStorage:GetAttribute("ThuWalking") == true,
+		ending = ReplicatedStorage:GetAttribute("Ending"),
+		nameWritten = ReplicatedStorage:GetAttribute("NameWritten") == true,
+	}
 end
 
 function EndingService.AnswerStay(p: Player, hold: boolean)

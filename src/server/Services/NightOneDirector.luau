@@ -67,7 +67,11 @@ local function floodCauseway()
 	local n = 12
 	for k = 0, n - 1 do
 		local p = a:Lerp(b, (k + 0.5) / n)
-		terrain:FillBlock(CFrame.lookAt(p + Vector3.new(0, 0.85, 0), p + (b - a) + Vector3.new(0, 0.85, 0)), Vector3.new(16, 1.7, (b - a).Magnitude / n + 1), Enum.Material.Water)
+		terrain:FillBlock(
+			CFrame.lookAt(p + Vector3.new(0, 0.85, 0), p + (b - a) + Vector3.new(0, 0.85, 0)),
+			Vector3.new(16, 1.7, (b - a).Magnitude / n + 1),
+			Enum.Material.Water
+		)
 	end
 	-- the line players can't cross: 20 studs out along the causeway, the width of the marsh crossing
 	local edge = a:Lerp(b, 0.12)
@@ -175,26 +179,38 @@ local function night(my: number)
 	end
 	task.spawn(Bin.StandAt, FILM_SPOT, THU_MAT)
 	Dialogue.Play("bathu_night1")
-	if not alive() then return end
+	if not alive() then
+		return
+	end
 	-- 3: the lanterns
 	beat(3)
 	Lanterns.DriftAll()
-	if not alive() then return end
+	if not alive() then
+		return
+	end
 	-- 4: Bin wanders off
 	beat(4)
 	Dialogue.Bark("bin_wanders")
 	Pace.wait(2)
-	if not alive() then return end
+	if not alive() then
+		return
+	end
 	Bin.WanderOff()
-	if not alive() then return end
+	if not alive() then
+		return
+	end
 	-- 5: trapped
 	Pace.wait(3)
-	if not alive() then return end
+	if not alive() then
+		return
+	end
 	beat(5)
 	floodCauseway()
 	message(Text.Messages.causewayFlooded)
 	Pace.wait(4)
-	if not alive() then return end
+	if not alive() then
+		return
+	end
 	-- 6: Bin's camera in the reeds; wait for someone to pick it up (a subtitle for the light if nobody has for a while)
 	beat(6)
 	local picked = Instance.new("BindableEvent")
@@ -213,7 +229,9 @@ local function night(my: number)
 		task.wait(0.25)
 	end
 	picked:Destroy()
-	if not alive() then return end
+	if not alive() then
+		return
+	end
 	-- 7: the Open phase ("Find Bin." is its message)
 	beat(7)
 	GameState.SetPhase("Open")
@@ -225,9 +243,16 @@ function Director.Dry()
 end
 
 function Director.State(): { [string]: any }
-	return { beat = ReplicatedStorage:GetAttribute("Night1Beat"), bin = Bin.Exists(), binMode = Bin.Mode(),
-		flooded = flood ~= nil, camera = camera ~= nil, tapes = ReplicatedStorage:GetAttribute("BinTapes") == true,
-		windows = Lanterns.Windows(), lanterns = #(CollectionService:GetTagged(Tags.LanternStop)) }
+	return {
+		beat = ReplicatedStorage:GetAttribute("Night1Beat"),
+		bin = Bin.Exists(),
+		binMode = Bin.Mode(),
+		flooded = flood ~= nil,
+		camera = camera ~= nil,
+		tapes = ReplicatedStorage:GetAttribute("BinTapes") == true,
+		windows = Lanterns.Windows(),
+		lanterns = #(CollectionService:GetTagged(Tags.LanternStop)),
+	}
 end
 
 function Director.Reset()
@@ -282,7 +307,11 @@ function Director.Start()
 	-- §5.4: the lanterns go out again at 23:00 so players can watch a second time
 	while true do
 		task.wait(0.5)
-		if not secondDriftDone and GameState.GetPhase() == "Open" and GameState.GetClock() >= Config.SecondLanternDriftHour then
+		if
+			not secondDriftDone
+			and GameState.GetPhase() == "Open"
+			and GameState.GetClock() >= Config.SecondLanternDriftHour
+		then
 			secondDriftDone = true
 			print("[Lanterns] second drift (23:00)")
 			task.spawn(Lanterns.DriftAll)

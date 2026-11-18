@@ -34,7 +34,9 @@ local function check(path: string): Report
 		meshes += 1
 		for _, prim in mesh.primitives or {} do
 			local mode = prim.mode or 4
-			local acc = if prim.indices ~= nil then gltf.accessors[prim.indices + 1] else gltf.accessors[prim.attributes.POSITION + 1]
+			local acc = if prim.indices ~= nil
+				then gltf.accessors[prim.indices + 1]
+				else gltf.accessors[prim.attributes.POSITION + 1]
 			if mode == 4 then
 				tris += math.floor(acc.count / 3)
 			elseif mode == 5 or mode == 6 then
@@ -75,7 +77,10 @@ local function check(path: string): Report
 	local ok = true
 	if tris > MAX_TRIS then
 		ok = false
-		table.insert(notes, `{tris} triangles: over Roblox's ~{MAX_TRIS} per mesh. Decimate it (docs/MESHY.md) or split it`)
+		table.insert(
+			notes,
+			`{tris} triangles: over Roblox's ~{MAX_TRIS} per mesh. Decimate it (docs/MESHY.md) or split it`
+		)
 	elseif tris > GOOD_TRIS then
 		table.insert(notes, `{tris} triangles: imports, but heavy for a prop used many times`)
 	end
@@ -110,7 +115,12 @@ for _, path in process.args do
 	end
 	local rep = r :: Report
 	local name = string.match(path, "([^/\\]+)%.glb$") or path
-	print(`{if rep.ok then "✓" else "✗"} {name}: {rep.tris} tris in {rep.meshes} mesh(es), size {rep.size[1]} x {rep.size[2]} x {rep.size[3]} (file units, usually metres), textures: {if #rep.images > 0 then table.concat(rep.images, ", ") else "none"}`)
+	print(
+		`{if rep.ok then "✓" else "✗"} {name}: {rep.tris} tris in {rep.meshes} mesh(es), size {rep.size[1]} x {rep.size[2]} x {rep.size[3]} (file units, usually metres), textures: {if #rep.images
+				> 0
+			then table.concat(rep.images, ", ")
+			else "none"}`
+	)
 	for _, n in rep.notes do
 		print("    - " .. n)
 	end

@@ -151,7 +151,9 @@ end
 
 function UI.SetLanternCooldown(seconds: number)
 	takenButton.AutoButtonColor = seconds <= 0
-	takenButton.Text = if seconds > 0 then string.format("%s (%d)", Text.UI.lightLantern, math.ceil(seconds)) else Text.UI.lightLantern
+	takenButton.Text = if seconds > 0
+		then string.format("%s (%d)", Text.UI.lightLantern, math.ceil(seconds))
+		else Text.UI.lightLantern
 end
 
 -- full-screen static (the Im lặng ending)
@@ -246,8 +248,17 @@ local function redrawJournal()
 		end
 	end
 	if #journalIds == 0 then
-		new("TextLabel", { Name = "Empty", Size = UDim2.new(1, -8, 0, 30), BackgroundTransparency = 1, Text = Text.UI.journalEmpty,
-			TextColor3 = INK, Font = Enum.Font.Garamond, TextSize = 20, TextXAlignment = Enum.TextXAlignment.Left, Parent = journalList })
+		new("TextLabel", {
+			Name = "Empty",
+			Size = UDim2.new(1, -8, 0, 30),
+			BackgroundTransparency = 1,
+			Text = Text.UI.journalEmpty,
+			TextColor3 = INK,
+			Font = Enum.Font.Garamond,
+			TextSize = 20,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			Parent = journalList,
+		})
 		return
 	end
 	local byPlace: { [string]: { string } } = {}
@@ -265,14 +276,32 @@ local function redrawJournal()
 	local n = 0
 	for _, place in places do
 		n += 1
-		new("TextLabel", { Name = "Place_" .. place, LayoutOrder = n, Size = UDim2.new(1, -8, 0, 28), BackgroundTransparency = 1,
-			Text = (Text.Places :: any)[place] or place, TextColor3 = rgb(120, 30, 24), Font = Enum.Font.Merriweather, TextSize = 22,
-			TextXAlignment = Enum.TextXAlignment.Left, Parent = journalList })
+		new("TextLabel", {
+			Name = "Place_" .. place,
+			LayoutOrder = n,
+			Size = UDim2.new(1, -8, 0, 28),
+			BackgroundTransparency = 1,
+			Text = (Text.Places :: any)[place] or place,
+			TextColor3 = rgb(120, 30, 24),
+			Font = Enum.Font.Merriweather,
+			TextSize = 22,
+			TextXAlignment = Enum.TextXAlignment.Left,
+			Parent = journalList,
+		})
 		for _, id in byPlace[place] do
 			n += 1
-			local b = new("TextButton", { Name = "Entry_" .. id, LayoutOrder = n, Size = UDim2.new(1, -8, 0, 26), BackgroundTransparency = 1,
-				Text = "  " .. Clues[id].title, TextColor3 = INK, Font = Enum.Font.Garamond, TextSize = 20,
-				TextXAlignment = Enum.TextXAlignment.Left, Parent = journalList })
+			local b = new("TextButton", {
+				Name = "Entry_" .. id,
+				LayoutOrder = n,
+				Size = UDim2.new(1, -8, 0, 26),
+				BackgroundTransparency = 1,
+				Text = "  " .. Clues[id].title,
+				TextColor3 = INK,
+				Font = Enum.Font.Garamond,
+				TextSize = 20,
+				TextXAlignment = Enum.TextXAlignment.Left,
+				Parent = journalList,
+			})
 			b.Activated:Connect(function()
 				UI.ShowClue(id)
 			end)
@@ -298,83 +327,242 @@ end
 
 local function build()
 	local player = Players.LocalPlayer
-	gui = new("ScreenGui", { Name = "LangVongUI", ResetOnSpawn = false, IgnoreGuiInset = true, ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-		Parent = player:WaitForChild("PlayerGui") })
+	gui = new("ScreenGui", {
+		Name = "LangVongUI",
+		ResetOnSpawn = false,
+		IgnoreGuiInset = true,
+		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
 
 	-- the camcorder's VHS viewfinder (shown by CamcorderController)
-	local vf = new("Frame", { Name = "Viewfinder", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = false, ZIndex = 2, Parent = gui })
+	local vf = new("Frame", {
+		Name = "Viewfinder",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Visible = false,
+		ZIndex = 2,
+		Parent = gui,
+	})
 	for _, c in { { 0, 0 }, { 1, 0 }, { 0, 1 }, { 1, 1 } } do -- the four corner brackets
-		local f = new("Frame", { Size = UDim2.fromOffset(60, 60), AnchorPoint = Vector2.new(c[1], c[2]),
-			Position = UDim2.new(c[1], c[1] == 0 and 40 or -40, c[2], c[2] == 0 and 40 or -40), BackgroundTransparency = 1, Parent = vf })
-		new("Frame", { Size = UDim2.new(1, 0, 0, 3), Position = UDim2.fromScale(0, c[2]), AnchorPoint = Vector2.new(0, c[2]), BorderSizePixel = 0,
-			BackgroundColor3 = rgb(230, 230, 230), Parent = f })
-		new("Frame", { Size = UDim2.new(0, 3, 1, 0), Position = UDim2.fromScale(c[1], 0), AnchorPoint = Vector2.new(c[1], 0), BorderSizePixel = 0,
-			BackgroundColor3 = rgb(230, 230, 230), Parent = f })
+		local f = new("Frame", {
+			Size = UDim2.fromOffset(60, 60),
+			AnchorPoint = Vector2.new(c[1], c[2]),
+			Position = UDim2.new(c[1], c[1] == 0 and 40 or -40, c[2], c[2] == 0 and 40 or -40),
+			BackgroundTransparency = 1,
+			Parent = vf,
+		})
+		new("Frame", {
+			Size = UDim2.new(1, 0, 0, 3),
+			Position = UDim2.fromScale(0, c[2]),
+			AnchorPoint = Vector2.new(0, c[2]),
+			BorderSizePixel = 0,
+			BackgroundColor3 = rgb(230, 230, 230),
+			Parent = f,
+		})
+		new("Frame", {
+			Size = UDim2.new(0, 3, 1, 0),
+			Position = UDim2.fromScale(c[1], 0),
+			AnchorPoint = Vector2.new(c[1], 0),
+			BorderSizePixel = 0,
+			BackgroundColor3 = rgb(230, 230, 230),
+			Parent = f,
+		})
 	end
-	new("Frame", { Name = "Tint", Size = UDim2.fromScale(1, 1), BackgroundColor3 = rgb(40, 70, 60), BackgroundTransparency = 0.86, BorderSizePixel = 0, Parent = vf })
+	new("Frame", {
+		Name = "Tint",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = rgb(40, 70, 60),
+		BackgroundTransparency = 0.86,
+		BorderSizePixel = 0,
+		Parent = vf,
+	})
 	local function vhs(name: string, pos: UDim2, anchor: Vector2, color: Color3?): TextLabel
-		return new("TextLabel", { Name = name, Size = UDim2.fromOffset(260, 34), Position = pos, AnchorPoint = anchor, BackgroundTransparency = 1,
-			Font = Enum.Font.Code, TextSize = 26, TextColor3 = color or rgb(235, 235, 235), TextStrokeTransparency = 0.4,
-			TextXAlignment = anchor.X == 0 and Enum.TextXAlignment.Left or Enum.TextXAlignment.Right, Text = "", Parent = vf })
+		return new("TextLabel", {
+			Name = name,
+			Size = UDim2.fromOffset(260, 34),
+			Position = pos,
+			AnchorPoint = anchor,
+			BackgroundTransparency = 1,
+			Font = Enum.Font.Code,
+			TextSize = 26,
+			TextColor3 = color or rgb(235, 235, 235),
+			TextStrokeTransparency = 0.4,
+			TextXAlignment = anchor.X == 0 and Enum.TextXAlignment.Left or Enum.TextXAlignment.Right,
+			Text = "",
+			Parent = vf,
+		})
 	end
 	UI.vfRec = vhs("Rec", UDim2.new(0, 70, 0, 70), Vector2.new(0, 0), rgb(255, 60, 50))
 	UI.vfMode = vhs("Mode", UDim2.new(0, 70, 0, 104), Vector2.new(0, 0))
 	UI.vfTime = vhs("Time", UDim2.new(1, -70, 0, 70), Vector2.new(1, 0))
 	UI.vfBattery = vhs("Battery", UDim2.new(1, -70, 1, -70), Vector2.new(1, 1))
 	UI.viewfinder = vf
-	local static = new("Frame", { Name = "Static", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = false, ZIndex = 3, Parent = vf })
+	local static = new("Frame", {
+		Name = "Static",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Visible = false,
+		ZIndex = 3,
+		Parent = vf,
+	})
 	for k = 0, 39 do
-		new("Frame", { Name = "Bar", Size = UDim2.new(1, 0, 1 / 40, 1), Position = UDim2.fromScale(0, k / 40), BorderSizePixel = 0,
-			BackgroundColor3 = rgb(128, 128, 128), ZIndex = 3, Parent = static })
+		new("Frame", {
+			Name = "Bar",
+			Size = UDim2.new(1, 0, 1 / 40, 1),
+			Position = UDim2.fromScale(0, k / 40),
+			BorderSizePixel = 0,
+			BackgroundColor3 = rgb(128, 128, 128),
+			ZIndex = 3,
+			Parent = static,
+		})
 	end
 	UI.vfStatic = static
 
 	-- clip chooser for playback (T)
-	local chooser = new("Frame", { Name = "Clips", Size = UDim2.fromOffset(240, 190), Position = UDim2.new(0.5, 0, 1, -40), AnchorPoint = Vector2.new(0.5, 1),
-		BackgroundColor3 = rgb(16, 18, 22), BackgroundTransparency = 0.15, Visible = false, ZIndex = 5, Parent = gui })
+	local chooser = new("Frame", {
+		Name = "Clips",
+		Size = UDim2.fromOffset(240, 190),
+		Position = UDim2.new(0.5, 0, 1, -40),
+		AnchorPoint = Vector2.new(0.5, 1),
+		BackgroundColor3 = rgb(16, 18, 22),
+		BackgroundTransparency = 0.15,
+		Visible = false,
+		ZIndex = 5,
+		Parent = gui,
+	})
 	corner(chooser)
-	new("UIListLayout", { Padding = UDim.new(0, 6), HorizontalAlignment = Enum.HorizontalAlignment.Center, SortOrder = Enum.SortOrder.LayoutOrder, Parent = chooser })
+	new("UIListLayout", {
+		Padding = UDim.new(0, 6),
+		HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		SortOrder = Enum.SortOrder.LayoutOrder,
+		Parent = chooser,
+	})
 	new("UIPadding", { PaddingTop = UDim.new(0, 8), Parent = chooser })
 	UI.clipChooser = chooser
 
 	-- text cards (the teller's narration, the rumor video)
-	cardFrame = new("Frame", { Name = "Card", Size = UDim2.fromScale(1, 1), BackgroundColor3 = rgb(0, 0, 0), BackgroundTransparency = 0.15,
-		Visible = false, ZIndex = 21, Parent = gui })
-	cardText = new("TextLabel", { Name = "Text", Size = UDim2.new(0.6, 0, 0.5, 0), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundTransparency = 1, TextColor3 = rgb(230, 220, 200), Font = Enum.Font.Garamond, TextSize = 30, TextWrapped = true, Text = "",
-		ZIndex = 22, Parent = cardFrame }) -- (above the fade: the ending text was dark grey under a half-done fade)
+	cardFrame = new("Frame", {
+		Name = "Card",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = rgb(0, 0, 0),
+		BackgroundTransparency = 0.15,
+		Visible = false,
+		ZIndex = 21,
+		Parent = gui,
+	})
+	cardText = new("TextLabel", {
+		Name = "Text",
+		Size = UDim2.new(0.6, 0, 0.5, 0),
+		Position = UDim2.fromScale(0.5, 0.5),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundTransparency = 1,
+		TextColor3 = rgb(230, 220, 200),
+		Font = Enum.Font.Garamond,
+		TextSize = 30,
+		TextWrapped = true,
+		Text = "",
+		ZIndex = 22,
+		Parent = cardFrame,
+	}) -- (above the fade: the ending text was dark grey under a half-done fade)
 
 	-- (on a dark backing, sized to the line: thin light text alone vanished on dark frames; release council 11-03)
-	messageLabel = new("TextLabel", { Name = "Message", Size = UDim2.new(0, 0, 0, 44), AutomaticSize = Enum.AutomaticSize.X,
-		Position = UDim2.new(0.5, 0, 1, -110), AnchorPoint = Vector2.new(0.5, 1), BackgroundColor3 = rgb(10, 12, 16), BackgroundTransparency = 0.35,
-		TextColor3 = rgb(248, 242, 228), TextStrokeTransparency = 0.5, Font = Enum.Font.Garamond, TextSize = 28,
-		Visible = false, ZIndex = 6, Parent = gui })
+	messageLabel = new("TextLabel", {
+		Name = "Message",
+		Size = UDim2.new(0, 0, 0, 44),
+		AutomaticSize = Enum.AutomaticSize.X,
+		Position = UDim2.new(0.5, 0, 1, -110),
+		AnchorPoint = Vector2.new(0.5, 1),
+		BackgroundColor3 = rgb(10, 12, 16),
+		BackgroundTransparency = 0.35,
+		TextColor3 = rgb(248, 242, 228),
+		TextStrokeTransparency = 0.5,
+		Font = Enum.Font.Garamond,
+		TextSize = 28,
+		Visible = false,
+		ZIndex = 6,
+		Parent = gui,
+	})
 	corner(messageLabel, 8)
 	new("UIPadding", { PaddingLeft = UDim.new(0, 18), PaddingRight = UDim.new(0, 18), Parent = messageLabel })
 
 	-- the dialogue box: who's speaking and their line; click it (or press Enter) to move on
-	dialogueFrame = new("TextButton", { Name = "Dialogue", Size = UDim2.new(0.62, 0, 0, 130), Position = UDim2.new(0.5, 0, 1, -170),
-		AnchorPoint = Vector2.new(0.5, 1), BackgroundColor3 = rgb(14, 16, 20), BackgroundTransparency = 0.2, AutoButtonColor = false, Text = "",
-		Visible = false, ZIndex = 7, Parent = gui })
+	dialogueFrame = new("TextButton", {
+		Name = "Dialogue",
+		Size = UDim2.new(0.62, 0, 0, 130),
+		Position = UDim2.new(0.5, 0, 1, -170),
+		AnchorPoint = Vector2.new(0.5, 1),
+		BackgroundColor3 = rgb(14, 16, 20),
+		BackgroundTransparency = 0.2,
+		AutoButtonColor = false,
+		Text = "",
+		Visible = false,
+		ZIndex = 7,
+		Parent = gui,
+	})
 	corner(dialogueFrame, 6)
-	dialogueSpeaker = new("TextLabel", { Name = "Speaker", Size = UDim2.new(1, -40, 0, 30), Position = UDim2.fromOffset(20, 10), BackgroundTransparency = 1,
-		TextColor3 = rgb(240, 170, 100), Font = Enum.Font.Merriweather, TextSize = 22, TextXAlignment = Enum.TextXAlignment.Left, Text = "",
-		ZIndex = 8, Parent = dialogueFrame })
-	dialogueText = new("TextLabel", { Name = "Line", Size = UDim2.new(1, -40, 1, -70), Position = UDim2.fromOffset(20, 40), BackgroundTransparency = 1,
-		TextColor3 = rgb(236, 228, 210), Font = Enum.Font.Garamond, TextSize = 26, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left,
-		TextYAlignment = Enum.TextYAlignment.Top, Text = "", ZIndex = 8, Parent = dialogueFrame })
-	new("TextLabel", { Name = "Hint", Size = UDim2.new(1, -40, 0, 20), Position = UDim2.new(0, 20, 1, -26), BackgroundTransparency = 1,
-		TextColor3 = rgb(150, 150, 150), Font = Enum.Font.Garamond, TextSize = 16, TextXAlignment = Enum.TextXAlignment.Right,
-		Text = Text.UI.next, ZIndex = 8, Parent = dialogueFrame })
+	dialogueSpeaker = new("TextLabel", {
+		Name = "Speaker",
+		Size = UDim2.new(1, -40, 0, 30),
+		Position = UDim2.fromOffset(20, 10),
+		BackgroundTransparency = 1,
+		TextColor3 = rgb(240, 170, 100),
+		Font = Enum.Font.Merriweather,
+		TextSize = 22,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Text = "",
+		ZIndex = 8,
+		Parent = dialogueFrame,
+	})
+	dialogueText = new("TextLabel", {
+		Name = "Line",
+		Size = UDim2.new(1, -40, 1, -70),
+		Position = UDim2.fromOffset(20, 40),
+		BackgroundTransparency = 1,
+		TextColor3 = rgb(236, 228, 210),
+		Font = Enum.Font.Garamond,
+		TextSize = 26,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		Text = "",
+		ZIndex = 8,
+		Parent = dialogueFrame,
+	})
+	new("TextLabel", {
+		Name = "Hint",
+		Size = UDim2.new(1, -40, 0, 20),
+		Position = UDim2.new(0, 20, 1, -26),
+		BackgroundTransparency = 1,
+		TextColor3 = rgb(150, 150, 150),
+		Font = Enum.Font.Garamond,
+		TextSize = 16,
+		TextXAlignment = Enum.TextXAlignment.Right,
+		Text = Text.UI.next,
+		ZIndex = 8,
+		Parent = dialogueFrame,
+	})
 	dialogueFrame.Activated:Connect(function()
 		if UI.onDialogueClick then
 			UI.onDialogueClick()
 		end
 	end)
 	-- skip the whole conversation (release council 11-03 B6)
-	local skip = new("TextButton", { Name = "Skip", Size = UDim2.fromOffset(0, 30), AutomaticSize = Enum.AutomaticSize.X, Position = UDim2.new(1, -12, 0, 10),
-		AnchorPoint = Vector2.new(1, 0), BackgroundColor3 = rgb(40, 44, 52), BackgroundTransparency = 0.2, TextColor3 = rgb(210, 204, 190),
-		Font = Enum.Font.Garamond, TextSize = 18, Text = Text.UI.skip, ZIndex = 9, Parent = dialogueFrame })
+	local skip = new("TextButton", {
+		Name = "Skip",
+		Size = UDim2.fromOffset(0, 30),
+		AutomaticSize = Enum.AutomaticSize.X,
+		Position = UDim2.new(1, -12, 0, 10),
+		AnchorPoint = Vector2.new(1, 0),
+		BackgroundColor3 = rgb(40, 44, 52),
+		BackgroundTransparency = 0.2,
+		TextColor3 = rgb(210, 204, 190),
+		Font = Enum.Font.Garamond,
+		TextSize = 18,
+		Text = Text.UI.skip,
+		ZIndex = 9,
+		Parent = dialogueFrame,
+	})
 	corner(skip, 6)
 	new("UIPadding", { PaddingLeft = UDim.new(0, 10), PaddingRight = UDim.new(0, 10), Parent = skip })
 	skip.Activated:Connect(function()
@@ -384,9 +572,20 @@ local function build()
 		end
 	end)
 	UI.dialogueSkip = skip
-	dialogueChoice = new("TextButton", { Name = "Choice", Size = UDim2.fromOffset(220, 40), Position = UDim2.new(1, -20, 1, -10), AnchorPoint = Vector2.new(1, 1),
-		BackgroundColor3 = rgb(200, 140, 70), TextColor3 = rgb(20, 16, 12), Font = Enum.Font.Merriweather, TextSize = 22, Text = "", Visible = false,
-		ZIndex = 9, Parent = dialogueFrame })
+	dialogueChoice = new("TextButton", {
+		Name = "Choice",
+		Size = UDim2.fromOffset(220, 40),
+		Position = UDim2.new(1, -20, 1, -10),
+		AnchorPoint = Vector2.new(1, 1),
+		BackgroundColor3 = rgb(200, 140, 70),
+		TextColor3 = rgb(20, 16, 12),
+		Font = Enum.Font.Merriweather,
+		TextSize = 22,
+		Text = "",
+		Visible = false,
+		ZIndex = 9,
+		Parent = dialogueFrame,
+	})
 	corner(dialogueChoice, 6)
 	dialogueChoice.Activated:Connect(function()
 		if UI.onDialogueChoice then
@@ -395,17 +594,58 @@ local function build()
 	end)
 
 	-- the Stay ending's choice
-	stayPanel = new("Frame", { Name = "Stay", Size = UDim2.fromOffset(460, 170), Position = UDim2.new(0.5, 0, 0.7, 0), AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundColor3 = rgb(10, 14, 18), BackgroundTransparency = 0.15, Visible = false, ZIndex = 12, Parent = gui })
+	stayPanel = new("Frame", {
+		Name = "Stay",
+		Size = UDim2.fromOffset(460, 170),
+		Position = UDim2.new(0.5, 0, 0.7, 0),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundColor3 = rgb(10, 14, 18),
+		BackgroundTransparency = 0.15,
+		Visible = false,
+		ZIndex = 12,
+		Parent = gui,
+	})
 	corner(stayPanel, 8)
-	new("TextLabel", { Name = "Prompt", Size = UDim2.new(1, -30, 0, 50), Position = UDim2.fromOffset(15, 12), BackgroundTransparency = 1,
-		Text = Text.Messages.holdOrLet, TextColor3 = rgb(230, 222, 205), Font = Enum.Font.Garamond, TextSize = 26, TextWrapped = true, ZIndex = 13, Parent = stayPanel })
-	stayTimer = new("TextLabel", { Name = "Timer", Size = UDim2.fromOffset(40, 24), Position = UDim2.new(1, -12, 0, 8), AnchorPoint = Vector2.new(1, 0),
-		BackgroundTransparency = 1, Text = "", TextColor3 = rgb(150, 150, 150), Font = Enum.Font.Code, TextSize = 18, ZIndex = 13, Parent = stayPanel })
+	new("TextLabel", {
+		Name = "Prompt",
+		Size = UDim2.new(1, -30, 0, 50),
+		Position = UDim2.fromOffset(15, 12),
+		BackgroundTransparency = 1,
+		Text = Text.Messages.holdOrLet,
+		TextColor3 = rgb(230, 222, 205),
+		Font = Enum.Font.Garamond,
+		TextSize = 26,
+		TextWrapped = true,
+		ZIndex = 13,
+		Parent = stayPanel,
+	})
+	stayTimer = new("TextLabel", {
+		Name = "Timer",
+		Size = UDim2.fromOffset(40, 24),
+		Position = UDim2.new(1, -12, 0, 8),
+		AnchorPoint = Vector2.new(1, 0),
+		BackgroundTransparency = 1,
+		Text = "",
+		TextColor3 = rgb(150, 150, 150),
+		Font = Enum.Font.Code,
+		TextSize = 18,
+		ZIndex = 13,
+		Parent = stayPanel,
+	})
 	for i, choice in { { "Hold", Text.UI.holdOn, true }, { "Let", Text.UI.letGo, false } } do
-		local b = new("TextButton", { Name = choice[1] :: string, Size = UDim2.fromOffset(190, 50), Position = UDim2.new(i == 1 and 0.27 or 0.73, 0, 1, -24),
-			AnchorPoint = Vector2.new(0.5, 1), BackgroundColor3 = i == 1 and rgb(70, 90, 110) or rgb(110, 70, 60), TextColor3 = rgb(240, 235, 225),
-			Font = Enum.Font.Merriweather, TextSize = 22, Text = choice[2] :: string, ZIndex = 13, Parent = stayPanel })
+		local b = new("TextButton", {
+			Name = choice[1] :: string,
+			Size = UDim2.fromOffset(190, 50),
+			Position = UDim2.new(i == 1 and 0.27 or 0.73, 0, 1, -24),
+			AnchorPoint = Vector2.new(0.5, 1),
+			BackgroundColor3 = i == 1 and rgb(70, 90, 110) or rgb(110, 70, 60),
+			TextColor3 = rgb(240, 235, 225),
+			Font = Enum.Font.Merriweather,
+			TextSize = 22,
+			Text = choice[2] :: string,
+			ZIndex = 13,
+			Parent = stayPanel,
+		})
 		corner(b, 6)
 		b.Activated:Connect(function()
 			stayPanel.Visible = false
@@ -416,10 +656,27 @@ local function build()
 	end
 
 	-- a taken player's button
-	takenPanel = new("Frame", { Name = "Taken", Size = UDim2.fromOffset(260, 60), Position = UDim2.new(0.5, 0, 1, -40), AnchorPoint = Vector2.new(0.5, 1),
-		BackgroundTransparency = 1, Visible = false, ZIndex = 6, Parent = gui })
-	takenButton = new("TextButton", { Name = "LightLantern", Size = UDim2.fromScale(1, 1), BackgroundColor3 = rgb(200, 120, 50), TextColor3 = rgb(25, 18, 10),
-		Font = Enum.Font.Merriweather, TextSize = 22, Text = Text.UI.lightLantern, ZIndex = 7, Parent = takenPanel })
+	takenPanel = new("Frame", {
+		Name = "Taken",
+		Size = UDim2.fromOffset(260, 60),
+		Position = UDim2.new(0.5, 0, 1, -40),
+		AnchorPoint = Vector2.new(0.5, 1),
+		BackgroundTransparency = 1,
+		Visible = false,
+		ZIndex = 6,
+		Parent = gui,
+	})
+	takenButton = new("TextButton", {
+		Name = "LightLantern",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = rgb(200, 120, 50),
+		TextColor3 = rgb(25, 18, 10),
+		Font = Enum.Font.Merriweather,
+		TextSize = 22,
+		Text = Text.UI.lightLantern,
+		ZIndex = 7,
+		Parent = takenPanel,
+	})
 	corner(takenButton, 8)
 	takenButton.Activated:Connect(function()
 		if UI.onLightLantern then
@@ -428,52 +685,171 @@ local function build()
 	end)
 
 	-- full-screen static
-	screenStatic = new("Frame", { Name = "ScreenStatic", Size = UDim2.fromScale(1, 1), BackgroundTransparency = 1, Visible = false, ZIndex = 15, Parent = gui })
+	screenStatic = new("Frame", {
+		Name = "ScreenStatic",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Visible = false,
+		ZIndex = 15,
+		Parent = gui,
+	})
 	for k = 0, 59 do
-		new("Frame", { Name = "Bar", Size = UDim2.new(1, 0, 1 / 60, 1), Position = UDim2.fromScale(0, k / 60), BorderSizePixel = 0,
-			BackgroundColor3 = rgb(128, 128, 128), ZIndex = 15, Parent = screenStatic })
+		new("Frame", {
+			Name = "Bar",
+			Size = UDim2.new(1, 0, 1 / 60, 1),
+			Position = UDim2.fromScale(0, k / 60),
+			BorderSizePixel = 0,
+			BackgroundColor3 = rgb(128, 128, 128),
+			ZIndex = 15,
+			Parent = screenStatic,
+		})
 	end
 
 	-- a memento's memory
-	memoryFrame = new("Frame", { Name = "Memory", Size = UDim2.fromScale(1, 1), BackgroundColor3 = rgb(0, 0, 0), BackgroundTransparency = 1, Visible = false,
-		ZIndex = 16, Parent = gui })
-	memoryText = new("TextLabel", { Name = "Text", Size = UDim2.new(0.6, 0, 0.3, 0), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundTransparency = 1, Text = "", TextColor3 = rgb(225, 215, 195), Font = Enum.Font.Garamond, TextSize = 30, TextWrapped = true, ZIndex = 17,
-		Parent = memoryFrame })
+	memoryFrame = new("Frame", {
+		Name = "Memory",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = rgb(0, 0, 0),
+		BackgroundTransparency = 1,
+		Visible = false,
+		ZIndex = 16,
+		Parent = gui,
+	})
+	memoryText = new("TextLabel", {
+		Name = "Text",
+		Size = UDim2.new(0.6, 0, 0.3, 0),
+		Position = UDim2.fromScale(0.5, 0.5),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundTransparency = 1,
+		Text = "",
+		TextColor3 = rgb(225, 215, 195),
+		Font = Enum.Font.Garamond,
+		TextSize = 30,
+		TextWrapped = true,
+		ZIndex = 17,
+		Parent = memoryFrame,
+	})
 
 	-- the clue panel: a scrap of paper
-	cluePanel = new("Frame", { Name = "CluePanel", Size = UDim2.fromOffset(520, 340), Position = UDim2.fromScale(0.5, 0.5), AnchorPoint = Vector2.new(0.5, 0.5),
-		BackgroundColor3 = PAPER, Visible = false, ZIndex = 10, Parent = gui })
+	cluePanel = new("Frame", {
+		Name = "CluePanel",
+		Size = UDim2.fromOffset(520, 340),
+		Position = UDim2.fromScale(0.5, 0.5),
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		BackgroundColor3 = PAPER,
+		Visible = false,
+		ZIndex = 10,
+		Parent = gui,
+	})
 	corner(cluePanel, 4)
-	clueTitle = new("TextLabel", { Name = "Title", Size = UDim2.new(1, -40, 0, 40), Position = UDim2.fromOffset(20, 16), BackgroundTransparency = 1,
-		TextColor3 = rgb(120, 30, 24), Font = Enum.Font.Merriweather, TextSize = 28, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 11, Parent = cluePanel })
-	clueBody = new("TextLabel", { Name = "Body", Size = UDim2.new(1, -40, 1, -120), Position = UDim2.fromOffset(20, 60), BackgroundTransparency = 1,
-		TextColor3 = INK, Font = Enum.Font.Garamond, TextSize = 22, TextWrapped = true, TextXAlignment = Enum.TextXAlignment.Left,
-		TextYAlignment = Enum.TextYAlignment.Top, ZIndex = 11, Parent = cluePanel })
-	local close = new("TextButton", { Name = "Close", Size = UDim2.fromOffset(110, 36), Position = UDim2.new(1, -20, 1, -16), AnchorPoint = Vector2.new(1, 1),
-		BackgroundColor3 = rgb(120, 30, 24), TextColor3 = PAPER, Font = Enum.Font.Merriweather, TextSize = 20, Text = Text.UI.close, ZIndex = 11, Parent = cluePanel })
+	clueTitle = new("TextLabel", {
+		Name = "Title",
+		Size = UDim2.new(1, -40, 0, 40),
+		Position = UDim2.fromOffset(20, 16),
+		BackgroundTransparency = 1,
+		TextColor3 = rgb(120, 30, 24),
+		Font = Enum.Font.Merriweather,
+		TextSize = 28,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		ZIndex = 11,
+		Parent = cluePanel,
+	})
+	clueBody = new("TextLabel", {
+		Name = "Body",
+		Size = UDim2.new(1, -40, 1, -120),
+		Position = UDim2.fromOffset(20, 60),
+		BackgroundTransparency = 1,
+		TextColor3 = INK,
+		Font = Enum.Font.Garamond,
+		TextSize = 22,
+		TextWrapped = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		ZIndex = 11,
+		Parent = cluePanel,
+	})
+	local close = new("TextButton", {
+		Name = "Close",
+		Size = UDim2.fromOffset(110, 36),
+		Position = UDim2.new(1, -20, 1, -16),
+		AnchorPoint = Vector2.new(1, 1),
+		BackgroundColor3 = rgb(120, 30, 24),
+		TextColor3 = PAPER,
+		Font = Enum.Font.Merriweather,
+		TextSize = 20,
+		Text = Text.UI.close,
+		ZIndex = 11,
+		Parent = cluePanel,
+	})
 	corner(close, 4)
 	close.Activated:Connect(UI.HideClue)
 
 	-- the journal
-	journal = new("Frame", { Name = "Journal", Size = UDim2.fromOffset(420, 460), Position = UDim2.new(0, 30, 0.5, 0), AnchorPoint = Vector2.new(0, 0.5),
-		BackgroundColor3 = PAPER, Visible = false, ZIndex = 7, Parent = gui })
+	journal = new("Frame", {
+		Name = "Journal",
+		Size = UDim2.fromOffset(420, 460),
+		Position = UDim2.new(0, 30, 0.5, 0),
+		AnchorPoint = Vector2.new(0, 0.5),
+		BackgroundColor3 = PAPER,
+		Visible = false,
+		ZIndex = 7,
+		Parent = gui,
+	})
 	corner(journal, 4)
-	new("TextLabel", { Name = "Heading", Size = UDim2.new(1, -30, 0, 44), Position = UDim2.fromOffset(16, 10), BackgroundTransparency = 1,
-		Text = Text.UI.journal, TextColor3 = INK, Font = Enum.Font.Merriweather, TextSize = 30, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 8, Parent = journal })
-	journalList = new("ScrollingFrame", { Name = "List", Size = UDim2.new(1, -30, 1, -70), Position = UDim2.fromOffset(16, 58), BackgroundTransparency = 1,
-		BorderSizePixel = 0, ScrollBarThickness = 4, AutomaticCanvasSize = Enum.AutomaticSize.Y, CanvasSize = UDim2.new(), ZIndex = 8, Parent = journal })
+	new("TextLabel", {
+		Name = "Heading",
+		Size = UDim2.new(1, -30, 0, 44),
+		Position = UDim2.fromOffset(16, 10),
+		BackgroundTransparency = 1,
+		Text = Text.UI.journal,
+		TextColor3 = INK,
+		Font = Enum.Font.Merriweather,
+		TextSize = 30,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		ZIndex = 8,
+		Parent = journal,
+	})
+	journalList = new("ScrollingFrame", {
+		Name = "List",
+		Size = UDim2.new(1, -30, 1, -70),
+		Position = UDim2.fromOffset(16, 58),
+		BackgroundTransparency = 1,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 4,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ZIndex = 8,
+		Parent = journal,
+	})
 	new("UIListLayout", { SortOrder = Enum.SortOrder.LayoutOrder, Parent = journalList })
-	local button = new("TextButton", { Name = "JournalButton", Size = UDim2.fromOffset(120, 44), Position = UDim2.new(0, 20, 1, -20), AnchorPoint = Vector2.new(0, 1),
-		BackgroundColor3 = PAPER, BackgroundTransparency = 0.1, TextColor3 = INK, Font = Enum.Font.Merriweather, TextSize = 22,
-		Text = Text.UI.journal .. " (J)", ZIndex = 6, Parent = gui })
+	local button = new("TextButton", {
+		Name = "JournalButton",
+		Size = UDim2.fromOffset(120, 44),
+		Position = UDim2.new(0, 20, 1, -20),
+		AnchorPoint = Vector2.new(0, 1),
+		BackgroundColor3 = PAPER,
+		BackgroundTransparency = 0.1,
+		TextColor3 = INK,
+		Font = Enum.Font.Merriweather,
+		TextSize = 22,
+		Text = Text.UI.journal .. " (J)",
+		ZIndex = 6,
+		Parent = gui,
+	})
 	corner(button, 6)
 	button.Activated:Connect(function()
 		UI.ToggleJournal()
 	end)
 
-	fadeFrame = new("Frame", { Name = "Fade", Size = UDim2.fromScale(1, 1), BackgroundColor3 = rgb(0, 0, 0), BackgroundTransparency = 1,
-		Visible = false, ZIndex = 20, Parent = gui })
+	fadeFrame = new("Frame", {
+		Name = "Fade",
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = rgb(0, 0, 0),
+		BackgroundTransparency = 1,
+		Visible = false,
+		ZIndex = 20,
+		Parent = gui,
+	})
 	redrawJournal()
 end
 

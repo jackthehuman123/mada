@@ -164,7 +164,10 @@ function LanternService.DriftAll()
 	for k, stop in stops do
 		local house = stop:GetAttribute("House") :: string
 		local points = pathFor(house)
-		table.insert(points, Vector3.new((stop :: BasePart).Position.X, Config.LanternFloatY, (stop :: BasePart).Position.Z))
+		table.insert(
+			points,
+			Vector3.new((stop :: BasePart).Position.X, Config.LanternFloatY, (stop :: BasePart).Position.Z)
+		)
 		local lantern = newLantern(f, house, points[1])
 		Remotes.event(Remotes.Names.Sfx):FireAllClients("lantern_on_water", points[1])
 		print(`[Lanterns] {house}'s lantern is on the water`)
