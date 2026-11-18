@@ -22,7 +22,7 @@ while IFS= read -r f; do lune_files+=("$f"); done < <(
 # luau-lsp cannot resolve @lune/* requires, so it only checks files that don't host Lune APIs.
 typed_files=()
 for f in "${lune_files[@]}"; do
-	case "$f" in tests/run.luau | tools/*.luau | tools/lib/*.luau) ;; *) typed_files+=("$f") ;; esac
+	case "$f" in tests/run.luau | tools/*.luau | tools/lib/*.luau) ;; *) grep -q '@lune/' "$f" || typed_files+=("$f") ;; esac
 done
 
 if [ ${#lune_files[@]} -gt 0 ]; then
