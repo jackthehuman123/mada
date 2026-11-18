@@ -1503,30 +1503,7 @@ local function testMarks(parent: Instance)
 	tag(m, Tags.CameraOnly)
 end
 
-local function lighting()
-	local L = game:GetService("Lighting")
-	-- (40/46/66 and 50/58/84 played pitch black on the dock: still night, but the shore, the paths and the water read)
-	-- (round 2, 2026-11-04: still black frames outdoors on the causeway, the lane and the dock: more moonlight, a little
-	-- exposure; still night)
-	L.Ambient = rgb(74, 82, 108)
-	L.OutdoorAmbient = rgb(112, 124, 158)
-	L.Brightness = 1.6
-	L.ExposureCompensation = 0.25
-	L.EnvironmentDiffuseScale = 0.3
-	L.EnvironmentSpecularScale = 0.3
-	L.FogColor = rgb(26, 32, 46)
-	L.FogStart = 40
-	L.FogEnd = 420
-	L.GlobalShadows = true
-	local atm = L:FindFirstChildOfClass("Atmosphere") or Instance.new("Atmosphere")
-	atm.Density = 0.3 -- (0.42 hid the karst towers' feet in haze: their tops hung in the sky)
-	atm.Offset = 0
-	atm.Color = rgb(40, 46, 64) -- (a light haze made distant land brighter than the night sky: the sky between the towers read as a hanging ceiling)
-	atm.Decay = rgb(18, 22, 34)
-	atm.Glare = 0
-	atm.Haze = 2.2
-	atm.Parent = L
-end
+-- Lighting is not set here: base Lighting comes from Scenes/<name>/mood.luau via SceneLoader (decision 2026-11-17).
 
 return function()
 	local old = Workspace:FindFirstChild("World")
@@ -1536,7 +1513,6 @@ return function()
 	local world = Instance.new("Folder")
 	world.Name = "World"
 	terrainPass()
-	lighting()
 	local village = Instance.new("Folder")
 	village.Name = "Village"
 	village.Parent = world

@@ -9,7 +9,7 @@ Index of `src/`. Read this before searching code. Services/controllers all expos
 | `SceneLoader.luau` | places prefabs from `layout`, applies `mood`; skips unknown prefabs with a warning, clears its own folder first | `load(sceneName): (placed, warnings)` |
 | `Scenes/active.luau` | list of scene names to load at boot | returns `{string}` |
 | `Scenes/village/layout.luau` | prefab placements (data) | `{Entry}` |
-| `Scenes/village/mood.luau` | fog, ambient, clock-time (data) | `Mood` |
+| `Scenes/village/mood.luau` | base Lighting: fog, ambient, exposure, atmosphere; `clockTime` is edit-mode only (data) | `Mood` |
 | `World/Build.luau` | graybox village, tags and gameplay objects | `function()` |
 | `Services/GameStateService` | phase, clock, reset | `GetPhase`, `SetPhase`, `GetClock`, `SetClock`, `OnPhase`, `OnReset`, `InShrine` |
 | `Services/MenuService` | menu/run/studio server kind, teams, solo start | `Kind`, `BeginSolo`, `SendAllBack`, `RunEnded`, `Snapshot` |

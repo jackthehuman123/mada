@@ -4,6 +4,7 @@
 local CollectionService = game:GetService("CollectionService")
 local Lighting = game:GetService("Lighting")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
 local ServerStorage = game:GetService("ServerStorage")
 
 local SceneShared = ReplicatedStorage:WaitForChild("Shared"):WaitForChild("Scene")
@@ -17,21 +18,57 @@ local function colour(c: { number }): Color3
 end
 
 local function applyMood(mood: Mood.Mood)
-	Lighting.ClockTime = mood.clockTime
+	-- During play GameStateService owns the time of day (it sets it in Init, before scenes load).
+	if mood.clockTime ~= nil and not RunService:IsRunning() then
+		Lighting.ClockTime = mood.clockTime
+	end
 	Lighting.Brightness = mood.brightness
 	Lighting.FogStart = mood.fogStart
 	Lighting.FogEnd = mood.fogEnd
 	Lighting.FogColor = colour(mood.fogColor)
 	Lighting.Ambient = colour(mood.ambient)
-	local atmosphere = Lighting:FindFirstChildOfClass("Atmosphere")
-	if mood.atmosphereDensity ~= nil then
-		atmosphere = atmosphere or Instance.new("Atmosphere")
-		assert(atmosphere, "atmosphere")
-		atmosphere.Density = mood.atmosphereDensity
-		atmosphere.Parent = Lighting
-	elseif atmosphere then
-		atmosphere:Destroy()
+	if mood.outdoorAmbient then
+		Lighting.OutdoorAmbient = colour(mood.outdoorAmbient)
 	end
+	if mood.exposure ~= nil then
+		Lighting.ExposureCompensation = mood.exposure
+	end
+	if mood.environmentDiffuse ~= nil then
+		Lighting.EnvironmentDiffuseScale = mood.environmentDiffuse
+	end
+	if mood.environmentSpecular ~= nil then
+		Lighting.EnvironmentSpecularScale = mood.environmentSpecular
+	end
+	if mood.globalShadows ~= nil then
+		Lighting.GlobalShadows = mood.globalShadows
+	end
+
+	local existing = Lighting:FindFirstChildOfClass("Atmosphere")
+	local a = mood.atmosphere
+	if not a then
+		if existing then
+			existing:Destroy()
+		end
+		return
+	end
+	local atmosphere: Atmosphere = existing or Instance.new("Atmosphere")
+	atmosphere.Density = a.density
+	if a.offset ~= nil then
+		atmosphere.Offset = a.offset
+	end
+	if a.color then
+		atmosphere.Color = colour(a.color)
+	end
+	if a.decay then
+		atmosphere.Decay = colour(a.decay)
+	end
+	if a.glare ~= nil then
+		atmosphere.Glare = a.glare
+	end
+	if a.haze ~= nil then
+		atmosphere.Haze = a.haze
+	end
+	atmosphere.Parent = Lighting
 end
 
 function SceneLoader.load(sceneName: string): (number, { string })

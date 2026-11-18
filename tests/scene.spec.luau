@@ -38,4 +38,30 @@ return function(test)
 		})
 		assert(#errs == 1 and errs[1]:find("clockTime"), "expected clockTime error")
 	end)
+	test("mood clockTime is optional (GameStateService owns time of day in play)", function()
+		local errs = Mood.validate({
+			brightness = 1,
+			fogStart = 0,
+			fogEnd = 100,
+			fogColor = { 0, 0, 0 },
+			ambient = { 0, 0, 0 },
+		})
+		assert(#errs == 0, table.concat(errs, "; "))
+	end)
+	test("mood checks optional lighting and atmosphere fields", function()
+		local errs = Mood.validate({
+			brightness = 1,
+			fogStart = 0,
+			fogEnd = 100,
+			fogColor = { 0, 0, 0 },
+			ambient = { 0, 0, 0 },
+			outdoorAmbient = { 0, 0, 999 },
+			environmentDiffuse = 2,
+			atmosphere = { density = 1.5, color = { 1, 2 } },
+		} :: any)
+		local all = table.concat(errs, "; ")
+		assert(#errs == 4, `expected 4 errors, got {#errs}: {all}`)
+		assert(all:find("outdoorAmbient") and all:find("environmentDiffuse"), all)
+		assert(all:find("atmosphere.density") and all:find("atmosphere.color"), all)
+	end)
 end

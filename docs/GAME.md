@@ -20,18 +20,18 @@ A 1–4 player co-op story-horror game for Roblox based on the Vietnamese *ma da
 | What | Source of truth | How to change it |
 | --- | --- | --- |
 | Luau code | `src/` | Edit files; Rojo syncs. Never edit Rojo-managed scripts inside Studio or with MCP `multi_edit`. |
-| Scenes (layout, mood) | `src/server/Scenes/<name>/layout.luau`, `mood.luau` | Edit the data files; `SceneLoader` applies them. |
-| Prefabs | `assets/prefabs/*.rbxm` | Built in Studio, extracted with `tools/extract-prefabs.luau`. |
-| Graybox village | `src/server/World/Build.luau` (baked by `tools/worldgen/00_graybox.luau`) | Edit `Build.luau`. Art-layer work in the published place keeps the graybox's names, tags and positions. |
+| Scenes (placement, Lighting) | `src/server/Scenes/<name>/layout.luau`, `mood.luau` | Edit the data files; `SceneLoader` applies them. Base Lighting lives only in `mood.luau`. |
+| Prefabs (built pieces) | `assets/prefabs/*.rbxm` | Built in Studio inside `Workspace.PrefabWorkshop`, extracted with `tools/extract-prefabs.luau` (skill `new-prefab`). |
+| Graybox ground and paths | `src/server/World/Build.luau` (baked by `tools/worldgen/00_graybox.luau`) | Edit `Build.luau`. Houses and props still in it move to prefabs + layout as their prefabs arrive. |
 | Player-facing text | `src/shared/Content/*.luau` | Data modules only, never in logic. |
 | Numbers | `src/shared/Config.luau` | Never inline. |
 | Asset IDs | `docs/ASSETS.md` | One row per inserted asset. |
 
 ## Assets
-Graybox first with plain parts; gameplay before art. Art pass: `search_asset` (Creator Store, free) → `insert_asset` → **sanitize** (delete every Script/LocalScript/ModuleScript inside, check for `require(` with numeric IDs) → anchor, scale, rename, tag, parent under `Workspace.World.<Area>` → log in `docs/ASSETS.md`. Not in the store: `generate_mesh` with a specific prompt.
+Graybox first with plain parts; gameplay before art. Art is prefabs (decision 2026-11-17): a piece is built once as a Model inside `Workspace.PrefabWorkshop` (Catlyn, or the main session through MCP), saved to `work/workshop.rbxl`, extracted to `assets/prefabs/<Name>.rbxm` and committed; it is placed only by entries in a scene's `layout.luau`. Never hand-place art in the published place. Store models: `search_asset` (Creator Store, free) → `insert_asset` into the workshop → **sanitize** (delete every Script/LocalScript/ModuleScript inside, check for `require(` with numeric IDs) → anchor, scale, rename → log in `docs/ASSETS.md`. Not in the store: `generate_mesh` with a specific prompt. Tags go on layout entries (`tags = {...}`), not inside the prefab, unless every copy needs them.
 
 ## Studio through MCP
-Tools: `list_roblox_studios`, `search_game_tree`, `inspect_instance`, `execute_luau`, `search_asset`, `insert_asset`, `generate_mesh`, `start_stop_play`, `get_console_output`, `screen_capture`, `character_navigation`, `user_keyboard_input`. Setup: `docs/MCP_SETUP.md`. Test loop after a change: stop play → let Rojo sync → `start_stop_play` → `get_console_output` (no errors from our scripts) → exercise the feature → stop play. Never edit while a playtest runs.
+Setup: `docs/MCP_SETUP.md`. Building in the workshop (`execute_luau`, `insert_asset`, `generate_mesh`) is done by Catlyn or the main session. The `studio-tester` agent only verifies: `start_stop_play`, `get_console_output`, `search_game_tree`, `inspect_instance`, `character_navigation`, input, and `screen_capture` when asked. Test loop after a change: stop play → let Rojo sync → `start_stop_play` → `get_console_output` (no errors from our scripts) → exercise the feature → stop play. Never edit while a playtest runs.
 
 ## Debug and tests
 `Services/DebugService.luau` (Studio only) exposes commands to skip phases, set the clock, give items, take/rescue players. `python tools/factory/test.py` builds the place from git, plays it in its own Studio window and runs `tests/` (about 2 minutes; don't run it while another agent uses Studio). See `docs/FACTORY.md`.
